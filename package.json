@@ -2,7 +2,8 @@
     "name": "color-palette-generator",
     "version": "0.0.0",
     "scripts": {
-        "start": "vite"
+        "start": "vite",
+        "build": "vite build"
     },
     "dependencies": {
         "@emotion/react": "^11.13.3",
