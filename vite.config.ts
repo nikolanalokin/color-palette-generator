@@ -21,4 +21,5 @@ export default defineConfig({
         outDir: 'docs',
         sourcemap: 'inline',
     },
+    base: '/color-palette-generator/'
 })
