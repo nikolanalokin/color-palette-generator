@@ -1,10 +1,13 @@
 import { formatHex, Okhsl, okhsl } from 'culori'
-import { invlerp, lerp, range } from './math'
+import { bezier, invlerp, lerp, range } from './math'
 import { contrastAPCA } from './utils'
 
 export const DEFAULT_TONES_SCALE = [0, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950, 1000]
 export const BLACK_CONTRAST_SCORE = [106, 0]
 export const WHITE_CONTRAST_SCORE = [0, -107.9]
+
+export const BLACK_HEX = '#000000'
+export const WHITE_HEX = '#ffffff'
 /**
  * Диапазон смещения цветовых оттенков
  * Положительное значение смещает вправо (от красного к оранжевому)
@@ -32,7 +35,7 @@ export type OkhslShadeFnProps = {
  * @param {boolean} props.useApca - использовать подгонку по шкале контрастности
  * @returns {string} итоговый цвет оттенка в hex
  */
-export function createShadeWithOkhsl (props: OkhslShadeFnProps): string {
+export function createShade (props: OkhslShadeFnProps): string {
     const {
         baseColor,
         baseTone,
@@ -49,8 +52,10 @@ export function createShadeWithOkhsl (props: OkhslShadeFnProps): string {
     const shadeColor = okhsl(baseColor)
     // сохраняем исходный цвет если используется подгонка по шкале контрастности
     if (!fixBase || tone !== baseColorShadeNumber) {
-        shadeColor.h = computeScaleHue(scaleValue, shadeColor.h, inputScaleValue, hueShift)
-        if (decreaseSaturationRatio) {
+        if (hueShift > 0) {
+            shadeColor.h = computeScaleHue(scaleValue, shadeColor.h, inputScaleValue, hueShift)
+        }
+        if (0 < decreaseSaturationRatio && decreaseSaturationRatio < 1) {
             shadeColor.s = computeScaleSaturationWithLocalPeak(scaleValue, shadeColor.s * decreaseSaturationRatio, shadeColor.s, inputScaleValue)
         }
         shadeColor.l = computeScaleLightness(scaleValue, shadeColor, useApca)
@@ -87,38 +92,79 @@ const computeScaleLightness = (scaleValue: number, baseOkhsl: Okhsl, useApca: bo
         return 1 - scaleValue
     }
 
-    const fgColor = scaleValue < .5 ? 'black' : 'white'
+    if (scaleValue === 0) {
+        return 1
+    }
+
+    if (scaleValue === 1) {
+        return 0
+    }
+
+    // // const l = 1 - scaleValue
+    // const l = 1 - Math.pow(scaleValue, 2)
+    // // const l = 1 - Math.pow(scaleValue, 3)
+    // // const l = bezier(scaleValue, [0, 1], [0.2, 0.8], [0.4, 0.6], [1, 0])[1]
+    // console.log(`x: ${scaleValue}, l: ${l}`)
+    // return l
+
+    const fgHex = scaleValue < .5 ? BLACK_HEX : WHITE_HEX
     const contrastScore = scaleValue < .5
         ? lerp(BLACK_CONTRAST_SCORE[0], BLACK_CONTRAST_SCORE[1], scaleValue)
         : lerp(WHITE_CONTRAST_SCORE[0], WHITE_CONTRAST_SCORE[1], scaleValue)
 
     if (!contrastScore) return 1
 
-    let lightness = null
-    let threshold = 110
+    return findLightnessByContrastScore(baseOkhsl, fgHex, contrastScore)
+}
 
+export function findClosestShadeNumber (inputHex: string, scale = DEFAULT_TONES_SCALE) {
+    const blackContrastScore = contrastAPCA(BLACK_HEX, inputHex)
+    const whiteContrastScore = contrastAPCA(WHITE_HEX, inputHex)
+    const blackToneNumber = range(BLACK_CONTRAST_SCORE[0], BLACK_CONTRAST_SCORE[1], scale.at(0), scale.at(-1), blackContrastScore)
+    const whiteToneNumber = range(WHITE_CONTRAST_SCORE[0], WHITE_CONTRAST_SCORE[1], scale.at(0), scale.at(-1), whiteContrastScore)
+    let inputToneNumber = 500
+    if (whiteContrastScore === 0) {
+        inputToneNumber = blackToneNumber
+    } else if (blackContrastScore === 0) {
+        inputToneNumber = whiteToneNumber
+    } else {
+        inputToneNumber = (blackToneNumber + whiteToneNumber) / 2
+    }
+    return scale.map(t => ([t, t - inputToneNumber])).reduce((t1, t2) => Math.abs(t1[1]) < Math.abs(t2[1]) ? t1 : t2)[0]
+}
+
+function findLightnessByContrastScore (baseOkhsl: Okhsl, fgHex: string, contrastScore: number) {
+    let result = null
+    let threshold = 110
     // поиск значения светлоты цвета, дающее наиболее близкое значение контрастности
     for (let testLightness = 0; testLightness < 100; testLightness++) {
         const l = testLightness / 100
-        const bgColor = formatHex({ ...baseOkhsl, l })
-        const resultScore = contrastAPCA(fgColor, bgColor)
+        const bgHex = formatHex({ ...baseOkhsl, l })
+        const resultScore = contrastAPCA(fgHex, bgHex)
         const delta = Math.abs(Math.abs(contrastScore) - Math.abs(resultScore))
 
         if (delta < threshold) {
             threshold = delta
-            lightness = l
+            result = l
         }
     }
-
-    return lightness
+    return result
 }
 
-export function findClosestShadeNumber (inputColor: string, scale = DEFAULT_TONES_SCALE) {
-    const blackContrastScore = contrastAPCA('black', inputColor)
-    const whiteContrastScore = contrastAPCA('white', inputColor)
-    const averageToneNumber = (
-        range(BLACK_CONTRAST_SCORE[0], BLACK_CONTRAST_SCORE[1], scale.at(0), scale.at(-1), blackContrastScore) +
-        range(WHITE_CONTRAST_SCORE[0], WHITE_CONTRAST_SCORE[1], scale.at(0), scale.at(-1), whiteContrastScore)
-    ) / 2
-    return scale.map(t => ([t, t - averageToneNumber])).reduce((t1, t2) => Math.abs(t1[1]) < Math.abs(t2[1]) ? t1 : t2)[0]
+function findContrastScore (baseOkhsl: Okhsl, fgHex: string, contrastScore: number) {
+    let result = null
+    let threshold = 110
+    // поиск значения светлоты цвета, дающее наиболее близкое значение контрастности
+    for (let testLightness = 0; testLightness < 100; testLightness++) {
+        const l = testLightness / 100
+        const bgHex = formatHex({ ...baseOkhsl, l })
+        const resultScore = contrastAPCA(fgHex, bgHex)
+        const delta = Math.abs(Math.abs(contrastScore) - Math.abs(resultScore))
+
+        if (delta < threshold) {
+            threshold = delta
+            result = l
+        }
+    }
+    return result
 }

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Meta } from '@storybook/react'
 import './algorithm.stories.css'
 import { createPaletteWithTailwindReference } from './createPaletteWithTailwindReference'
-import { createPaletteWithOkhsl } from './createPaletteWithOkhsl'
+import { createPalette } from './createPalette'
 import { formatHex, Hsl, hsl, Okhsl, okhsl, wcagContrast } from 'culori'
 import { Palette as TPalette, ShadeInfo } from './types'
 import { ConvertFn } from 'culori/src/converter'
@@ -51,7 +51,7 @@ export const Playground = () => {
     const [apca, setApca] = useState(true)
     const createPaletteFn = {
         reference: createPaletteWithTailwindReference,
-        okhsl: createPaletteWithOkhsl,
+        okhsl: createPalette,
     }[method]
     const hexColor = formatHex(color)
     let palette = createPaletteFn(hexColor, apca)

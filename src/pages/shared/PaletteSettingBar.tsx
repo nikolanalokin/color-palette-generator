@@ -4,42 +4,53 @@ import { RangeInput } from '../../components'
 import { TextInput } from '../../components/inputs/TextInput'
 import { Checkbox } from '../../components/inputs/Checkbox'
 import { NumberInput } from '../../components/inputs/NumberInput'
+import { useEffect, useState } from 'react'
+import { contrastAPCA, Palette } from '../../core'
+
+export type PaletteSettingBarValue = {
+    color?: Okhsl
+    fixBase?: boolean
+    useApca?: boolean
+    hueShift?: number
+    decreaseSaturationRatio?: number
+}
 
 export type PaletteSettingBarProps = {
-    color?: Okhsl
-    onColorChange?(hex: Okhsl): void
-    fixBase?: boolean
-    onFixBaseChange?(value: boolean): void
-    useApca?: boolean
-    onUseApcaChange?(value: boolean): void
-    hueShift?: number
-    onHueShiftChange?(value: number): void
-    decreaseSaturationRatio?: number
-    onDecreaseSaturationRatioChange?(value: number): void
+    value?: PaletteSettingBarValue
+    onChange?(value: PaletteSettingBarValue): void
+    palette?: Palette
 }
 
 export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
     const {
-        color,
-        onColorChange,
-        fixBase,
-        onFixBaseChange,
-        useApca,
-        onUseApcaChange,
-        hueShift,
-        onHueShiftChange,
-        decreaseSaturationRatio,
-        onDecreaseSaturationRatioChange,
+        value: valueProp = {},
+        onChange,
+        palette,
     } = props
-    const hex = formatHex(color)
-    const hue = color.h
-    const handleHueChange = (value: number) => onColorChange?.({ ...color, h: value, })
-    const saturation = color.s * 100
-    const handleSaturationChange = (value: number) => onColorChange?.({ ...color, s: value / 100, })
-    const lightness = color.l * 100
-    const handleLightnessChange = (value: number) => onColorChange?.({ ...color, l: value / 100, })
-    const handleHexColorChange = (evt: React.ChangeEvent<HTMLInputElement>) => onColorChange?.(okhsl(evt.target.value))
-    const handleHexStringChange = (value: string) => onColorChange?.(okhsl(value))
+    const hex = formatHex(valueProp.color)
+    const hue = valueProp.color.h
+    const [hexString, setHexString] = useState(hex)
+    useEffect(() => {
+        setHexString(hex)
+    }, [hex])
+    const updateValue = (changes: Partial<PaletteSettingBarValue>) => {
+        const valueCopy = { ...valueProp }
+        Object.keys(changes).forEach(key => {
+            valueCopy[key] = changes[key]
+        })
+        onChange?.(valueCopy)
+    }
+    const handleHueChange = (value: number) => updateValue({ color: { ...valueProp.color, h: value, }})
+    const saturation = valueProp.color.s * 100
+    const handleSaturationChange = (value: number) => updateValue({ color: { ...valueProp.color, s: value / 100, }})
+    const lightness = valueProp.color.l * 100
+    const handleLightnessChange = (value: number) => updateValue({ color: { ...valueProp.color, l: value / 100, }})
+    const handleHexColorChange = (evt: React.ChangeEvent<HTMLInputElement>) => updateValue({ color: okhsl(evt.target.value)})
+    const handleHexStringChange = (value: string) => {
+        setHexString(value)
+        const valueOkhsl = okhsl(value)
+        if (valueOkhsl) updateValue({ color: valueOkhsl })
+    }
     return (
         <PaletteSettingBarRoot>
             <HexContainer>
@@ -52,7 +63,7 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                 </ColorRectContainer>
                 <TextInput
                     id="hex"
-                    value={hex}
+                    value={hexString}
                     onChange={handleHexStringChange}
                 />
             </HexContainer>
@@ -89,16 +100,16 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                     <Checkbox
                         id="useApca"
                         labelText="Подогнать цвета под фиксированные значения контрастности"
-                        checked={useApca}
-                        onChange={onUseApcaChange}
+                        checked={valueProp.useApca}
+                        onChange={value => updateValue({ useApca: value })}
                     />
 
                     <Checkbox
                         id="fixBase"
                         labelText="Зафиксировать входной цвет"
-                        checked={fixBase}
-                        onChange={onFixBaseChange}
-                        disabled={!useApca}
+                        checked={valueProp.fixBase}
+                        onChange={value => updateValue({ fixBase: value })}
+                        disabled={!valueProp.useApca}
                     />
                 </Column>
 
@@ -107,8 +118,8 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                         id="hueShift"
                         labelText="Смещение цветового тона"
                         step={1}
-                        value={hueShift}
-                        onChange={onHueShiftChange}
+                        value={valueProp.hueShift}
+                        onChange={value => updateValue({ hueShift: value })}
                     />
 
                     <NumberInput
@@ -118,11 +129,35 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                         min={0}
                         step={.01}
                         max={1}
-                        value={decreaseSaturationRatio}
-                        onChange={onDecreaseSaturationRatioChange}
+                        value={valueProp.decreaseSaturationRatio}
+                        onChange={value => updateValue({ decreaseSaturationRatio: value })}
                     />
                 </Column>
             </PaletteOptionsContainer>
+
+            {/* <Column>
+                <Checkbox labelText="Задать контрастность вручную" />
+                <Row>
+                    { palette.shades.map(shade => (
+                        <Column key={shade.number}>
+                            <NumberInput
+                                id={`l-${shade.number}`}
+                                labelText={shade.number.toString()}
+                                value={round(contrastAPCA('black', shade.hexcode))}
+                                readOnly
+                                css={{ width: '75px' }}
+                            />
+                            <NumberInput
+                                id={`l-${shade.number}`}
+                                labelText={shade.number.toString()}
+                                value={round(contrastAPCA('white', shade.hexcode))}
+                                readOnly
+                                css={{ width: '75px' }}
+                            />
+                        </Column>
+                    ))}
+                </Row>
+            </Column> */}
         </PaletteSettingBarRoot>
     )
 }
@@ -196,3 +231,7 @@ const ColorRect = styled.input`
         border: none;
     }
 `
+
+function round (value: number) {
+    return Math.round(value * 100) / 100
+}

@@ -1,25 +1,27 @@
 import { useState } from 'react'
 import styled from '@emotion/styled'
-import { PaletteSettingBar } from './shared/PaletteSettingBar'
+import { PaletteSettingBar, PaletteSettingBarValue } from './shared/PaletteSettingBar'
 import { PaletteContrastTable } from './shared/PaletteContrastTable'
-import { createPaletteWithOkhsl } from '../core'
+import { createPalette } from '../core'
 import { formatHex, okhsl, Okhsl } from 'culori'
 import { PalettePlots } from './shared/PalettePlots'
 import { GlobalStyles } from '../components'
 import { PaletteDisplayBlock } from './shared/PaletteDisplayBlock'
 
 export const App = () => {
-    const [color, setColor] = useState<Okhsl>(okhsl('#d03531'))
-    const [useApca, setUseApca] = useState<boolean>(true)
-    const [fixBase, setFixBase] = useState<boolean>(false)
-    const [hueShift, setHueShift] = useState<number>(5)
-    const [decreaseSaturationRatio, setDecreaseSaturationRatio] = useState<number>(.75)
-    const palette = createPaletteWithOkhsl({
-        baseColor: formatHex(color),
-        fixBase: fixBase,
-        useApca: useApca,
-        hueShift: hueShift,
-        decreaseSaturationRatio: decreaseSaturationRatio,
+    const [options, setOptions] = useState<PaletteSettingBarValue>({
+        color: okhsl('#d03531'),
+        useApca: true,
+        fixBase: false,
+        hueShift: 5,
+        decreaseSaturationRatio: .75,
+    })
+    const palette = createPalette({
+        baseColor: formatHex(options.color),
+        fixBase: options.fixBase,
+        useApca: options.useApca,
+        hueShift: options.hueShift,
+        decreaseSaturationRatio: options.decreaseSaturationRatio,
     })
     return (
         <>
@@ -28,19 +30,18 @@ export const App = () => {
                 <Main>
                     <SettingBarSection>
                         <PaletteSettingBar
-                            color={color}
-                            onColorChange={setColor}
-                            useApca={useApca}
-                            onUseApcaChange={value => {
-                                setUseApca(value)
-                                if (!value) setFixBase(false)
+                            value={options}
+                            onChange={value => {
+                                if (!value.useApca) {
+                                    setOptions({
+                                        ...value,
+                                        fixBase: false,
+                                    })
+                                    return
+                                }
+                                setOptions(value)
                             }}
-                            fixBase={fixBase}
-                            onFixBaseChange={setFixBase}
-                            hueShift={hueShift}
-                            onHueShiftChange={setHueShift}
-                            decreaseSaturationRatio={decreaseSaturationRatio}
-                            onDecreaseSaturationRatioChange={setDecreaseSaturationRatio}
+                            palette={palette}
                         />
                     </SettingBarSection>
                     <PlotsSection>
@@ -80,7 +81,16 @@ const Main = styled.main({
         "settingBar plots"
         "display plots"
         "contrastTable contrastTable"
-    `
+    `,
+
+    '@media (max-width: 1600px)': {
+        gridTemplateAreas: `
+            "settingBar settingBar"
+            "plots plots"
+            "display display"
+            "contrastTable contrastTable"
+        `,
+    },
 })
 
 const Section = styled.section({
@@ -95,6 +105,11 @@ const SettingBarSection = styled(Section)({
 const PlotsSection = styled(Section)({
     gridArea: 'plots',
     borderInlineStart: '1px solid',
+
+    '@media (max-width: 1600px)': {
+        borderInlineStart: 'none',
+        borderBlockEnd: '1px solid',
+    },
 })
 
 const DisplaySection = styled(Section)({

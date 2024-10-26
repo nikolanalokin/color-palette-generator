@@ -25,42 +25,56 @@ export const PalettePlots = (props: PalettePlotsProps) => {
                 <option value="okhsl">OKHSL</option>
                 <option value="hsl">HSL</option>
             </SelectInput>
-            <StyledLinePlot
-                data={hueData}
-                xMin={0}
-                xMax={1000}
-                yMin={0}
-                yMax={360}
-            />
-            <StyledLinePlot
-                data={saturationData}
-                xMin={0}
-                xMax={1000}
-                yMin={0}
-                yMax={100}
-            />
-            <StyledLinePlot
-                data={lightnessData}
-                xMin={0}
-                xMax={1000}
-                yMin={0}
-                yMax={100}
-            />
+            <PlotsContainer>
+                <StyledLinePlot
+                    data={hueData}
+                    xMin={0}
+                    xMax={1000}
+                    yMin={0}
+                    yMax={360}
+                />
+                <StyledLinePlot
+                    data={saturationData}
+                    xMin={0}
+                    xMax={1000}
+                    yMin={0}
+                    yMax={100}
+                />
+                <StyledLinePlot
+                    data={lightnessData}
+                    xMin={0}
+                    xMax={1000}
+                    yMin={0}
+                    yMax={100}
+                />
+            </PlotsContainer>
         </PalettePlotsRoot>
     )
 }
 
 const PalettePlotsRoot = styled.div(
     ({}) => ({
-        width: '100%',
         display: 'flex',
         flexDirection: 'column',
         rowGap: '24px',
     })
 )
 
+const PlotsContainer = styled.div(
+    ({}) => ({
+        display: 'flex',
+        flexDirection: 'column',
+        rowGap: '24px',
+
+        '@media (max-width: 1600px)': {
+            flexDirection: 'row',
+            columnGap: '16px',
+        },
+    })
+)
+
 const StyledLinePlot = styled(LinePlot)({
-    width: '480px',
+    width: '420px',
 })
 
 const Gradient = styled.div(

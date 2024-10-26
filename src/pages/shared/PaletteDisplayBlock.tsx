@@ -80,7 +80,6 @@ const createRow = (shade: ShadeInfo) => {
     const wcagWhite = wcagContrast(shade.hexcode, 'white')
     const apcaBlack = contrastAPCA('black', shade.hexcode)
     const apcaWhite = contrastAPCA('white', shade.hexcode)
-
     return {
         hex: shade.hexcode,
         wcag: `${ wcagBlack.toFixed(2) }/${ wcagWhite.toFixed(2) }`,
@@ -132,6 +131,7 @@ const PaletteScale = styled.div(
     ({}) => ({
         display: 'flex',
         flexDirection: 'column',
+        borderRadius: '8px',
         boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px;',
     })
 )

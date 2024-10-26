@@ -1,6 +1,6 @@
 import { deltaE, getColorInfo } from './utils'
 import { Palette } from './types'
-import { createShadeWithOkhsl, DEFAULT_TONES_SCALE, findClosestShadeNumber } from './createShadeWithOkhsl'
+import { createShade, DEFAULT_TONES_SCALE, findClosestShadeNumber } from './createShade'
 
 export type OkhslPaletteFnProps = {
     baseColor: string
@@ -11,7 +11,7 @@ export type OkhslPaletteFnProps = {
     decreaseSaturationRatio?: number
 }
 
-export function createPaletteWithOkhsl (props: OkhslPaletteFnProps): Palette {
+export function createPalette (props: OkhslPaletteFnProps): Palette {
     const {
         baseColor,
         scale = DEFAULT_TONES_SCALE,
@@ -23,7 +23,7 @@ export function createPaletteWithOkhsl (props: OkhslPaletteFnProps): Palette {
     const baseColorInfo = getColorInfo(baseColor)
     const baseColorShadeNumber = findClosestShadeNumber(baseColor, scale)
     const shades = scale.map(tone => {
-        const shadeHex = createShadeWithOkhsl({
+        const shadeHex = createShade({
             baseColor: baseColorInfo.hexcode,
             baseTone: baseColorShadeNumber,
             tone,
