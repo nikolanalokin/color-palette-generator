@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import { formatHex, okhsl, Okhsl } from 'culori'
-import { RangeInput } from '../../components'
+import { OkhslColorPicker, RangeInput, SelectInput } from '../../components'
 import { TextInput } from '../../components/inputs/TextInput'
 import { Checkbox } from '../../components/inputs/Checkbox'
 import { NumberInput } from '../../components/inputs/NumberInput'
@@ -9,8 +9,8 @@ import { contrastAPCA, Palette } from '../../core'
 
 export type PaletteSettingBarValue = {
     color?: Okhsl
+    method?: 'lightness' | 'apca'
     fixBase?: boolean
-    useApca?: boolean
     hueShift?: number
     decreaseSaturationRatio?: number
 }
@@ -28,7 +28,7 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
         palette,
     } = props
     const hex = formatHex(valueProp.color)
-    const hue = valueProp.color.h
+    // const hue = valueProp.color.h
     const [hexString, setHexString] = useState(hex)
     useEffect(() => {
         setHexString(hex)
@@ -40,11 +40,11 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
         })
         onChange?.(valueCopy)
     }
-    const handleHueChange = (value: number) => updateValue({ color: { ...valueProp.color, h: value, }})
-    const saturation = valueProp.color.s * 100
-    const handleSaturationChange = (value: number) => updateValue({ color: { ...valueProp.color, s: value / 100, }})
-    const lightness = valueProp.color.l * 100
-    const handleLightnessChange = (value: number) => updateValue({ color: { ...valueProp.color, l: value / 100, }})
+    // const handleHueChange = (value: number) => updateValue({ color: { ...valueProp.color, h: value, }})
+    // const saturation = valueProp.color.s * 100
+    // const handleSaturationChange = (value: number) => updateValue({ color: { ...valueProp.color, s: value / 100, }})
+    // const lightness = valueProp.color.l * 100
+    // const handleLightnessChange = (value: number) => updateValue({ color: { ...valueProp.color, l: value / 100, }})
     const handleHexColorChange = (evt: React.ChangeEvent<HTMLInputElement>) => updateValue({ color: okhsl(evt.target.value)})
     const handleHexStringChange = (value: string) => {
         setHexString(value)
@@ -69,7 +69,11 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
             </HexContainer>
 
             <HslContainer>
-                <RangeInput
+                <OkhslColorPicker
+                    value={valueProp.color}
+                    onChange={value => updateValue({ color: value })}
+                />
+                {/* <RangeInput
                     id="hue"
                     labelText="hue"
                     value={hue}
@@ -84,6 +88,7 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                     onChange={handleSaturationChange}
                     min={0}
                     max={100}
+                    step={.01}
                 />
                 <RangeInput
                     id="lightness"
@@ -92,47 +97,46 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                     onChange={handleLightnessChange}
                     min={0}
                     max={100}
-                />
+                    step={.01}
+                /> */}
             </HslContainer>
 
             <PaletteOptionsContainer>
-                <Column>
-                    <Checkbox
-                        id="useApca"
-                        labelText="Подогнать цвета под фиксированные значения контрастности"
-                        checked={valueProp.useApca}
-                        onChange={value => updateValue({ useApca: value })}
-                    />
+                <SelectInput
+                    id="method"
+                    labelText="Метод формирования палитры"
+                    value={valueProp.method}
+                    onChange={value => updateValue({ method: value as PaletteSettingBarValue['method'] })}
+                >
+                    <option value="apca">Линейное изменение контрастности по APCA</option>
+                    <option value="lightness">Нелинейное изменение светлоты</option>
+                </SelectInput>
 
-                    <Checkbox
-                        id="fixBase"
-                        labelText="Зафиксировать входной цвет"
-                        checked={valueProp.fixBase}
-                        onChange={value => updateValue({ fixBase: value })}
-                        disabled={!valueProp.useApca}
-                    />
-                </Column>
+                <NumberInput
+                    id="hueShift"
+                    labelText="Смещение цветового тона"
+                    step={1}
+                    value={valueProp.hueShift}
+                    onChange={value => updateValue({ hueShift: value })}
+                />
 
-                <Column>
-                    <NumberInput
-                        id="hueShift"
-                        labelText="Смещение цветового тона"
-                        step={1}
-                        value={valueProp.hueShift}
-                        onChange={value => updateValue({ hueShift: value })}
-                    />
+                <NumberInput
+                    id="decreaseSaturationRatio"
+                    labelText="Коэффициент уменьшения насыщенности"
+                    defaultValue={.75}
+                    min={0}
+                    step={.01}
+                    max={1}
+                    value={valueProp.decreaseSaturationRatio}
+                    onChange={value => updateValue({ decreaseSaturationRatio: value })}
+                />
 
-                    <NumberInput
-                        id="decreaseSaturationRatio"
-                        labelText="Коэффициент уменьшения насыщенности"
-                        defaultValue={.75}
-                        min={0}
-                        step={.01}
-                        max={1}
-                        value={valueProp.decreaseSaturationRatio}
-                        onChange={value => updateValue({ decreaseSaturationRatio: value })}
-                    />
-                </Column>
+                <Checkbox
+                    id="fixBase"
+                    labelText="Зафиксировать входной цвет"
+                    checked={valueProp.fixBase}
+                    onChange={value => updateValue({ fixBase: value })}
+                />
             </PaletteOptionsContainer>
 
             {/* <Column>
@@ -143,14 +147,14 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                             <NumberInput
                                 id={`l-${shade.number}`}
                                 labelText={shade.number.toString()}
-                                value={round(contrastAPCA('black', shade.hexcode))}
+                                value={round(contrastAPCA('black', shade.hex))}
                                 readOnly
                                 css={{ width: '75px' }}
                             />
                             <NumberInput
                                 id={`l-${shade.number}`}
                                 labelText={shade.number.toString()}
-                                value={round(contrastAPCA('white', shade.hexcode))}
+                                value={round(contrastAPCA('white', shade.hex))}
                                 readOnly
                                 css={{ width: '75px' }}
                             />
@@ -204,7 +208,9 @@ const HslContainer = styled.div(
     })
 )
 
-const PaletteOptionsContainer = styled(Row)({})
+const PaletteOptionsContainer = styled(Column)({
+    alignItems: 'flex-start'
+})
 
 const ColorRectContainer = styled(Row)(
     ({}) => ({
@@ -231,7 +237,3 @@ const ColorRect = styled.input`
         border: none;
     }
 `
-
-function round (value: number) {
-    return Math.round(value * 100) / 100
-}

@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 import { PaletteSettingBar, PaletteSettingBarValue } from './shared/PaletteSettingBar'
 import { PaletteContrastTable } from './shared/PaletteContrastTable'
 import { createPalette } from '../core'
-import { formatHex, okhsl, Okhsl } from 'culori'
+import { formatHex, okhsl } from 'culori'
 import { PalettePlots } from './shared/PalettePlots'
 import { GlobalStyles } from '../components'
 import { PaletteDisplayBlock } from './shared/PaletteDisplayBlock'
@@ -11,15 +11,15 @@ import { PaletteDisplayBlock } from './shared/PaletteDisplayBlock'
 export const App = () => {
     const [options, setOptions] = useState<PaletteSettingBarValue>({
         color: okhsl('#d03531'),
-        useApca: true,
         fixBase: false,
+        method: 'apca',
         hueShift: 5,
         decreaseSaturationRatio: .75,
     })
     const palette = createPalette({
         baseColor: formatHex(options.color),
+        method: options.method,
         fixBase: options.fixBase,
-        useApca: options.useApca,
         hueShift: options.hueShift,
         decreaseSaturationRatio: options.decreaseSaturationRatio,
     })
@@ -32,13 +32,6 @@ export const App = () => {
                         <PaletteSettingBar
                             value={options}
                             onChange={value => {
-                                if (!value.useApca) {
-                                    setOptions({
-                                        ...value,
-                                        fixBase: false,
-                                    })
-                                    return
-                                }
                                 setOptions(value)
                             }}
                             palette={palette}

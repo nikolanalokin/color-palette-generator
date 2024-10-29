@@ -12,7 +12,7 @@ export const PaletteDisplayLine = (props: PaletteDisplayLineProps) => {
         <PaletteDisplayLineRoot>
             <Gradient
                 style={{
-                    background: `linear-gradient(to right, ${palette.shades.map((shade, i, arr) => `${shade.hexcode} ${shade.number / arr.at(-1).number * 100}%`).join(', ')})`
+                    background: `linear-gradient(to right, ${palette.shades.map((shade, i, arr) => `${shade.hex} ${shade.number / arr.at(-1).number * 100}%`).join(', ')})`
                 }}
             />
 
@@ -21,7 +21,7 @@ export const PaletteDisplayLine = (props: PaletteDisplayLineProps) => {
                     <StyledPaletteColor
                         key={shade.number}
                         shade={shade}
-                        closest={shade.hexcode === palette.closestShade.hexcode}
+                        closest={shade.hex === palette.closestShade.hex}
                     />
                 )) }
             </PaletteContainer>

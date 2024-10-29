@@ -148,7 +148,7 @@ export const Playground = () => {
                 <>
                     <Palette palette={palette} />
                     <ContrastTable palette={palette} />
-                    <code className="code-block">{JSON.stringify(palette.shades.map(shade => shade.hexcode))}</code>
+                    <code className="code-block">{JSON.stringify(palette.shades.map(shade => shade.hex))}</code>
                     <code className="code-block">{JSON.stringify(palette, null, '  ')}</code>
                 </>
             ) : null }
@@ -159,11 +159,11 @@ export const Playground = () => {
 const Palette = ({ palette }) => {
     return (
         <div className="grid">
-            {/* <ColorRect color={palette.input.hexcode} titleText="Base color" labelText={palette.input.hexcode} /> */}
+            {/* <ColorRect color={palette.input.hex} titleText="Base color" labelText={palette.input.hex} /> */}
 
             <div
                 className="gradient"
-                style={{ background: `linear-gradient(to right, ${palette.shades.map((shade, i, arr) => `${shade.hexcode} ${shade.number / arr.at(-1).number * 100}%`).join(', ')})` }}
+                style={{ background: `linear-gradient(to right, ${palette.shades.map((shade, i, arr) => `${shade.hex} ${shade.number / arr.at(-1).number * 100}%`).join(', ')})` }}
             />
 
             <div className="row palette-row">
@@ -171,8 +171,8 @@ const Palette = ({ palette }) => {
                     <ColorRect
                         key={shade.number}
                         shade={shade}
-                        color={shade.hexcode}
-                        closest={shade.hexcode === palette.closestShade?.hexcode}
+                        color={shade.hex}
+                        closest={shade.hex === palette.closestShade?.hex}
                     />
                 ))}
             </div>
@@ -201,7 +201,7 @@ const ColorRect = (props: { color?: string, shade?: ShadeInfo, closest?: boolean
             </div>
             <div className="rect-label">
                 <div className="title">{ shade.number }</div>
-                <div className="subtitle">{ shade.hexcode }</div>
+                <div className="subtitle">{ shade.hex }</div>
                 <div className="caption">
                     WCAG { wcagBlack.toFixed(2) }/{ wcagWhite.toFixed(2) }
                 </div>
@@ -307,7 +307,7 @@ const ContrastTable = (props: { palette: TPalette }) => {
                             </th>
 
                             { shades.map((shadeV, colIndex) => {
-                                const score = contrast(shadeV.hexcode, shadeH.hexcode)
+                                const score = contrast(shadeV.hex, shadeH.hex)
                                 const show = method == 'apca'
                                     ? (level === 'AA' ? Math.abs(score) >= 60 : level === 'AAA' ? Math.abs(score) >= 75 : true)
                                     : (level === 'AA' ? score >= 4.5 : level === 'AAA' ? score >= 7 : true)
@@ -317,8 +317,8 @@ const ContrastTable = (props: { palette: TPalette }) => {
                                             <div
                                                 className="cell contrast-cell"
                                                 style={{
-                                                    backgroundColor: shadeH.hexcode,
-                                                    color: shadeV.hexcode,
+                                                    backgroundColor: shadeH.hex,
+                                                    color: shadeV.hex,
                                                 }}
                                             >
                                                 { score.toFixed(2) }

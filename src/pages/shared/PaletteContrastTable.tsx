@@ -70,7 +70,7 @@ export const PaletteContrastTable = (props: PaletteContrastTableProps) => {
                        )) }
                    </tr>
                </thead>
-               <tbody onMouseLeave={handleMouseLeave}>
+               <tbody>
                    { shades.map((shadeH, rowIndex) => (
                        <tr key={shadeH.number}>
                            <th>
@@ -79,18 +79,18 @@ export const PaletteContrastTable = (props: PaletteContrastTableProps) => {
                                </HeaderCell>
                            </th>
 
-                           { shades.map((shadeV, colIndex) => {
-                               const score = contrast(shadeV.hexcode, shadeH.hexcode)
+                           { shades.map((shadeV) => {
+                               const score = contrast(shadeV.hex, shadeH.hex)
                                const show = method == 'apca'
                                    ? (level === 'AA' ? Math.abs(score) >= 60 : level === 'AAA' ? Math.abs(score) >= 75 : true)
                                    : (level === 'AA' ? score >= 4.5 : level === 'AAA' ? score >= 7 : true)
                                return (
-                                   <td key={shadeV.number} data-row={rowIndex} data-col={colIndex} onMouseEnter={handleMouseEnter}>
+                                   <td key={shadeV.number}>
                                        { show ? (
                                            <ColorCell
                                                style={{
-                                                   backgroundColor: shadeH.hexcode,
-                                                   color: shadeV.hexcode,
+                                                   backgroundColor: shadeH.hex,
+                                                   color: shadeV.hex,
                                                }}
                                            >
                                                { score.toFixed(2) }

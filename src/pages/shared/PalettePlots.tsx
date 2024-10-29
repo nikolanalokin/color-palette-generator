@@ -1,8 +1,9 @@
 import styled from '@emotion/styled'
 import { Palette } from '../../core'
-import { LinePlot } from '../../components'
+import { LinePlot, PlotContainer } from '../../components'
 import { useState } from 'react'
 import { SelectInput } from '../../components/inputs/SelectInput'
+import { Section } from './primitives'
 
 export type PalettePlotsProps = {
     palette?: Palette
@@ -11,9 +12,7 @@ export type PalettePlotsProps = {
 export const PalettePlots = (props: PalettePlotsProps) => {
     const { palette } = props
     const [colorSpace, setColorSpace] = useState('okhsl')
-    const hueData = palette.shades.map<[number, number]>(shade => [shade.number, shade[colorSpace].hue]).slice(1, -1)
-    const saturationData = palette.shades.map<[number, number]>(shade => [shade.number, shade[colorSpace].saturation]).slice(1, -1)
-    const lightnessData = palette.shades.map<[number, number]>(shade => [shade.number, shade[colorSpace].lightness]).slice(1, -1)
+    const data = palette.shades.slice(1, -1)
     return (
         <PalettePlotsRoot>
             <SelectInput
@@ -26,27 +25,48 @@ export const PalettePlots = (props: PalettePlotsProps) => {
                 <option value="hsl">HSL</option>
             </SelectInput>
             <PlotsContainer>
-                <StyledLinePlot
-                    data={hueData}
-                    xMin={0}
-                    xMax={1000}
-                    yMin={0}
-                    yMax={360}
-                />
-                <StyledLinePlot
-                    data={saturationData}
-                    xMin={0}
-                    xMax={1000}
-                    yMin={0}
-                    yMax={100}
-                />
-                <StyledLinePlot
-                    data={lightnessData}
-                    xMin={0}
-                    xMax={1000}
-                    yMin={0}
-                    yMax={100}
-                />
+                <Section area="huePlot">
+                    <PlotContainer>
+                        { size => (
+                            <StyledLinePlot
+                                {...size}
+                                data={data}
+                                getX={s => s.number}
+                                getY={s => s[colorSpace].h}
+                                xDomain={[0, 1000]}
+                                yDomain={[0, 360]}
+                            />
+                        ) }
+                    </PlotContainer>
+                </Section>
+                <Section area="saturationPlot">
+                    <PlotContainer>
+                        { size => (
+                            <StyledLinePlot
+                                {...size}
+                                data={data}
+                                getX={s => s.number}
+                                getY={s => s[colorSpace].s}
+                                xDomain={[0, 1000]}
+                                yDomain={[0, 1]}
+                            />
+                        ) }
+                    </PlotContainer>
+                </Section>
+                <Section area="lightnessPlot">
+                    <PlotContainer>
+                        { size => (
+                            <StyledLinePlot
+                                {...size}
+                                data={data}
+                                getX={s => s.number}
+                                getY={s => s[colorSpace].l}
+                                xDomain={[0, 1000]}
+                                yDomain={[0, 1]}
+                            />
+                        ) }
+                    </PlotContainer>
+                </Section>
             </PlotsContainer>
         </PalettePlotsRoot>
     )
@@ -76,10 +96,3 @@ const PlotsContainer = styled.div(
 const StyledLinePlot = styled(LinePlot)({
     width: '420px',
 })
-
-const Gradient = styled.div(
-    ({}) => ({
-        height: '48px',
-        borderRadius: '8px',
-    })
-)

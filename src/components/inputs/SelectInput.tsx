@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import { Field } from './shared/Field'
 import { Label } from './shared/Label'
+import { BaseSelect } from './shared/BaseSelect'
 
 type BaseSelectInputProps = {
     labelText?: string
@@ -26,7 +27,7 @@ export const SelectInput = (props: SelectInputProps) => {
                 </Label>
             ) : null }
 
-            <select
+            <BaseSelect
                 id={id}
                 value={value}
                 onChange={evt => onChange?.(evt.target.value)}

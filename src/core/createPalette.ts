@@ -1,11 +1,14 @@
 import { deltaE, getColorInfo } from './utils'
 import { Palette } from './types'
-import { createShade, DEFAULT_TONES_SCALE, findClosestShadeNumber } from './createShade'
+import { createShadeViaApca, findClosestShadeNumber } from './createShadeViaApca'
+import { createShadeViaLightness } from './createShadeViaLightness'
+
+export const DEFAULT_TONES_SCALE = [0, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950, 1000]
 
 export type OkhslPaletteFnProps = {
     baseColor: string
     scale?: number[]
-    useApca?: boolean
+    method?: 'lightness' | 'apca'
     fixBase?: boolean
     hueShift?: number
     decreaseSaturationRatio?: number
@@ -15,34 +18,47 @@ export function createPalette (props: OkhslPaletteFnProps): Palette {
     const {
         baseColor,
         scale = DEFAULT_TONES_SCALE,
-        useApca,
+        method = 'apca',
         fixBase,
         hueShift = 0,
         decreaseSaturationRatio,
     } = props || {}
     const baseColorInfo = getColorInfo(baseColor)
-    const baseColorShadeNumber = findClosestShadeNumber(baseColor, scale)
-    const shades = scale.map(tone => {
-        const shadeHex = createShade({
-            baseColor: baseColorInfo.hexcode,
-            baseTone: baseColorShadeNumber,
+    // const baseColorShadeNumber = findClosestShadeNumber(baseColor, scale)
+    const shadesMap = new Map()
+    const shadeFn = {
+        lightness: createShadeViaLightness,
+        apca: createShadeViaApca,
+    }[method]
+    scale.forEach(tone => {
+        const shade = shadeFn({
+            baseColor: baseColorInfo.okhsl,
+            // baseTone: baseColorShadeNumber,
             tone,
             scale,
-            useApca,
             fixBase,
             hueShift,
             decreaseSaturationRatio,
         })
-        const shadeInfo = getColorInfo(shadeHex)
-        return {
+        shadesMap.set(tone, {
             number: tone,
-            ...shadeInfo,
-            delta: deltaE(baseColorInfo.hexcode, shadeInfo.hexcode)
-        }
+            ...shade,
+            delta: deltaE(baseColorInfo.okhsl, shade.okhsl),
+        })
     })
+    let closestShade = shadesMap.values().reduce((s1, s2) => s1.delta < s2.delta ? s1 : s2)
+    // if (fixBase) {
+    //     const fixedShade = {
+    //         number: closestShade.number,
+    //         ...baseColorInfo,
+    //         delta: 0,
+    //     }
+    //     shadesMap.set(closestShade.number, fixedShade)
+    //     closestShade = fixedShade
+    // }
     return {
         input: baseColorInfo,
-        shades,
-        closestShade: shades.reduce((s1, s2) => s1.delta < s2.delta ? s1 : s2),
+        shades: scale.map(tone => shadesMap.get(tone)),
+        closestShade,
     }
 }

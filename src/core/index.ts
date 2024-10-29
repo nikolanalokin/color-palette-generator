@@ -1,4 +1,5 @@
 export { createPalette } from './createPalette'
-export { createShade, findClosestShadeNumber as findClosestShadeNumberWithOkhsl } from './createShade'
+export { createShadeViaApca, findClosestShadeNumber as findClosestShadeNumberWithOkhsl } from './createShadeViaApca'
 export { contrastAPCA, deltaE } from './utils'
 export type * from './types'
+export * from './math'
