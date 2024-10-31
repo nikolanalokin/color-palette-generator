@@ -7,6 +7,7 @@ import {
     APCA_WHITE_ON_RANGE,
     BLACK_HEX,
     contrastAPCA,
+    findNearestValueInScale,
     getColorInfo,
     WHITE_HEX
 } from './utils'
@@ -115,13 +116,13 @@ export function findClosestShadeNumber (inputColor: Color | string, scale: numbe
     const whiteContrastScore = contrastAPCA(WHITE_HEX, inputHex)
     const blackToneNumber = range(APCA_BLACK_ON_RANGE[0], APCA_BLACK_ON_RANGE[1], scale.at(0), scale.at(-1), blackContrastScore)
     const whiteToneNumber = range(APCA_WHITE_ON_RANGE[0], APCA_WHITE_ON_RANGE[1], scale.at(0), scale.at(-1), whiteContrastScore)
-    let inputToneNumber = 500
+    let inputScaleNumber = 500
     if (whiteContrastScore === 0) {
-        inputToneNumber = blackToneNumber
+        inputScaleNumber = blackToneNumber
     } else if (blackContrastScore === 0) {
-        inputToneNumber = whiteToneNumber
+        inputScaleNumber = whiteToneNumber
     } else {
-        inputToneNumber = (blackToneNumber + whiteToneNumber) / 2
+        inputScaleNumber = (blackToneNumber + whiteToneNumber) / 2
     }
-    return scale.map(t => ([t, t - inputToneNumber])).reduce((t1, t2) => Math.abs(t1[1]) < Math.abs(t2[1]) ? t1 : t2)[0]
+    return findNearestValueInScale(inputScaleNumber, scale)
 }

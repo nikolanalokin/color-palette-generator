@@ -1,9 +1,10 @@
 import styled from '@emotion/styled'
-import { contrastAPCA, Palette, ShadeInfo } from '../../core'
-import { wcagContrast } from 'culori'
+import { Palette, ShadeInfo } from '../../core'
 import { Checkbox } from '../../components/inputs/Checkbox'
 import { useState } from 'react'
 import { formatHsl, formatOkhsl } from './format-utils'
+import { keyframes } from '@emotion/react'
+import { paletteToBlob } from '../../utils/paletteToImage'
 
 export type PaletteDisplayBlockProps = {
     palette?: Palette
@@ -12,6 +13,22 @@ export type PaletteDisplayBlockProps = {
 export const PaletteDisplayBlock = (props: PaletteDisplayBlockProps) => {
     const { palette } = props
     const [highlight, setHighlight] = useState(false)
+    const [copied, setCopied] = useState(false)
+    const handlePaletteClick = (evt: React.MouseEvent<HTMLDivElement>) => {
+        paletteToBlob(palette)
+            .then(blob => {
+                return window.navigator.clipboard.write([
+                    new ClipboardItem({ [blob.type]: blob })
+                ])
+            })
+            .then(() => {
+                setCopied(true)
+
+                setTimeout(() => {
+                    setCopied(false)
+                }, 1000)
+            })
+    }
     return (
         <PaletteDisplayBlockRoot>
             <PaletteScaleContainer>
@@ -24,7 +41,7 @@ export const PaletteDisplayBlock = (props: PaletteDisplayBlockProps) => {
                     />
                 </HeaderScaleBlock>
 
-                <PaletteScale>
+                <PaletteScale data-copied={copied} onClick={handlePaletteClick}>
                     { palette.shades.map((shade) => {
                         const color = Math.abs(shade.apca.blackOn) > Math.abs(shade.apca.whiteOn) ? 'black' :'white'
                         return (
@@ -120,12 +137,29 @@ const PaletteDisplayBlockRoot = styled.div(
 
 const PaletteScaleContainer = styled.div({})
 
+const copyAnimationKeyframes = keyframes`
+    0% {
+        box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.5);
+    }
+    90% {
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.16);
+    }
+    100% {
+        box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.16);
+    }
+`
+
 const PaletteScale = styled.div(
     ({}) => ({
         display: 'flex',
         flexDirection: 'column',
         borderRadius: '8px',
-        boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px;',
+        boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.16)',
+        cursor: 'pointer',
+
+        '&[data-copied="true"]': {
+            animation: `${copyAnimationKeyframes} 1s`
+        }
     })
 )
 

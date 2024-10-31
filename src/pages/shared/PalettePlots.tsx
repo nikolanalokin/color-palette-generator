@@ -4,6 +4,7 @@ import { LinePlot, PlotContainer } from '../../components'
 import { useState } from 'react'
 import { SelectInput } from '../../components/inputs/SelectInput'
 import { Section } from './primitives'
+import { PlotLinePlot } from '../../components/plots/PlotLinePlot'
 
 export type PalettePlotsProps = {
     palette?: Palette
@@ -25,7 +26,7 @@ export const PalettePlots = (props: PalettePlotsProps) => {
                 <option value="hsl">HSL</option>
             </SelectInput>
             <PlotsContainer>
-                <Section area="huePlot">
+                {/* <Section area="huePlot">
                     <PlotContainer>
                         { size => (
                             <StyledLinePlot
@@ -66,6 +67,39 @@ export const PalettePlots = (props: PalettePlotsProps) => {
                             />
                         ) }
                     </PlotContainer>
+                </Section> */}
+                <Section area="huePlot">
+                    <PlotLinePlot
+                        data={data}
+                        getX={d => d.number}
+                        getY={d => d[colorSpace].h}
+                        xDomain={[0, 1000]}
+                        yDomain={[0, 360]}
+                        xLabel="tone"
+                        yLabel="hue"
+                    />
+                </Section>
+                <Section area="saturationPlot">
+                    <PlotLinePlot
+                        data={data}
+                        getX={d => d.number}
+                        getY={d => d[colorSpace].s}
+                        xDomain={[0, 1000]}
+                        yDomain={[0, 1]}
+                        xLabel="tone"
+                        yLabel="saturation"
+                    />
+                </Section>
+                <Section area="lightnessPlot">
+                    <PlotLinePlot
+                        data={data}
+                        getX={d => d.number}
+                        getY={d => d[colorSpace].l}
+                        xDomain={[0, 1000]}
+                        yDomain={[0, 1]}
+                        xLabel="tone"
+                        yLabel="lightness"
+                    />
                 </Section>
             </PlotsContainer>
         </PalettePlotsRoot>
