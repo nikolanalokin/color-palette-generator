@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { formatHsl, formatOkhsl } from './format-utils'
 import { keyframes } from '@emotion/react'
 import { paletteToBlob } from '../../utils/paletteToImage'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../../components'
 
 export type PaletteDisplayBlockProps = {
     palette?: Palette
@@ -44,14 +45,33 @@ export const PaletteDisplayBlock = (props: PaletteDisplayBlockProps) => {
                 <PaletteScale data-copied={copied} onClick={handlePaletteClick}>
                     { palette.shades.map((shade) => {
                         const color = Math.abs(shade.apca.blackOn) > Math.abs(shade.apca.whiteOn) ? 'black' :'white'
+                        const tooltipData = createRow(shade)
                         return (
-                            <ScaleBlock
-                                key={shade.number}
-                                css={{ color, backgroundColor: shade.hex }}
-                                data-highlight={highlight && palette.closestShade.number === shade.number}
-                            >
-                                { shade.number }
-                            </ScaleBlock>
+                            <Tooltip placement="right">
+                                <TooltipTrigger asChild>
+                                    <ScaleBlock
+                                        key={shade.number}
+                                        css={{ color, backgroundColor: shade.hex }}
+                                        data-highlight={highlight && palette.closestShade.number === shade.number}
+                                    >
+                                        { shade.number }
+                                    </ScaleBlock>
+                                </TooltipTrigger>
+
+                                <TooltipContent>
+                                    { columns.map(column => (
+                                        <div key={`${shade.number}:${column.key}`}>
+                                            <b>
+                                                { column.label }
+                                            </b>
+                                            <span>: </span>
+                                            <span>
+                                                { tooltipData[column.key] }
+                                            </span>
+                                        </div>
+                                    )) }
+                                </TooltipContent>
+                            </Tooltip>
                         )
                     }) }
                 </PaletteScale>

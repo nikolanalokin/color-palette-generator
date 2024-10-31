@@ -8,6 +8,7 @@
     "dependencies": {
         "@emotion/react": "^11.13.3",
         "@emotion/styled": "^11.13.0",
+        "@floating-ui/react": "^0.26.26",
         "@observablehq/plot": "^0.6.16",
         "@visx/axis": "^3.10.1",
         "@visx/curve": "^3.3.0",
