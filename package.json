@@ -10,6 +10,7 @@
         "@emotion/styled": "^11.13.0",
         "@floating-ui/react": "^0.26.26",
         "@observablehq/plot": "^0.6.16",
+        "@radix-ui/react-select": "^2.1.2",
         "@visx/axis": "^3.10.1",
         "@visx/curve": "^3.3.0",
         "@visx/grid": "^3.5.0",
@@ -20,6 +21,7 @@
         "@visx/tooltip": "^3.3.0",
         "apca-w3": "^0.1.9",
         "culori": "^4.0.1",
+        "lucide-react": "^0.454.0",
         "normalize.css": "^8.0.1",
         "react": "^18.3.1",
         "react-dom": "^18.3.1"

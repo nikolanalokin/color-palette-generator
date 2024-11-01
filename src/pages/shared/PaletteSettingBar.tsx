@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import { formatHex, okhsl, Okhsl } from 'culori'
-import { OkhslColorPicker, RangeInput, SelectInput } from '../../components'
+import { OkhslColorPicker, Select, SelectContent, SelectGroup, SelectInput, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../../components'
 import { TextInput } from '../../components/inputs/TextInput'
 import { Checkbox } from '../../components/inputs/Checkbox'
 import { NumberInput } from '../../components/inputs/NumberInput'
 import { useEffect, useState } from 'react'
-import { contrastAPCA, Palette } from '../../core'
+import { Palette } from '../../core'
 
 export type PaletteSettingBarValue = {
     color?: Okhsl
@@ -28,7 +28,6 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
         palette,
     } = props
     const hex = formatHex(valueProp.color)
-    // const hue = valueProp.color.h
     const [hexString, setHexString] = useState(hex)
     useEffect(() => {
         setHexString(hex)
@@ -40,11 +39,6 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
         })
         onChange?.(valueCopy)
     }
-    // const handleHueChange = (value: number) => updateValue({ color: { ...valueProp.color, h: value, }})
-    // const saturation = valueProp.color.s * 100
-    // const handleSaturationChange = (value: number) => updateValue({ color: { ...valueProp.color, s: value / 100, }})
-    // const lightness = valueProp.color.l * 100
-    // const handleLightnessChange = (value: number) => updateValue({ color: { ...valueProp.color, l: value / 100, }})
     const handleHexColorChange = (evt: React.ChangeEvent<HTMLInputElement>) => updateValue({ color: okhsl(evt.target.value)})
     const handleHexStringChange = (value: string) => {
         setHexString(value)
@@ -53,168 +47,89 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
     }
     return (
         <PaletteSettingBarRoot>
-            <HexContainer>
-                <ColorRectContainer>
-                    <ColorRect
-                        type="color"
-                        value={hex}
-                        onChange={handleHexColorChange}
-                    />
-                </ColorRectContainer>
-                <TextInput
-                    id="hex"
-                    value={hexString}
-                    onChange={handleHexStringChange}
-                />
-            </HexContainer>
+            {/* <Select>
+                <SelectTrigger>
+                    <SelectValue placeholder="Select a fruit" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectGroup>
+                        <SelectLabel>Fruits</SelectLabel>
+                        <SelectItem value="apple">Apple</SelectItem>
+                        <SelectItem value="banana">Banana</SelectItem>
+                        <SelectItem value="blueberry">Blueberry</SelectItem>
+                        <SelectItem value="grapes">Grapes</SelectItem>
+                        <SelectItem value="pineapple">Pineapple</SelectItem>
+                    </SelectGroup>
+                </SelectContent>
+            </Select> */}
 
-            <HslContainer>
-                <OkhslColorPicker
-                    value={valueProp.color}
-                    onChange={value => updateValue({ color: value })}
+            <ColorRectContainer>
+                <ColorRect
+                    type="color"
+                    value={hex}
+                    onChange={handleHexColorChange}
                 />
-                {/* <RangeInput
-                    id="hue"
-                    labelText="hue"
-                    value={hue}
-                    onChange={handleHueChange}
-                    min={0}
-                    max={360}
-                />
-                <RangeInput
-                    id="saturation"
-                    labelText="saturation"
-                    value={saturation}
-                    onChange={handleSaturationChange}
-                    min={0}
-                    max={100}
-                    step={.01}
-                />
-                <RangeInput
-                    id="lightness"
-                    labelText="lightness"
-                    value={lightness}
-                    onChange={handleLightnessChange}
-                    min={0}
-                    max={100}
-                    step={.01}
-                /> */}
-            </HslContainer>
+            </ColorRectContainer>
 
-            <PaletteOptionsContainer>
-                <SelectInput
-                    id="method"
-                    labelText="Метод формирования палитры"
-                    value={valueProp.method}
-                    onChange={value => updateValue({ method: value as PaletteSettingBarValue['method'] })}
-                >
-                    <option value="apca">Линейное изменение контрастности по APCA</option>
-                    <option value="lightness">Нелинейное изменение светлоты</option>
-                </SelectInput>
+            <TextInput
+                id="hex"
+                value={hexString}
+                onChange={handleHexStringChange}
+            />
 
-                <NumberInput
-                    id="hueShift"
-                    labelText="Смещение цветового тона"
-                    step={1}
-                    value={valueProp.hueShift}
-                    onChange={value => updateValue({ hueShift: value })}
-                />
+            <OkhslColorPicker
+                value={valueProp.color}
+                onChange={value => updateValue({ color: value })}
+            />
 
-                <NumberInput
-                    id="decreaseSaturationRatio"
-                    labelText="Коэффициент уменьшения насыщенности"
-                    defaultValue={.75}
-                    min={0}
-                    step={.01}
-                    max={1}
-                    value={valueProp.decreaseSaturationRatio}
-                    onChange={value => updateValue({ decreaseSaturationRatio: value })}
-                />
+            <SelectInput
+                id="method"
+                labelText="Метод формирования палитры"
+                value={valueProp.method}
+                onChange={value => updateValue({ method: value as PaletteSettingBarValue['method'] })}
+            >
+                <option value="apca">Линейное изменение контрастности по APCA</option>
+                <option value="lightness">Нелинейное изменение светлоты</option>
+            </SelectInput>
 
-                <Checkbox
-                    id="fixBase"
-                    labelText="Зафиксировать входной цвет"
-                    checked={valueProp.fixBase}
-                    onChange={value => updateValue({ fixBase: value })}
-                />
-            </PaletteOptionsContainer>
+            <NumberInput
+                id="hueShift"
+                labelText="Смещение цветового тона"
+                step={1}
+                value={valueProp.hueShift}
+                onChange={value => updateValue({ hueShift: value })}
+            />
 
-            {/* <Column>
-                <Checkbox labelText="Задать контрастность вручную" />
-                <Row>
-                    { palette.shades.map(shade => (
-                        <Column key={shade.number}>
-                            <NumberInput
-                                id={`l-${shade.number}`}
-                                labelText={shade.number.toString()}
-                                value={round(contrastAPCA('black', shade.hex))}
-                                readOnly
-                                css={{ width: '75px' }}
-                            />
-                            <NumberInput
-                                id={`l-${shade.number}`}
-                                labelText={shade.number.toString()}
-                                value={round(contrastAPCA('white', shade.hex))}
-                                readOnly
-                                css={{ width: '75px' }}
-                            />
-                        </Column>
-                    ))}
-                </Row>
-            </Column> */}
+            <NumberInput
+                id="decreaseSaturationRatio"
+                labelText="Коэффициент уменьшения насыщенности (%)"
+                min={0}
+                max={100}
+                step={1}
+                value={valueProp.decreaseSaturationRatio * 100}
+                onChange={value => updateValue({ decreaseSaturationRatio: value / 100 })}
+            />
+
+            <Checkbox
+                id="fixBase"
+                labelText="Зафиксировать входной цвет"
+                checked={valueProp.fixBase}
+                onChange={value => updateValue({ fixBase: value })}
+            />
         </PaletteSettingBarRoot>
     )
 }
 
 const PaletteSettingBarRoot = styled.div(
     ({}) => ({
-        // minWidth: '512px',
         display: 'grid',
-        gridTemplateColumns: '20% 1fr',
-        gap: '24px',
+        gap: '16px',
     })
 )
 
-const Row = styled.div(
+const ColorRectContainer = styled.div(
     ({}) => ({
-        display: 'flex',
-        columnGap: '12px',
-    })
-)
-
-const Column = styled.div(
-    ({}) => ({
-        display: 'flex',
-        flexDirection: 'column',
-        rowGap: '12px',
-        flexGrow: 1,
-    })
-)
-
-const HexContainer = styled.div(
-    ({}) => ({
-        gridRow: 'span 2',
-        display: 'flex',
-        flexDirection: 'column',
-        rowGap: '12px',
-    })
-)
-
-const HslContainer = styled.div(
-    ({}) => ({
-        display: 'flex',
-        flexDirection: 'column',
-        rowGap: '12px',
-    })
-)
-
-const PaletteOptionsContainer = styled(Column)({
-    alignItems: 'flex-start'
-})
-
-const ColorRectContainer = styled(Row)(
-    ({}) => ({
-        aspectRatio: 1,
+        aspectRatio: 16 / 9,
     })
 )
 

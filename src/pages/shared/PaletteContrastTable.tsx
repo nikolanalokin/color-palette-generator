@@ -13,20 +13,6 @@ export const PaletteContrastTable = (props: PaletteContrastTableProps) => {
     const [method, setMethod] = useState('apca')
     const [level, setLevel] = useState('all')
     const contrast = method === 'apca' ? contrastAPCA : wcagContrast
-    const [mousePos, setMousePos] = useState({ col: null, row: null })
-    const handleMouseEnter = (evt: React.MouseEvent<HTMLTableCellElement>) => {
-        if (evt.currentTarget) {
-            const { col, row } = evt.currentTarget.dataset
-            setMousePos({
-                col: +col,
-                row: +row,
-            })
-        }
-    }
-    const handleMouseLeave = () => {
-        setMousePos({ col: null, row: null })
-    }
-
     return (
         <PaletteContrastTableRoot>
            <Filters>
@@ -57,7 +43,7 @@ export const PaletteContrastTable = (props: PaletteContrastTableProps) => {
                     }[method] }</option>
                </SelectInput>
            </Filters>
-           <Table selectedCol={mousePos.col} selectedRow={mousePos.row}>
+           <Table>
                <thead>
                    <tr>
                        <th></th>
@@ -110,7 +96,6 @@ export const PaletteContrastTable = (props: PaletteContrastTableProps) => {
 const PaletteContrastTableRoot = styled.div(
     () => ({
         display: 'grid',
-        justifyItems: 'center',
         gap: '16px',
     })
 )
@@ -152,28 +137,14 @@ const PlaceholderCell = styled(Cell)({
     transition: 'box-shadow .2s ease',
 })
 
-const Table = styled.table<any>(
-    ({ selectedCol, selectedRow }) => ({
-        borderCollapse: 'collapse',
-        borderColor: 'inherit',
-        textIndent: 0,
-        tableLayout: 'fixed',
-        width: '1240px',
+const Table = styled.table<any>({
+    borderCollapse: 'collapse',
+    borderColor: 'inherit',
+    textIndent: 0,
+    tableLayout: 'fixed',
+    width: '1240px',
 
-        '& th, & td': {
-            padding: '3px',
-        },
-
-        ...(selectedRow !== null && {
-            [`tbody tr:nth-of-type(${selectedRow + 1}) td ${ColorCell}`]: {
-                boxShadow: '0 0 0 1px white, 0 0 0 2px rgba(0, 0, 0, 0.5)'
-            },
-        }),
-
-        ...(selectedCol !== null && {
-            [`tbody tr td:nth-of-type(${selectedCol + 1}) ${ColorCell}`]: {
-                boxShadow: '0 0 0 1px white, 0 0 0 2px rgba(0, 0, 0, 0.5)'
-            },
-        }),
-    })
-)
+    '& th, & td': {
+        padding: '3px',
+    },
+})

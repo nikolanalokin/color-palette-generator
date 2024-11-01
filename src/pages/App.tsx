@@ -14,7 +14,7 @@ export const App = () => {
         fixBase: false,
         method: 'apca',
         hueShift: 5,
-        decreaseSaturationRatio: .75,
+        decreaseSaturationRatio: .15,
     })
     const palette = createPalette({
         baseColor: formatHex(options.color),
@@ -27,32 +27,33 @@ export const App = () => {
         <>
             <GlobalStyles />
             <Root>
+                <Header>Генератор цветовых палитр</Header>
                 <Main>
-                    <SettingBarSection>
-                        <PaletteSettingBar
-                            value={options}
-                            onChange={value => {
-                                setOptions(value)
-                            }}
-                            palette={palette}
-                        />
-                    </SettingBarSection>
-                    <PlotsSection>
-                        <PalettePlots
-                            palette={palette}
-                        />
-                    </PlotsSection>
                     <DisplaySection>
                         <PaletteDisplayBlock
                             palette={palette}
                         />
                     </DisplaySection>
+                    <PlotsSection>
+                        <PalettePlots
+                            palette={palette}
+                        />
+                    </PlotsSection>
                     <ContrastTableSection>
                         <PaletteContrastTable
                             palette={palette}
                         />
                     </ContrastTableSection>
                 </Main>
+                <Sidebar>
+                    <PaletteSettingBar
+                        value={options}
+                        onChange={value => {
+                            setOptions(value)
+                        }}
+                        palette={palette}
+                    />
+                </Sidebar>
                 <Footer>
                     @nikolanalokin { new Date().getFullYear() }
                 </Footer>
@@ -64,59 +65,57 @@ export const App = () => {
 const Root = styled.div(
     () => ({
         maxWidth: '100%',
+        display: 'grid',
+        gridTemplateColumns: '1fr 384px',
+        gridTemplateAreas: `
+            "header header"
+            "main aside"
+            "footer aside"
+        `,
     })
 )
 
 const Main = styled.main({
+    gridArea: 'main',
     display: 'grid',
-    gridTemplateColumns: '1fr auto',
-    gridTemplateAreas: `
-        "settingBar plots"
-        "display plots"
-        "contrastTable contrastTable"
-    `,
-
-    '@media (max-width: 1600px)': {
-        gridTemplateAreas: `
-            "settingBar settingBar"
-            "plots plots"
-            "display display"
-            "contrastTable contrastTable"
-        `,
-    },
+    paddingInline: '48px',
+    paddingBlock: '24px',
+    gap: '24px',
 })
 
 const Section = styled.section({
-    padding: '48px',
-})
-
-const SettingBarSection = styled(Section)({
-    gridArea: 'settingBar',
-    borderBlockEnd: '1px solid',
 })
 
 const PlotsSection = styled(Section)({
-    gridArea: 'plots',
-    borderInlineStart: '1px solid',
-
-    '@media (max-width: 1600px)': {
-        borderInlineStart: 'none',
-        borderBlockEnd: '1px solid',
-    },
 })
 
 const DisplaySection = styled(Section)({
-    gridArea: 'display',
 })
 
 const ContrastTableSection = styled(Section)({
-    gridArea: 'contrastTable',
-    borderBlockStart: '1px solid',
+})
+
+const Header = styled.header({
+    gridArea: 'header',
+    paddingInline: '48px',
+    paddingBlock: '24px',
+    fontSize: '18px',
+    fontWeight: 600,
     borderBlockEnd: '1px solid',
 })
 
-const Footer = styled(Section)({
+const Footer = styled.footer({
+    gridArea: 'footer',
     paddingInline: '48px',
     paddingBlock: '24px',
     fontSize: '14px',
+    borderBlockStart: '1px solid',
+})
+
+const Sidebar = styled.aside({
+    gridArea: 'aside',
+    paddingInline: '24px',
+    paddingBlock: '24px',
+    fontSize: '14px',
+    borderInlineStart: '1px solid',
 })

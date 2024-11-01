@@ -21,7 +21,7 @@ export function createPalette (props: OkhslPaletteFnProps): Palette {
         method = 'apca',
         fixBase,
         hueShift = 0,
-        decreaseSaturationRatio,
+        decreaseSaturationRatio = 0,
     } = props || {}
     const baseColorInfo = getColorInfo(baseColor)
     // const baseColorShadeNumber = findClosestShadeNumber(baseColor, scale)

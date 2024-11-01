@@ -39,6 +39,6 @@ export const SelectInput = (props: SelectInputProps) => {
 
 const SelectInputRoot = styled(Field)(
     () => ({
-
+        overflow: 'hidden',
     })
 )

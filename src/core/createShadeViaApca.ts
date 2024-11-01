@@ -43,7 +43,7 @@ export function createShadeViaApca (opts: ShadeFnOptions): ShadeFnResult {
         scale,
         fixBase,
         hueShift = 0,
-        decreaseSaturationRatio,
+        decreaseSaturationRatio = 0,
     } = opts
 
     const baseColorShadeNumber = baseTone ?? findClosestShadeNumber(baseColor, scale)
@@ -58,7 +58,7 @@ export function createShadeViaApca (opts: ShadeFnOptions): ShadeFnResult {
         }
 
         if (0 < decreaseSaturationRatio && decreaseSaturationRatio < 1) {
-            shadeColor.s = computeScaleSaturationWithLocalPeak(scaleValue, shadeColor.s * decreaseSaturationRatio, shadeColor.s, inputScaleValue)
+            shadeColor.s = computeScaleSaturationWithLocalPeak(scaleValue, shadeColor.s * (1 - decreaseSaturationRatio), shadeColor.s, inputScaleValue)
         }
 
         shadeColor.l = computeScaleLightnessByAPCA(scaleValue, shadeColor)
