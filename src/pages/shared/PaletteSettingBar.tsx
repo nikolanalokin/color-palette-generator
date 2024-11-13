@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import { formatHex, okhsl, Okhsl } from 'culori'
-import { OkhslColorPicker, Select, SelectContent, SelectGroup, SelectInput, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../../components'
+import { Field, Label, OkhslColorPicker, Select, SelectContent, SelectGroup, SelectInput, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../../components'
 import { TextInput } from '../../components/inputs/TextInput'
 import { Checkbox } from '../../components/inputs/Checkbox'
 import { NumberInput } from '../../components/inputs/NumberInput'
@@ -47,22 +47,6 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
     }
     return (
         <PaletteSettingBarRoot>
-            {/* <Select>
-                <SelectTrigger>
-                    <SelectValue placeholder="Select a fruit" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectGroup>
-                        <SelectLabel>Fruits</SelectLabel>
-                        <SelectItem value="apple">Apple</SelectItem>
-                        <SelectItem value="banana">Banana</SelectItem>
-                        <SelectItem value="blueberry">Blueberry</SelectItem>
-                        <SelectItem value="grapes">Grapes</SelectItem>
-                        <SelectItem value="pineapple">Pineapple</SelectItem>
-                    </SelectGroup>
-                </SelectContent>
-            </Select> */}
-
             <ColorRectContainer>
                 <ColorRect
                     type="color"
@@ -82,15 +66,21 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                 onChange={value => updateValue({ color: value })}
             />
 
-            <SelectInput
-                id="method"
-                labelText="Метод формирования палитры"
-                value={valueProp.method}
-                onChange={value => updateValue({ method: value as PaletteSettingBarValue['method'] })}
-            >
-                <option value="apca">Линейное изменение контрастности по APCA</option>
-                <option value="lightness">Нелинейное изменение светлоты</option>
-            </SelectInput>
+            <Field>
+                <Label>Метод формирования палитры</Label>
+                <Select
+                    value={valueProp.method}
+                    onValueChange={value => updateValue({ method: value as PaletteSettingBarValue['method'] })}
+                >
+                    <SelectTrigger>
+                        <SelectValue placeholder="Выберете алгоритм генерации" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="apca">Линейное изменение контрастности по APCA</SelectItem>
+                        <SelectItem value="lightness">Нелинейное изменение светлоты</SelectItem>
+                    </SelectContent>
+                </Select>
+            </Field>
 
             <NumberInput
                 id="hueShift"

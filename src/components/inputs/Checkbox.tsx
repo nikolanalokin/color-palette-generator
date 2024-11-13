@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import { Label } from './shared/Label'
+import { Label } from './shared'
 
 type BaseCheckboxProps = {
     labelText?: string

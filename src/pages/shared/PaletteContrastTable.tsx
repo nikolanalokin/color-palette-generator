@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import { contrastAPCA, Palette } from '../../core'
 import { wcagContrast } from 'culori'
 import { useState } from 'react'
-import { SelectInput } from '../../components/inputs/SelectInput'
+import { Field, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components'
 
 export type PaletteContrastTableProps = {
     palette?: Palette
@@ -16,32 +16,44 @@ export const PaletteContrastTable = (props: PaletteContrastTableProps) => {
     return (
         <PaletteContrastTableRoot>
            <Filters>
-                <SelectInput
-                    id="method"
-                    labelText="Метод расчёта контрастности"
-                    value={method}
-                    onChange={setMethod}
-                >
-                    <option value="apca">APCA</option>
-                    <option value="wcag">WCAG</option>
-                </SelectInput>
+                <Field>
+                    <Label>Метод расчёта контрастности</Label>
+                    <Select
+                        value={method}
+                        onValueChange={setMethod}
+                    >
+                        <SelectTrigger>
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="apca">APCA</SelectItem>
+                            <SelectItem value="wcag">WCAG</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </Field>
 
-               <SelectInput
-                   id="level"
-                   labelText="Допустимый уровень контрастности"
-                   value={level}
-                   onChange={setLevel}
-                >
-                    <option value="all">Все уровни</option>
-                    <option value="AA">{ {
-                        apca: '60+',
-                        wcag: '4.5+ (AA)',
-                    }[method] }</option>
-                    <option value="AAA">{ {
-                        apca: '75+',
-                        wcag: '7+ (AAA)',
-                    }[method] }</option>
-               </SelectInput>
+                <Field>
+                    <Label>Допустимый уровень контрастности</Label>
+                    <Select
+                        value={level}
+                        onValueChange={setLevel}
+                    >
+                        <SelectTrigger>
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Все уровни</SelectItem>
+                            <SelectItem value="AA">{ {
+                                apca: '60+',
+                                wcag: '4.5+ (AA)',
+                            }[method] }</SelectItem>
+                            <SelectItem value="AAA">{ {
+                                apca: '75+',
+                                wcag: '7+ (AAA)',
+                            }[method] }</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </Field>
            </Filters>
            <Table>
                <thead>

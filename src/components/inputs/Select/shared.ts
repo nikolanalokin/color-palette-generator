@@ -14,7 +14,7 @@ export const stylesTrigger = css`
     font-size: 14px;
     line-height: 20px;
     cursor: pointer;
-    border: 1px solid #000000;
+    border: none;
 
     & > span {
         overflow: hidden;
@@ -26,6 +26,7 @@ export const stylesTrigger = css`
     &:focus {
         outline: 2px solid transparent;
         outline-offset: 2px;
+        box-shadow: 0 0 0 1px white, 0 0 0 3px black;
     }
 
     &::placeholder {

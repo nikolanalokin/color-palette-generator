@@ -3,7 +3,7 @@ import { Color, formatCss, p3 } from 'culori'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useControllableState } from '../../hooks'
 import { clamp, invlerp, lerp, precision, round, ticks } from '../../../core'
-import { BaseInput } from '../shared/BaseInput'
+import { BaseInput } from '../shared'
 
 type BaseColorRangeInputProps<C extends Color> = {
     value?: C
@@ -114,36 +114,65 @@ const Range = (props: RangeProps) => {
         step = .01,
     } = props
     const range = getRange(color, channel)
-    const valueNormalized = invlerp(range[0], range[1], valueProp)
-    const {
-        sliderProps,
-        trumbProps,
-    } = useSlider({
-        value: valueNormalized,
-        onChange(value: number) {
-            onChange?.(round(lerp(range[0], range[1], value), precision(step)))
-        }
-    })
+    const handleChange = (value: number) => {
+        onChange?.(value)
+    }
     return (
         <RangeRoot
-            {...sliderProps}
+            type="range"
             style={{ backgroundImage: generateBackground(color, channel, range) }}
-        >
-            <RangeTrumb
-                {...trumbProps}
-                style={{ left: `${valueNormalized * 100}%`, backgroundColor: getCssColor(color) }}
-            />
-        </RangeRoot>
+            value={valueProp}
+            onChange={evt => handleChange(+evt.target.value)}
+            min={range.at(0)}
+            max={range.at(-1)}
+            step={step}
+            trumbColor={getCssColor(color)}
+        />
     )
 }
 
-const RangeRoot = styled.div({
+const RangeRoot = styled.input<{ trumbColor: string }>(
+    ({ trumbColor }) => ({
+        appearance: 'none',
+        position: 'relative',
+        touchAction: 'none',
+        height: '40px',
+        minWidth: '200px',
+        flexGrow: 1,
+        borderRadius: '6px',
+        backgroundClip: 'content-box',
+        border: '1px dashed rgba(0 0 0 / .1)',
+
+        '&::-webkit-slider-thumb': {
+            appearance: 'none',
+            width: '10px',
+            height: '40px',
+            boxShadow: '0 0 0 1px white, 0 0 0 2px black',
+            cursor: 'grab',
+            borderRadius: '2px',
+            backgroundColor: trumbColor,
+        },
+
+        '&::-moz-range-thumb': {
+            appearance: 'none',
+            border: 'none',
+            width: '10px',
+            height: '40px',
+            boxShadow: '0 0 0 1px white, 0 0 0 2px black',
+            cursor: 'grab',
+            borderRadius: '2px',
+            backgroundColor: trumbColor,
+        },
+    })
+)
+
+const _RangeRoot = styled.div({
     position: 'relative',
     touchAction: 'none',
-    height: '48px',
+    height: '40px',
     minWidth: '200px',
     flexGrow: 1,
-    borderRadius: '8px',
+    borderRadius: '6px',
     backgroundClip: 'content-box',
     border: '1px dashed rgba(0 0 0 / .1)',
 })

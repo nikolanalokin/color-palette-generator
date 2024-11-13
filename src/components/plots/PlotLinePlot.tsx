@@ -44,7 +44,7 @@ export const PlotLinePlot = (props: PlotLinePlotProps) => {
             x: { domain: xDomain, label: xLabel },
             y: { domain: yDomain, label: yLabel },
             marks: [
-                Plot.dot(data.map(d => [getX(d), getY(d)]), { tip: true }),
+                Plot.dot(data.map(d => [getX(d), getY(d)]), { tip: { fontSize: 12 } }),
                 Plot.line(data.map(d => [getX(d), getY(d)]), { curve: 'linear', strokeWidth: 1 }),
             ]
         })

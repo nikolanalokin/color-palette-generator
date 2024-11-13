@@ -7,3 +7,5 @@ export * from './RangeInput'
 export * from './Select'
 export * from './SelectInput'
 export * from './TextInput'
+
+export * from './shared'

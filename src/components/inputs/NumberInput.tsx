@@ -1,7 +1,5 @@
 import styled from '@emotion/styled'
-import { Label } from './shared/Label'
-import { Field } from './shared/Field'
-import { BaseInput } from './shared/BaseInput'
+import { BaseInput, Field, Label } from './shared'
 
 type BaseNumberInputProps = {
     labelText?: string

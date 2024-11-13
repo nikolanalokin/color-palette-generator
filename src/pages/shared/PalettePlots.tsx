@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import { Palette } from '../../core'
-import { PlotContainer, PlotLinePlot, SelectInput } from '../../components'
+import { Field, Label, PlotLinePlot, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components'
 import { useState } from 'react'
 import { Section } from './primitives'
 
@@ -14,15 +14,21 @@ export const PalettePlots = (props: PalettePlotsProps) => {
     const data = palette.shades.slice(1, -1)
     return (
         <PalettePlotsRoot>
-            <SelectInput
-                id="colorSpace"
-                labelText="Цветовое пространство"
-                value={colorSpace}
-                onChange={setColorSpace}
-            >
-                <option value="okhsl">OKHSL</option>
-                <option value="hsl">HSL</option>
-            </SelectInput>
+            <Field>
+                <Label>Цветовое пространство</Label>
+                <Select
+                    value={colorSpace}
+                    onValueChange={setColorSpace}
+                >
+                    <SelectTrigger>
+                        <SelectValue placeholder="Выберете цветовое пространство" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="okhsl">OKHSL</SelectItem>
+                        <SelectItem value="hsl">HSL</SelectItem>
+                    </SelectContent>
+                </Select>
+            </Field>
             <PlotsContainer>
                 <Section area="huePlot">
                     <PlotLinePlot
@@ -66,6 +72,7 @@ const PalettePlotsRoot = styled.div(
     ({}) => ({
         display: 'flex',
         flexDirection: 'column',
+        alignItems: 'flex-start',
         rowGap: '24px',
     })
 )
