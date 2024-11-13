@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import { contrastAPCA, Palette } from '../../core'
 import { wcagContrast } from 'culori'
 import { useState } from 'react'
-import { SelectInput } from '../../components/inputs/SelectInput'
+import { Field, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components'
 
 export type PaletteContrastTableProps = {
     palette?: Palette
@@ -13,51 +13,49 @@ export const PaletteContrastTable = (props: PaletteContrastTableProps) => {
     const [method, setMethod] = useState('apca')
     const [level, setLevel] = useState('all')
     const contrast = method === 'apca' ? contrastAPCA : wcagContrast
-    const [mousePos, setMousePos] = useState({ col: null, row: null })
-    const handleMouseEnter = (evt: React.MouseEvent<HTMLTableCellElement>) => {
-        if (evt.currentTarget) {
-            const { col, row } = evt.currentTarget.dataset
-            setMousePos({
-                col: +col,
-                row: +row,
-            })
-        }
-    }
-    const handleMouseLeave = () => {
-        setMousePos({ col: null, row: null })
-    }
-
     return (
         <PaletteContrastTableRoot>
            <Filters>
-                <SelectInput
-                    id="method"
-                    labelText="Метод расчёта контрастности"
-                    value={method}
-                    onChange={setMethod}
-                >
-                    <option value="apca">APCA</option>
-                    <option value="wcag">WCAG</option>
-                </SelectInput>
+                <Field>
+                    <Label>Метод расчёта контрастности</Label>
+                    <Select
+                        value={method}
+                        onValueChange={setMethod}
+                    >
+                        <SelectTrigger>
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="apca">APCA</SelectItem>
+                            <SelectItem value="wcag">WCAG</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </Field>
 
-               <SelectInput
-                   id="level"
-                   labelText="Допустимый уровень контрастности"
-                   value={level}
-                   onChange={setLevel}
-                >
-                    <option value="all">Все уровни</option>
-                    <option value="AA">{ {
-                        apca: '60+',
-                        wcag: '4.5+ (AA)',
-                    }[method] }</option>
-                    <option value="AAA">{ {
-                        apca: '75+',
-                        wcag: '7+ (AAA)',
-                    }[method] }</option>
-               </SelectInput>
+                <Field>
+                    <Label>Допустимый уровень контрастности</Label>
+                    <Select
+                        value={level}
+                        onValueChange={setLevel}
+                    >
+                        <SelectTrigger>
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Все уровни</SelectItem>
+                            <SelectItem value="AA">{ {
+                                apca: '60+',
+                                wcag: '4.5+ (AA)',
+                            }[method] }</SelectItem>
+                            <SelectItem value="AAA">{ {
+                                apca: '75+',
+                                wcag: '7+ (AAA)',
+                            }[method] }</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </Field>
            </Filters>
-           <Table selectedCol={mousePos.col} selectedRow={mousePos.row}>
+           <Table>
                <thead>
                    <tr>
                        <th></th>
@@ -70,7 +68,7 @@ export const PaletteContrastTable = (props: PaletteContrastTableProps) => {
                        )) }
                    </tr>
                </thead>
-               <tbody onMouseLeave={handleMouseLeave}>
+               <tbody>
                    { shades.map((shadeH, rowIndex) => (
                        <tr key={shadeH.number}>
                            <th>
@@ -79,18 +77,18 @@ export const PaletteContrastTable = (props: PaletteContrastTableProps) => {
                                </HeaderCell>
                            </th>
 
-                           { shades.map((shadeV, colIndex) => {
-                               const score = contrast(shadeV.hexcode, shadeH.hexcode)
+                           { shades.map((shadeV) => {
+                               const score = contrast(shadeV.hex, shadeH.hex)
                                const show = method == 'apca'
                                    ? (level === 'AA' ? Math.abs(score) >= 60 : level === 'AAA' ? Math.abs(score) >= 75 : true)
                                    : (level === 'AA' ? score >= 4.5 : level === 'AAA' ? score >= 7 : true)
                                return (
-                                   <td key={shadeV.number} data-row={rowIndex} data-col={colIndex} onMouseEnter={handleMouseEnter}>
+                                   <td key={shadeV.number}>
                                        { show ? (
                                            <ColorCell
                                                style={{
-                                                   backgroundColor: shadeH.hexcode,
-                                                   color: shadeV.hexcode,
+                                                   backgroundColor: shadeH.hex,
+                                                   color: shadeV.hex,
                                                }}
                                            >
                                                { score.toFixed(2) }
@@ -110,7 +108,6 @@ export const PaletteContrastTable = (props: PaletteContrastTableProps) => {
 const PaletteContrastTableRoot = styled.div(
     () => ({
         display: 'grid',
-        justifyItems: 'center',
         gap: '16px',
     })
 )
@@ -152,28 +149,14 @@ const PlaceholderCell = styled(Cell)({
     transition: 'box-shadow .2s ease',
 })
 
-const Table = styled.table<any>(
-    ({ selectedCol, selectedRow }) => ({
-        borderCollapse: 'collapse',
-        borderColor: 'inherit',
-        textIndent: 0,
-        tableLayout: 'fixed',
-        width: '1240px',
+const Table = styled.table<any>({
+    borderCollapse: 'collapse',
+    borderColor: 'inherit',
+    textIndent: 0,
+    tableLayout: 'fixed',
+    width: '1240px',
 
-        '& th, & td': {
-            padding: '3px',
-        },
-
-        ...(selectedRow !== null && {
-            [`tbody tr:nth-of-type(${selectedRow + 1}) td ${ColorCell}`]: {
-                boxShadow: '0 0 0 1px white, 0 0 0 2px rgba(0, 0, 0, 0.5)'
-            },
-        }),
-
-        ...(selectedCol !== null && {
-            [`tbody tr td:nth-of-type(${selectedCol + 1}) ${ColorCell}`]: {
-                boxShadow: '0 0 0 1px white, 0 0 0 2px rgba(0, 0, 0, 0.5)'
-            },
-        }),
-    })
-)
+    '& th, & td': {
+        padding: '3px',
+    },
+})

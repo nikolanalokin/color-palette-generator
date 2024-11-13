@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import { Palette } from '../../core'
-import { LinePlot } from '../../components'
+import { Field, Label, PlotLinePlot, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components'
 import { useState } from 'react'
-import { SelectInput } from '../../components/inputs/SelectInput'
+import { Section } from './primitives'
 
 export type PalettePlotsProps = {
     palette?: Palette
@@ -11,61 +11,75 @@ export type PalettePlotsProps = {
 export const PalettePlots = (props: PalettePlotsProps) => {
     const { palette } = props
     const [colorSpace, setColorSpace] = useState('okhsl')
-    const hueData = palette.shades.map<[number, number]>(shade => [shade.number, shade[colorSpace].hue]).slice(1, -1)
-    const saturationData = palette.shades.map<[number, number]>(shade => [shade.number, shade[colorSpace].saturation]).slice(1, -1)
-    const lightnessData = palette.shades.map<[number, number]>(shade => [shade.number, shade[colorSpace].lightness]).slice(1, -1)
+    const data = palette.shades.slice(1, -1)
     return (
         <PalettePlotsRoot>
-            <SelectInput
-                id="colorSpace"
-                labelText="Цветовое пространство"
-                value={colorSpace}
-                onChange={setColorSpace}
-            >
-                <option value="okhsl">OKHSL</option>
-                <option value="hsl">HSL</option>
-            </SelectInput>
-            <StyledLinePlot
-                data={hueData}
-                xMin={0}
-                xMax={1000}
-                yMin={0}
-                yMax={360}
-            />
-            <StyledLinePlot
-                data={saturationData}
-                xMin={0}
-                xMax={1000}
-                yMin={0}
-                yMax={100}
-            />
-            <StyledLinePlot
-                data={lightnessData}
-                xMin={0}
-                xMax={1000}
-                yMin={0}
-                yMax={100}
-            />
+            <Field>
+                <Label>Цветовое пространство</Label>
+                <Select
+                    value={colorSpace}
+                    onValueChange={setColorSpace}
+                >
+                    <SelectTrigger>
+                        <SelectValue placeholder="Выберете цветовое пространство" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="okhsl">OKHSL</SelectItem>
+                        <SelectItem value="hsl">HSL</SelectItem>
+                    </SelectContent>
+                </Select>
+            </Field>
+            <PlotsContainer>
+                <Section area="huePlot">
+                    <PlotLinePlot
+                        data={data}
+                        getX={d => d.number}
+                        getY={d => d[colorSpace].h}
+                        xDomain={[0, 1000]}
+                        yDomain={[0, 360]}
+                        xLabel="tone"
+                        yLabel="hue"
+                    />
+                </Section>
+                <Section area="saturationPlot">
+                    <PlotLinePlot
+                        data={data}
+                        getX={d => d.number}
+                        getY={d => d[colorSpace].s}
+                        xDomain={[0, 1000]}
+                        yDomain={[0, 1]}
+                        xLabel="tone"
+                        yLabel="saturation"
+                    />
+                </Section>
+                <Section area="lightnessPlot">
+                    <PlotLinePlot
+                        data={data}
+                        getX={d => d.number}
+                        getY={d => d[colorSpace].l}
+                        xDomain={[0, 1000]}
+                        yDomain={[0, 1]}
+                        xLabel="tone"
+                        yLabel="lightness"
+                    />
+                </Section>
+            </PlotsContainer>
         </PalettePlotsRoot>
     )
 }
 
 const PalettePlotsRoot = styled.div(
     ({}) => ({
-        width: '100%',
         display: 'flex',
         flexDirection: 'column',
+        alignItems: 'flex-start',
         rowGap: '24px',
     })
 )
 
-const StyledLinePlot = styled(LinePlot)({
-    width: '480px',
-})
-
-const Gradient = styled.div(
+const PlotsContainer = styled.div(
     ({}) => ({
-        height: '48px',
-        borderRadius: '8px',
+        display: 'flex',
+        columnGap: '24px',
     })
 )

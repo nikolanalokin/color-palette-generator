@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
-import { Field } from './shared/Field'
-import { Label } from './shared/Label'
+import { BaseSelect, Field, Label } from './shared'
 
 type BaseSelectInputProps = {
     labelText?: string
@@ -26,7 +25,7 @@ export const SelectInput = (props: SelectInputProps) => {
                 </Label>
             ) : null }
 
-            <select
+            <BaseSelect
                 id={id}
                 value={value}
                 onChange={evt => onChange?.(evt.target.value)}
@@ -38,6 +37,6 @@ export const SelectInput = (props: SelectInputProps) => {
 
 const SelectInputRoot = styled(Field)(
     () => ({
-
+        overflow: 'hidden',
     })
 )

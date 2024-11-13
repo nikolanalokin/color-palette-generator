@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
-import { Label } from './shared/Label'
-import { Field } from './shared/Field'
+import { BaseInput, Field, Label } from './shared'
 
 type BaseTextInputProps = {
     labelText?: string
@@ -27,7 +26,7 @@ export const TextInput = (props: TextInputProps) => {
                 </Label>
             ) : null }
 
-            <input
+            <BaseInput
                 id={id}
                 type="text"
                 value={value}

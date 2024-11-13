@@ -1,64 +1,59 @@
 import { useState } from 'react'
 import styled from '@emotion/styled'
-import { PaletteSettingBar } from './shared/PaletteSettingBar'
+import { PaletteSettingBar, PaletteSettingBarValue } from './shared/PaletteSettingBar'
 import { PaletteContrastTable } from './shared/PaletteContrastTable'
-import { createPaletteWithOkhsl } from '../core'
-import { formatHex, okhsl, Okhsl } from 'culori'
+import { createPalette } from '../core'
+import { formatHex, okhsl } from 'culori'
 import { PalettePlots } from './shared/PalettePlots'
 import { GlobalStyles } from '../components'
 import { PaletteDisplayBlock } from './shared/PaletteDisplayBlock'
 
 export const App = () => {
-    const [color, setColor] = useState<Okhsl>(okhsl('#d03531'))
-    const [useApca, setUseApca] = useState<boolean>(true)
-    const [fixBase, setFixBase] = useState<boolean>(false)
-    const [hueShift, setHueShift] = useState<number>(5)
-    const [decreaseSaturationRatio, setDecreaseSaturationRatio] = useState<number>(.75)
-    const palette = createPaletteWithOkhsl({
-        baseColor: formatHex(color),
-        fixBase: fixBase,
-        useApca: useApca,
-        hueShift: hueShift,
-        decreaseSaturationRatio: decreaseSaturationRatio,
+    const [options, setOptions] = useState<PaletteSettingBarValue>({
+        color: okhsl('#d03531'),
+        fixBase: false,
+        method: 'apca',
+        hueShift: 5,
+        decreaseSaturationRatio: .15,
+    })
+    const palette = createPalette({
+        baseColor: formatHex(options.color),
+        method: options.method,
+        fixBase: options.fixBase,
+        hueShift: options.hueShift,
+        decreaseSaturationRatio: options.decreaseSaturationRatio,
     })
     return (
         <>
             <GlobalStyles />
             <Root>
+                <Header>Генератор цветовых палитр</Header>
                 <Main>
-                    <SettingBarSection>
-                        <PaletteSettingBar
-                            color={color}
-                            onColorChange={setColor}
-                            useApca={useApca}
-                            onUseApcaChange={value => {
-                                setUseApca(value)
-                                if (!value) setFixBase(false)
-                            }}
-                            fixBase={fixBase}
-                            onFixBaseChange={setFixBase}
-                            hueShift={hueShift}
-                            onHueShiftChange={setHueShift}
-                            decreaseSaturationRatio={decreaseSaturationRatio}
-                            onDecreaseSaturationRatioChange={setDecreaseSaturationRatio}
-                        />
-                    </SettingBarSection>
-                    <PlotsSection>
-                        <PalettePlots
-                            palette={palette}
-                        />
-                    </PlotsSection>
                     <DisplaySection>
                         <PaletteDisplayBlock
                             palette={palette}
                         />
                     </DisplaySection>
+                    <PlotsSection>
+                        <PalettePlots
+                            palette={palette}
+                        />
+                    </PlotsSection>
                     <ContrastTableSection>
                         <PaletteContrastTable
                             palette={palette}
                         />
                     </ContrastTableSection>
                 </Main>
+                <Sidebar>
+                    <PaletteSettingBar
+                        value={options}
+                        onChange={value => {
+                            setOptions(value)
+                        }}
+                        palette={palette}
+                    />
+                </Sidebar>
                 <Footer>
                     @nikolanalokin { new Date().getFullYear() }
                 </Footer>
@@ -70,45 +65,57 @@ export const App = () => {
 const Root = styled.div(
     () => ({
         maxWidth: '100%',
+        display: 'grid',
+        gridTemplateColumns: '1fr 384px',
+        gridTemplateAreas: `
+            "header header"
+            "main aside"
+            "footer aside"
+        `,
     })
 )
 
 const Main = styled.main({
+    gridArea: 'main',
     display: 'grid',
-    gridTemplateColumns: '1fr auto',
-    gridTemplateAreas: `
-        "settingBar plots"
-        "display plots"
-        "contrastTable contrastTable"
-    `
+    paddingInline: '48px',
+    paddingBlock: '24px',
+    gap: '24px',
 })
 
 const Section = styled.section({
-    padding: '48px',
-})
-
-const SettingBarSection = styled(Section)({
-    gridArea: 'settingBar',
-    borderBlockEnd: '1px solid',
 })
 
 const PlotsSection = styled(Section)({
-    gridArea: 'plots',
-    borderInlineStart: '1px solid',
 })
 
 const DisplaySection = styled(Section)({
-    gridArea: 'display',
 })
 
 const ContrastTableSection = styled(Section)({
-    gridArea: 'contrastTable',
-    borderBlockStart: '1px solid',
+})
+
+const Header = styled.header({
+    gridArea: 'header',
+    paddingInline: '48px',
+    paddingBlock: '24px',
+    fontSize: '18px',
+    fontWeight: 600,
     borderBlockEnd: '1px solid',
 })
 
-const Footer = styled(Section)({
+const Footer = styled.footer({
+    gridArea: 'footer',
     paddingInline: '48px',
     paddingBlock: '24px',
     fontSize: '14px',
+    borderBlockStart: '1px solid',
+})
+
+const Sidebar = styled.aside({
+    gridArea: 'aside',
+    paddingInline: '24px',
+    paddingBlock: '24px',
+    fontSize: '14px',
+    borderInlineStart: '1px solid',
 })

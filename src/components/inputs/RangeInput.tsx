@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
-import { Label } from './shared/Label'
-import { Field } from './shared/Field'
+import { Field, Label } from './shared'
 
 type BaseRangeInputProps = {
     labelText?: string

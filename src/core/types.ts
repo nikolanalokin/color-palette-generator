@@ -1,15 +1,20 @@
+import { Hsl, Okhsl, Oklch, Rgb } from 'culori'
+
 export type ColorInfo = {
-    hexcode: string
-    hsl: {
-        hue: number
-        saturation: number
-        lightness: number
-    }
-    okhsl: {
-        hue: number
-        saturation: number
-        lightness: number
-    }
+    hex: string
+    rgb: Rgb
+    hsl: Hsl
+    okhsl: Okhsl
+    oklch: Oklch
+    apca: ContrastInfo
+    wcag: ContrastInfo
+}
+
+export type ContrastInfo = {
+    onBlack: number
+    onWhite: number
+    whiteOn: number
+    blackOn: number
 }
 
 export type ShadeInfo = ColorInfo & {

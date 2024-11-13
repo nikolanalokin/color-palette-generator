@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
-import { wcagContrast } from 'culori'
+import { formatHsl, wcagContrast } from 'culori'
 import { contrastAPCA, ShadeInfo } from '../../core'
+import { formatOkhsl } from './format-utils'
 
 type BasePaletteColorProps = {
     shade?: ShadeInfo
@@ -12,17 +13,17 @@ export type PaletteColorProps = Omit<React.HTMLAttributes<HTMLDivElement>, keyof
 export const PaletteColor = (props: PaletteColorProps) => {
     if (!props.shade) return
     const { shade, closest, ...restProps } = props
-    let wcagBlack = wcagContrast(shade.hexcode, 'black')
-    let wcagWhite = wcagContrast(shade.hexcode, 'white')
-    let apcaBlack = contrastAPCA('black', shade.hexcode)
-    let apcaWhite = contrastAPCA('white', shade.hexcode)
+    let wcagBlack = wcagContrast(shade.hex, 'black')
+    let wcagWhite = wcagContrast(shade.hex, 'white')
+    let apcaBlack = contrastAPCA('black', shade.hex)
+    let apcaWhite = contrastAPCA('white', shade.hex)
     let textColor = Math.abs(apcaBlack) > 60 ? 'black' : Math.abs(apcaWhite) > 60 ? 'white' : '#808080'
     return (
         <PaletteColorRoot {...restProps}>
             <PaletteColorRect
                 data-highlight={closest}
                 {...props}
-                style={{ backgroundColor: shade.hexcode }}
+                style={{ backgroundColor: shade.hex }}
             >
                 <span style={{ color: textColor }}>{ shade.number }</span>
             </PaletteColorRect>
@@ -32,7 +33,7 @@ export const PaletteColor = (props: PaletteColorProps) => {
                     { shade.number }
                 </Title>
                 <Subtitle>
-                    { shade.hexcode }
+                    { shade.hex }
                 </Subtitle>
                 <Caption>
                     WCAG { wcagBlack.toFixed(2) }/{ wcagWhite.toFixed(2) }
@@ -41,10 +42,10 @@ export const PaletteColor = (props: PaletteColorProps) => {
                     APCA { apcaBlack.toFixed(1) }/{ apcaWhite.toFixed(1) }
                 </Caption>
                 <Caption>
-                    HSL { shade.hsl.hue } { shade.hsl.saturation } { shade.hsl.lightness }
+                    HSL { formatHsl(shade.hsl) }
                 </Caption>
                 <Caption>
-                    OKHSL { shade.okhsl.hue } { shade.okhsl.saturation } { shade.okhsl.lightness }
+                    OKHSL { formatOkhsl(shade.okhsl) }
                 </Caption>
                 <Caption>
                     deltaE { shade.delta.toPrecision(4) }

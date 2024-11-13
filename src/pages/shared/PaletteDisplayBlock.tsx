@@ -1,9 +1,11 @@
 import styled from '@emotion/styled'
-import { contrastAPCA, Palette, ShadeInfo } from '../../core'
-import { PaletteColor } from './PaletteColor'
-import { wcagContrast } from 'culori'
+import { Palette, ShadeInfo } from '../../core'
 import { Checkbox } from '../../components/inputs/Checkbox'
 import { useState } from 'react'
+import { formatHsl, formatOkhsl } from './format-utils'
+import { keyframes } from '@emotion/react'
+import { paletteToBlob } from '../../utils/paletteToImage'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../../components'
 
 export type PaletteDisplayBlockProps = {
     palette?: Palette
@@ -12,6 +14,22 @@ export type PaletteDisplayBlockProps = {
 export const PaletteDisplayBlock = (props: PaletteDisplayBlockProps) => {
     const { palette } = props
     const [highlight, setHighlight] = useState(false)
+    const [copied, setCopied] = useState(false)
+    const handlePaletteClick = (evt: React.MouseEvent<HTMLDivElement>) => {
+        paletteToBlob(palette)
+            .then(blob => {
+                return window.navigator.clipboard.write([
+                    new ClipboardItem({ [blob.type]: blob })
+                ])
+            })
+            .then(() => {
+                setCopied(true)
+
+                setTimeout(() => {
+                    setCopied(false)
+                }, 1000)
+            })
+    }
     return (
         <PaletteDisplayBlockRoot>
             <PaletteScaleContainer>
@@ -24,70 +42,85 @@ export const PaletteDisplayBlock = (props: PaletteDisplayBlockProps) => {
                     />
                 </HeaderScaleBlock>
 
-                <PaletteScale>
+                <PaletteScale data-copied={copied} onClick={handlePaletteClick}>
                     { palette.shades.map((shade) => {
-                        const apcaBlack = contrastAPCA('black', shade.hexcode)
-                        const apcaWhite = contrastAPCA('white', shade.hexcode)
-                        const color = Math.abs(apcaBlack) > 60 ? 'black' : Math.abs(apcaWhite) > 60 ? 'white' : '#808080'
+                        const color = Math.abs(shade.apca.blackOn) > Math.abs(shade.apca.whiteOn) ? 'black' :'white'
+                        const tooltipData = createRow(shade)
                         return (
-                            <ScaleBlock
-                                key={shade.number}
-                                css={{ color, backgroundColor: shade.hexcode }}
-                                data-highlight={highlight && palette.closestShade.number === shade.number}
-                            >
-                                { shade.number }
-                            </ScaleBlock>
+                            <Tooltip placement="right">
+                                <TooltipTrigger asChild>
+                                    <ScaleBlock
+                                        key={shade.number}
+                                        css={{ color, backgroundColor: shade.hex }}
+                                        data-highlight={highlight && palette.closestShade.number === shade.number}
+                                    >
+                                        { shade.number }
+                                    </ScaleBlock>
+                                </TooltipTrigger>
+
+                                <TooltipContent>
+                                    { columns.map(column => (
+                                        <div key={`${shade.number}:${column.key}`}>
+                                            <b>
+                                                { column.label }
+                                            </b>
+                                            <span>: </span>
+                                            <span>
+                                                { tooltipData[column.key] }
+                                            </span>
+                                        </div>
+                                    )) }
+                                </TooltipContent>
+                            </Tooltip>
                         )
                     }) }
                 </PaletteScale>
             </PaletteScaleContainer>
             <PaletteInfoContainer>
-                <Grid>
-                    <Row>
-                        { columns.map(column => {
+                <Table>
+                    <thead>
+                        <TableRow>
+                            { columns.map(column => {
+                                return (
+                                    <TableHeaderCell key={column.key}>
+                                        <HeaderCell>
+                                            { column.label }
+                                        </HeaderCell>
+                                    </TableHeaderCell>
+                                )
+                            }) }
+                        </TableRow>
+                    </thead>
+                    <tbody>
+                        { palette.shades.map((shade) => {
+                            const row = createRow(shade)
                             return (
-                                <HeaderCell key={column.key}>
-                                    { column.label }
-                                </HeaderCell>
+                                <TableRow key={shade.number}>
+                                    { columns.map(column => (
+                                        <TableDataCell key={`${shade.number}:${column.key}`}>
+                                            <Cell>
+                                                { row[column.key] }
+                                            </Cell>
+                                        </TableDataCell>
+                                    )) }
+                                </TableRow>
                             )
                         }) }
-                    </Row>
-                    { palette.shades.map((shade) => {
-                        const row = createRow(shade)
-                        return (
-                            <Row
-                                key={shade.number}
-                            >
-                                { columns.map(column => {
-
-                                    return (
-                                        <Cell key={`${shade.number}:${column.key}`}>
-                                            { row[column.key] }
-                                        </Cell>
-                                    )
-                                }) }
-                            </Row>
-                        )
-                    }) }
-                </Grid>
+                    </tbody>
+                </Table>
             </PaletteInfoContainer>
         </PaletteDisplayBlockRoot>
     )
 }
 
 const createRow = (shade: ShadeInfo) => {
-    const wcagBlack = wcagContrast(shade.hexcode, 'black')
-    const wcagWhite = wcagContrast(shade.hexcode, 'white')
-    const apcaBlack = contrastAPCA('black', shade.hexcode)
-    const apcaWhite = contrastAPCA('white', shade.hexcode)
-
     return {
-        hex: shade.hexcode,
-        wcag: `${ wcagBlack.toFixed(2) }/${ wcagWhite.toFixed(2) }`,
-        apca: `${ apcaBlack.toFixed(1) }/${ apcaWhite.toFixed(1) }`,
-        hsl: `${ shade.hsl.hue } ${ shade.hsl.saturation } ${ shade.hsl.lightness }`,
-        okhsl: `${ shade.okhsl.hue } ${ shade.okhsl.saturation } ${ shade.okhsl.lightness }`,
-        deltaE: `${ shade.delta.toPrecision(4) }`,
+        hex: shade.hex,
+        wcag: `${ shade.wcag.onBlack.toFixed(2) }/${ shade.wcag.onWhite.toFixed(2) }`,
+        apca: `${ shade.apca.onBlack.toFixed(1) }/${ shade.apca.onWhite.toFixed(1) }`,
+        hsl: formatHsl(shade.hsl),
+        okhsl: formatOkhsl(shade.okhsl),
+        deltaE: shade.delta.toPrecision(4),
     }
 }
 
@@ -103,10 +136,6 @@ const columns = [
     {
         key: 'apca',
         label: 'APCA',
-    },
-    {
-        key: 'hsl',
-        label: 'HSL',
     },
     {
         key: 'okhsl',
@@ -128,11 +157,29 @@ const PaletteDisplayBlockRoot = styled.div(
 
 const PaletteScaleContainer = styled.div({})
 
+const copyAnimationKeyframes = keyframes`
+    0% {
+        box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.5);
+    }
+    90% {
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.16);
+    }
+    100% {
+        box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.16);
+    }
+`
+
 const PaletteScale = styled.div(
     ({}) => ({
         display: 'flex',
         flexDirection: 'column',
-        boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px;',
+        borderRadius: '8px',
+        boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.16)',
+        cursor: 'pointer',
+
+        '&[data-copied="true"]': {
+            animation: `${copyAnimationKeyframes} 1s`
+        }
     })
 )
 
@@ -176,16 +223,28 @@ const PaletteInfoContainer = styled.div(
     })
 )
 
-const Grid = styled.div(
+const Table = styled.table(
     ({}) => ({
-        display: 'flex',
-        flexDirection: 'column',
+        borderCollapse: 'collapse',
+        borderSpacing: 0,
     })
 )
 
-const Row = styled.div(
+const TableRow = styled.tr(
     ({}) => ({
-        display: 'flex',
+
+    })
+)
+
+const TableHeaderCell = styled.th(
+    ({}) => ({
+        padding: 0,
+    })
+)
+
+const TableDataCell = styled.td(
+    ({}) => ({
+        padding: 0,
     })
 )
 

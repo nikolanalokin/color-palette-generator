@@ -1,49 +1,130 @@
 import styled from '@emotion/styled'
-import * as d3 from 'd3'
-import { useRef, useEffect } from 'react'
-import { useChartDimensions } from './useChartDimensions'
+import { useMemo } from 'react'
+import { ShadeInfo } from '../../core'
+import { scaleLinear } from '@visx/scale'
+import { AxisBottom, AxisLeft } from '@visx/axis'
+import { LinePath } from '@visx/shape'
+import { curveLinear } from '@visx/curve'
+import { Group } from '@visx/group'
+import { MarkerCircle } from '@visx/marker'
+import { Grid } from '@visx/grid'
 
-export type LinePlotProps = React.HTMLAttributes<HTMLDivElement> & {
-    data: [number, number][]
-    xMin?: number
-    xMax?: number
-    yMin?: number
-    yMax?: number
+const defaultMargin = { top: 20, right: 20, bottom: 32, left: 40 }
+
+export type LinePlotProps = React.SVGAttributes<SVGSVGElement> & {
+    data: ShadeInfo[]
+    getX: (d: ShadeInfo) => number
+    getY: (d: ShadeInfo) => number
+    xDomain?: [number, number]
+    yDomain?: [number, number]
+    width?: number
+    height?: number
+    margin?: { top: number; right: number; bottom: number; left: number }
 }
 
 export const LinePlot = (props: LinePlotProps) => {
-    const { data, xMin, xMax, yMin, yMax, ...restProps } = props
-    const [ref, dms] = useChartDimensions({
-        height: 320,
-        marginTop: 0,
-        marginRight: 0,
-        marginBottom: 20,
-        marginLeft: 30,
-    })
-    const gx = useRef<SVGGElement>()
-    const gy = useRef<SVGGElement>()
-    const x = d3.scaleLinear([xMin, xMax], [dms.marginLeft, dms.boundedWidth])
-    const y = d3.scaleLinear([yMin, yMax], [dms.boundedHeight, dms.marginTop])
-    const line = d3.line(d => x(d[0]), d => y(d[1]))
-    useEffect(() => void d3.select(gx.current).call(d3.axisBottom(x)), [gx, x])
-    useEffect(() => void d3.select(gy.current).call(d3.axisLeft(y)), [gy, y])
+    const {
+        data,
+        getX,
+        getY,
+        xDomain,
+        yDomain,
+        width,
+        height,
+        margin = defaultMargin,
+        ...restProps
+    } = props
+
+    // bounds
+    const xMax = width - margin.left - margin.right
+    const yMax = height - margin.top - margin.bottom
+
+    const xScale = useMemo(
+        () => scaleLinear({
+            domain: xDomain ?? [Math.min(...data.map(getX)), Math.max(...data.map(getX))],
+            range: [0, xMax],
+        }),
+        [data, xMax]
+    )
+
+    const yScale = useMemo(
+        () => scaleLinear({
+            domain: yDomain ?? [Math.min(...data.map(getY)), Math.max(...data.map(getY))],
+            range: [yMax, 0],
+        }),
+        [data, yMax]
+    )
+
     return (
-        <PlotRoot {...restProps} ref={ref}>
-            <svg width={dms.width} height={dms.height}>
-                <g ref={gx} transform={`translate(0, ${dms.boundedHeight})`} />
-                <g ref={gy} transform={`translate(${dms.marginLeft}, 0)`} />
-                <path fill="none" stroke="currentColor" strokeWidth="1" d={line(data)} />
-                <g fill="white" stroke="currentColor" strokeWidth="1">
-                    { data.map((d, i) => (
-                        <circle key={i} cx={x(d[0])} cy={y(d[1])} r="2" />
-                    )) }
-                </g>
+        <PlotRoot>
+            <svg {...restProps} width={width} height={height}>
+                {/* сетка */}
+                <Grid
+                    top={margin.top}
+                    left={margin.left}
+                    width={xMax}
+                    height={yMax}
+                    xScale={xScale}
+                    yScale={yScale}
+                    stroke='black'
+                    strokeOpacity={0.1}
+                />
+
+                <MarkerCircle
+                    id="marker-circle"
+                    fill="#333333"
+                    size={2}
+                    refX={2}
+                />
+
+                <Group
+                    top={margin.top}
+                    left={margin.left}
+                >
+                    <LinePath<ShadeInfo>
+                        curve={curveLinear}
+                        data={data}
+                        x={(d) => xScale(getX(d)) ?? 0}
+                        y={(d) => yScale(getY(d)) ?? 0}
+                        stroke="#333333"
+                        strokeWidth={1}
+                        strokeOpacity={1}
+                        shapeRendering="geometricPrecision"
+                        markerMid="url(#marker-circle)"
+                        markerStart="url(#marker-circle)"
+                        markerEnd="url(#marker-circle)"
+                    />
+                </Group>
+
+                {/* оси */}
+                <AxisLeft
+                    top={margin.top}
+                    left={margin.left}
+                    scale={yScale}
+                    tickLabelProps={{
+                        fill: 'black',
+                        fontSize: 12,
+                        fontFamily: '"IBM Plex Mono", "Courier New", Courier, monospace',
+                        textAnchor: 'end',
+                    }}
+                />
+                <AxisBottom
+                    top={yMax + margin.top}
+                    left={margin.left}
+                    scale={xScale}
+                    tickFormat={x => String(x)}
+                    tickLabelProps={{
+                        fill: 'black',
+                        fontSize: 12,
+                        fontFamily: '"IBM Plex Mono", "Courier New", Courier, monospace',
+                        textAnchor: 'middle',
+                    }}
+                />
             </svg>
         </PlotRoot>
     )
 }
 
-const PlotRoot = styled.div(() => ({
-    width: '100%',
-    height: '100%',
-}))
+const PlotRoot = styled.div({
+    position: 'relative'
+})
