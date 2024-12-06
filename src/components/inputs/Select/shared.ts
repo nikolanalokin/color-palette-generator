@@ -11,8 +11,8 @@ export const stylesTrigger = css`
     height: 40px;
     border-radius: 6px;
     background-color: rgba(0 0 0 / .1);
-    font-size: 14px;
-    line-height: 20px;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
     cursor: pointer;
     border: none;
 
@@ -108,7 +108,7 @@ export const stylesLabel = css`
     padding-block: 6px;
     padding-inline-start: 32px;
     padding-inline-end: 8px;
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 600;
 `
 
@@ -123,7 +123,7 @@ export const stylesItem = css`
     padding-block: 6px;
     padding-inline-start: 32px;
     padding-inline-end: 8px;
-    font-size: 14px;
+    font-size: 0.875rem;
     border-radius: 4px;
     outline: 2px solid transparent;
     outline-offset: 2px;

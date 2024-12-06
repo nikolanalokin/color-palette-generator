@@ -21,6 +21,7 @@ export type ShadeFnOptions = {
     fixBase?: boolean
     hueShift?: number
     decreaseSaturationRatio?: number
+    contrastScore?: number
 }
 
 export type ShadeFnResult = ColorInfo
@@ -33,6 +34,9 @@ export type ShadeFnResult = ColorInfo
  * @param {number} opts.tone - желаемый оттенок
  * @param {number[]} opts.scale - шкала, в рамках которой определяется оттенок (как минимум должны присутствовать первое и последнее значение)
  * @param {boolean} opts.fixBase - зафиксировать входной цвет
+ * @param {boolean} opts.hueShift - смещение цветового тона
+ * @param {boolean} opts.decreaseSaturationRatio - коэффициент уменьшения насыщенности
+ * @param {boolean} opts.contrastScore - фиксированное значение контрастности
  * @returns {string} итоговый цвет оттенка в hex
  */
 export function createShadeViaApca (opts: ShadeFnOptions): ShadeFnResult {
@@ -44,6 +48,7 @@ export function createShadeViaApca (opts: ShadeFnOptions): ShadeFnResult {
         fixBase,
         hueShift = 0,
         decreaseSaturationRatio = 0,
+        contrastScore,
     } = opts
 
     const baseColorShadeNumber = baseTone ?? findClosestShadeNumber(baseColor, scale)
@@ -61,7 +66,7 @@ export function createShadeViaApca (opts: ShadeFnOptions): ShadeFnResult {
             shadeColor.s = computeScaleSaturationWithLocalPeak(scaleValue, shadeColor.s * (1 - decreaseSaturationRatio), shadeColor.s, inputScaleValue)
         }
 
-        shadeColor.l = computeScaleLightnessByAPCA(scaleValue, shadeColor)
+        shadeColor.l = computeScaleLightnessByAPCA(scaleValue, shadeColor, contrastScore)
     }
 
     return getColorInfo(shadeColor)
@@ -82,10 +87,13 @@ function computeScaleSaturationWithLocalPeak (scaleValue: number, minSaturation:
     return a * Math.pow(scaleValue - scalePeak, 2) + maxSaturation
 }
 
-function computeScaleLightnessByAPCA (scaleValue: number, baseOkhsl: Okhsl) {
+function computeScaleLightnessByAPCA (scaleValue: number, baseOkhsl: Okhsl, score?: number) {
+    if (scaleValue === 0) return 1
+    if (scaleValue === 1) return 0
+
     const fgHex = scaleValue <= .5 ? BLACK_HEX : WHITE_HEX
 
-    const contrastScore = scaleValue <= .5
+    const contrastScore = score || scaleValue <= .5
         ? lerp(APCA_ON_BLACK_RANGE.at(0), APCA_ON_BLACK_RANGE.at(-1), scaleValue)
         : lerp(APCA_ON_WHITE_RANGE.at(0), APCA_ON_WHITE_RANGE.at(-1), scaleValue)
 

@@ -22,7 +22,7 @@ export type ShadeInfo = ColorInfo & {
     delta: number
 }
 
-export type Palette = {
+export type PaletteInfo = {
     input: ColorInfo
     shades: ShadeInfo[]
     closestShade: ShadeInfo

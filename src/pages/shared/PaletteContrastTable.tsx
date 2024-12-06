@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
-import { contrastAPCA, Palette } from '../../core'
+import { contrastAPCA, PaletteInfo } from '../../core'
 import { wcagContrast } from 'culori'
 import { useState } from 'react'
 import { Field, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components'
 
 export type PaletteContrastTableProps = {
-    palette?: Palette
+    palette?: PaletteInfo
 }
 
 export const PaletteContrastTable = (props: PaletteContrastTableProps) => {

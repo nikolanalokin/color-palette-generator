@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import { Palette, ShadeInfo } from '../../core'
+import { PaletteInfo, ShadeInfo } from '../../core'
 import { Checkbox } from '../../components/inputs/Checkbox'
 import { useState } from 'react'
 import { formatHsl, formatOkhsl } from './format-utils'
@@ -8,7 +8,7 @@ import { paletteToBlob } from '../../utils/paletteToImage'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../components'
 
 export type PaletteDisplayBlockProps = {
-    palette?: Palette
+    palette?: PaletteInfo
 }
 
 export const PaletteDisplayBlock = (props: PaletteDisplayBlockProps) => {

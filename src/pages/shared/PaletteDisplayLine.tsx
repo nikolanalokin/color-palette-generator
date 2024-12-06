@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
-import { Palette } from '../../core'
+import { PaletteInfo } from '../../core'
 import { PaletteColor } from './PaletteColor'
 
 export type PaletteDisplayLineProps = {
-    palette?: Palette
+    palette?: PaletteInfo
 }
 
 export const PaletteDisplayLine = (props: PaletteDisplayLineProps) => {

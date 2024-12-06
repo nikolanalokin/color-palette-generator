@@ -5,11 +5,12 @@ import { TextInput } from '../../components/inputs/TextInput'
 import { Checkbox } from '../../components/inputs/Checkbox'
 import { NumberInput } from '../../components/inputs/NumberInput'
 import { useEffect, useState } from 'react'
-import { Palette } from '../../core'
+import { PaletteInfo } from '../../core'
 
 export type PaletteSettingBarValue = {
     color?: Okhsl
     method?: 'lightness' | 'apca'
+    lightnessFuncton?: 'linear' | 'bezier'
     fixBase?: boolean
     hueShift?: number
     decreaseSaturationRatio?: number
@@ -18,7 +19,7 @@ export type PaletteSettingBarValue = {
 export type PaletteSettingBarProps = {
     value?: PaletteSettingBarValue
     onChange?(value: PaletteSettingBarValue): void
-    palette?: Palette
+    palette?: PaletteInfo
 }
 
 export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
@@ -70,17 +71,40 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                 <Label>Метод формирования палитры</Label>
                 <Select
                     value={valueProp.method}
-                    onValueChange={value => updateValue({ method: value as PaletteSettingBarValue['method'] })}
+                    onValueChange={value => updateValue({
+                        method: value as PaletteSettingBarValue['method'],
+                        ...(value === 'lightness' && {
+                            lightnessFuncton: 'linear',
+                        })
+                    })}
                 >
                     <SelectTrigger>
                         <SelectValue placeholder="Выберете алгоритм генерации" />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="apca">Линейное изменение контрастности по APCA</SelectItem>
-                        <SelectItem value="lightness">Нелинейное изменение светлоты</SelectItem>
+                        <SelectItem value="lightness">Функциональное изменение светлоты</SelectItem>
                     </SelectContent>
                 </Select>
             </Field>
+
+            { valueProp.method === 'lightness' ? (
+                <Field>
+                    <Label>Функция изменения светлоты</Label>
+                    <Select
+                        value={valueProp.lightnessFuncton}
+                        onValueChange={value => updateValue({ lightnessFuncton: value as PaletteSettingBarValue['lightnessFuncton'] })}
+                    >
+                        <SelectTrigger>
+                            <SelectValue placeholder="Выберете функцию" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="linear">Линейная</SelectItem>
+                            <SelectItem value="bezier">Безье</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </Field>
+            ) : null }
 
             <NumberInput
                 id="hueShift"

@@ -1,11 +1,11 @@
 import { deltaE, getColorInfo } from './utils'
-import { Palette } from './types'
+import { PaletteInfo } from './types'
 import { createShadeViaApca, findClosestShadeNumber } from './createShadeViaApca'
 import { createShadeViaLightness } from './createShadeViaLightness'
 
 export const DEFAULT_TONES_SCALE = [0, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950, 1000]
 
-export type OkhslPaletteFnProps = {
+export type PaletteFnProps = {
     baseColor: string
     scale?: number[]
     method?: 'lightness' | 'apca'
@@ -14,7 +14,7 @@ export type OkhslPaletteFnProps = {
     decreaseSaturationRatio?: number
 }
 
-export function createPalette (props: OkhslPaletteFnProps): Palette {
+export function createPalette (props: PaletteFnProps): PaletteInfo {
     const {
         baseColor,
         scale = DEFAULT_TONES_SCALE,

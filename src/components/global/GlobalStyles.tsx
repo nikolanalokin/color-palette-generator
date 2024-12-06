@@ -20,6 +20,7 @@ export const GlobalStyles = () => {
                 #root {
                     height: 100%;
                     width: 100%;
+                    min-height: inherit;
                 }
 
                 a {
