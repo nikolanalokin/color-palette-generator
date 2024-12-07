@@ -7,34 +7,74 @@ import { PaletteDisplayBlock } from './shared/PaletteDisplayBlock'
 import { PalettePlots } from './shared/PalettePlots'
 import { PaletteContrastTable } from './shared/PaletteContrastTable'
 import { PaletteInfoSection as PaletteInfoSectionBlock } from './shared/PaletteInfoSection'
+import { addPalette, PaletteOptions, setEditedPalette, updatePalette, useAppStore } from '../stores/app'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { getNearestColorNames } from '../core/utils'
+
+const DEFAULT_COLOR = '#d03531'
+const DEFAULT_OPTIONS: PaletteOptions = {
+    method: 'contrast',
+    lightnessFuncton: null,
+    hueShift: 5,
+    decreaseSaturationRatio: .15,
+}
 
 export const Palette = () => {
-    const [options, setOptions] = useState<PaletteSettingBarValue>({
-        color: okhsl('#d03531'),
-        fixBase: false,
-        method: 'contrast',
-        lightnessFuncton: null,
-        hueShift: 5,
-        decreaseSaturationRatio: .15,
-    })
+    const { paletteId } = useParams()
+    const navigate = useNavigate()
 
-    const palette = createPalette({
-        baseColor: formatHex(options.color),
-        method: options.method,
-        hueShift: options.hueShift,
-        decreaseSaturationRatio: options.decreaseSaturationRatio,
-    })
+    const palettes = useAppStore(state => state.palettes)
+    const editedPalette = useAppStore(state => state.editedPalette)
 
     useEffect(() => {
-        console.log(palette)
-    }, [palette])
+        if (paletteId) {
+            const p = palettes.find(palette => palette.id === paletteId)
+            if (p) setEditedPalette(p)
+            else setEditedPalette({
+                id: null,
+                color: DEFAULT_COLOR,
+                name: '',
+                options: DEFAULT_OPTIONS,
+                palette: createPalette(DEFAULT_COLOR, DEFAULT_OPTIONS),
+            })
+        } else {
+            setEditedPalette({
+                id: null,
+                color: DEFAULT_COLOR,
+                name: '',
+                options: DEFAULT_OPTIONS,
+                palette: createPalette(DEFAULT_COLOR, DEFAULT_OPTIONS),
+            })
+        }
+    }, [paletteId])
+
+    const updateName = (name: string) => {
+        console.log('updateName', name)
+        setEditedPalette({ ...editedPalette, name })
+    }
+
+    const updateColor = (color: string) => {
+        console.log('updateColor', color)
+        const newPalette = createPalette(color, editedPalette.options)
+        setEditedPalette({ ...editedPalette, color, palette: newPalette })
+    }
+
+    const updateOptions = (options: PaletteOptions) => {
+        console.log('updateOptions', options)
+        const newPalette = createPalette(editedPalette.color, options)
+        setEditedPalette({ ...editedPalette, options, palette: newPalette })
+    }
+
+    if (!editedPalette) {
+        return null
+    }
 
     return (
         <PaletteRoot>
             <PaletteInfoSection>
                 <DisplaySection>
                     <PaletteInfoSectionBlock
-                        palette={palette}
+                        palette={editedPalette.palette}
                     />
                 </DisplaySection>
 
@@ -59,11 +99,22 @@ export const Palette = () => {
 
             <PaletteSettingsAside>
                 <PaletteSettingBar
-                    value={options}
-                    onChange={value => {
-                        setOptions(value)
+                    name={editedPalette.name}
+                    onNameChange={value => updateName(value)}
+                    color={editedPalette.color}
+                    onColorChange={value => updateColor(value)}
+                    options={editedPalette.options}
+                    onOptionsChange={value => updateOptions(value)}
+                    onSave={() => {
+                        if (paletteId) {
+                            updatePalette(editedPalette)
+                        } else {
+                            addPalette(editedPalette)
+                        }
+                        navigate('/dashboard', { replace: true })
+                        setEditedPalette(null)
                     }}
-                    palette={palette}
+                    palette={editedPalette.palette}
                 />
             </PaletteSettingsAside>
         </PaletteRoot>

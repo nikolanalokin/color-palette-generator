@@ -6,16 +6,14 @@ import { createShadeViaLightness } from './createShadeViaLightness'
 export const DEFAULT_TONES_SCALE = [0, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950, 1000]
 
 export type PaletteFnProps = {
-    baseColor: string
     scale?: number[]
     method?: 'lightness' | 'contrast'
     hueShift?: number
     decreaseSaturationRatio?: number
 }
 
-export function createPalette (props: PaletteFnProps): PaletteInfo {
+export function createPalette (baseColor: string, props: PaletteFnProps): PaletteInfo {
     const {
-        baseColor,
         scale = DEFAULT_TONES_SCALE,
         method = 'contrast',
         hueShift = 0,

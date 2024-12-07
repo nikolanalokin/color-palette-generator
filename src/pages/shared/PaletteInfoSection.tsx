@@ -18,7 +18,7 @@ export const PaletteInfoSection = (props: PaletteInfoSectionProps) => {
     const { palette } = props
     const tip = (
         <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger asChild>
                 <InfoIcon size="1em" />
             </TooltipTrigger>
             <TooltipContent>
@@ -65,11 +65,11 @@ export const PaletteInfoSection = (props: PaletteInfoSectionProps) => {
                 </thead>
                 <tbody>
                     { palette.shades.map((shade) => {
-                        const color = Math.abs(shade.apca.blackOn) > Math.abs(shade.apca.whiteOn) ? 'black' :'white'
+                        const color = Math.abs(shade.apca.blackOn) >= 45 ? 'black' :'white'
                         const row = createRow(shade)
                         const highlight = palette.nearestShade.number === shade.number
                         return (
-                            <TableRow data-highlight={highlight}>
+                            <TableRow key={shade.number} data-highlight={highlight}>
                                 <TextCell>
                                     <Text>{ shade.number }</Text>
                                 </TextCell>

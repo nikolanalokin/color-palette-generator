@@ -27,6 +27,10 @@ const IconButtonRoot = styled.button(
     {
         paddingBlock: '8px',
         paddingInline: '8px',
-        lineHeight: '1.25rem',
+
+        'svg': {
+            width: '1.25rem',
+            height: '1.25rem',
+        }
     }
 )

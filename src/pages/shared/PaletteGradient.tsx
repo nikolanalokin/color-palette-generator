@@ -1,7 +1,8 @@
 import styled from '@emotion/styled'
-import { formatHsl, wcagContrast } from 'culori'
+import { formatHex, formatHsl, wcagContrast } from 'culori'
 import { contrastAPCA, PaletteInfo, ShadeInfo } from '../../core'
 import { formatOkhsl } from './format-utils'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../../components'
 
 type BasePaletteGradientProps = {
     palette?: PaletteInfo
@@ -13,8 +14,18 @@ export const PaletteGradient = (props: PaletteGradientProps) => {
     const { palette, ...restProps } = props
     return (
         <PaletteGradientRoot palette={palette} {...restProps}>
-            <PaletteGradientShadePoint shade={palette.nearestShade} />
-            <PaletteGradientShadePoint shade={palette.inputShade} />
+            { palette.shades.map(shade => (
+                <PaletteGradientShadePoint
+                    key={shade.number}
+                    shade={shade}
+                    data-nearest={shade.number === palette.nearestShade.number}
+                />
+            )) }
+
+            <PaletteGradientShadePoint
+                shade={palette.inputShade}
+                data-input={true}
+            />
         </PaletteGradientRoot>
     )
 }
@@ -32,16 +43,43 @@ const PaletteGradientRoot = styled.div<{ palette?: PaletteInfo }>(
     }
 )
 
-const PaletteGradientShadePoint = styled.div<{ shade?: ShadeInfo }>(
+type PaletteGradientShadePointProps = {
+    shade: ShadeInfo
+}
+
+const PaletteGradientShadePoint = ({ shade, ...restProps }: PaletteGradientShadePointProps) => {
+    return (
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <PaletteGradientShadePointRoot shade={shade} {...restProps} />
+            </TooltipTrigger>
+            <TooltipContent>
+                { shade.number }
+            </TooltipContent>
+        </Tooltip>
+    )
+}
+
+const PaletteGradientShadePointRoot = styled.div<{ shade?: ShadeInfo }>(
     ({ shade }) => ({
         position: 'absolute',
-        height: '11px',
-        width: '11px',
+        height: '8px',
+        width: '8px',
         borderRadius: '50%',
         insetBlockStart: `calc(${shade.normalized * 100}%)`,
         insetInlineStart: '50%',
         translate: '-50% -50%',
         backgroundColor: shade.hex,
         boxShadow: '0 0 0 1px white, 0 0 0 3px black',
+
+        '&[data-nearest="true"]': {
+            boxShadow: `0 0 0 1px white, 0 0 0 3px black`,
+        },
+
+        '&[data-input="true"]': {
+            height: '12px',
+            width: '12px',
+            boxShadow: `0 0 0 1px white, 0 0 0 3px black`,
+        },
     })
 )

@@ -16,11 +16,15 @@ export const Dashboard = () => {
         open,
         close,
     } = useModal()
+    console.log(palettes)
     return (
         <DashboardRoot>
             <PalettesGrid>
                 { palettes.map(palette => (
-                    <PaletteCard data={palette} />
+                    <PaletteCard
+                        key={palette.id}
+                        data={palette}
+                    />
                 )) }
                 <PaletteCardAdd to="/palette/new" />
             </PalettesGrid>
@@ -44,13 +48,11 @@ export const Dashboard = () => {
 
 const DashboardRoot = styled.main({
     flexGrow: 1,
-    display: 'flex',
     paddingInline: '48px',
     paddingBlock: '24px',
 })
 
 const PalettesGrid = styled.section({
-    display: 'grid',
-    gridAutoRows: 'min-content',
-    gap: '36px',
+    display: 'flex',
+    columnGap: '24px',
 })

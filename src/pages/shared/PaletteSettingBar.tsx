@@ -1,11 +1,14 @@
 import styled from '@emotion/styled'
 import { formatHex, okhsl, Okhsl } from 'culori'
-import { Button, Field, Label, OkhslColorPicker, Select, SelectContent, SelectGroup, SelectInput, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../../components'
+import { Button, Field, IconButton, Label, OkhslColorPicker, Select, SelectContent, SelectGroup, SelectInput, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../../components'
 import { TextInput } from '../../components/inputs/TextInput'
 import { Checkbox } from '../../components/inputs/Checkbox'
 import { NumberInput } from '../../components/inputs/NumberInput'
 import { useEffect, useState } from 'react'
 import { PaletteInfo } from '../../core'
+import { PaletteOptions } from '../../stores/app'
+import { resetStyles } from '../../components/buttons/shared'
+import { CheckIcon } from 'lucide-react'
 
 export type PaletteSettingBarValue = {
     color?: Okhsl
@@ -17,37 +20,72 @@ export type PaletteSettingBarValue = {
 }
 
 export type PaletteSettingBarProps = {
-    value?: PaletteSettingBarValue
-    onChange?(value: PaletteSettingBarValue): void
+    name?: string
+    onNameChange?(value: string): void
+    color?: string
+    onColorChange?(value: string): void
+    options?: PaletteOptions
+    onOptionsChange?(value: PaletteOptions): void
     palette?: PaletteInfo
+    onSave?(): void
 }
 
 export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
     const {
-        value: valueProp = {},
-        onChange,
+        name,
+        onNameChange,
+        color,
+        onColorChange,
+        options,
+        onOptionsChange,
         palette,
+        onSave,
     } = props
-    const hex = formatHex(valueProp.color)
+    const hex = color
     const [hexString, setHexString] = useState(hex)
     useEffect(() => {
         setHexString(hex)
     }, [hex])
-    const updateValue = (changes: Partial<PaletteSettingBarValue>) => {
-        const valueCopy = { ...valueProp }
+    const updateValue = (changes: Partial<PaletteOptions>) => {
+        const valueCopy = { ...options }
         Object.keys(changes).forEach(key => {
             valueCopy[key] = changes[key]
         })
-        onChange?.(valueCopy)
+        onOptionsChange?.(valueCopy)
     }
-    const handleHexColorChange = (evt: React.ChangeEvent<HTMLInputElement>) => updateValue({ color: okhsl(evt.target.value)})
+    const handleHexColorChange = (evt: React.ChangeEvent<HTMLInputElement>) => onColorChange?.(formatHex(evt.target.value))
     const handleHexStringChange = (value: string) => {
         setHexString(value)
         const valueOkhsl = okhsl(value)
-        if (valueOkhsl) updateValue({ color: valueOkhsl })
+        if (valueOkhsl) onColorChange?.(value)
     }
     return (
         <PaletteSettingBarRoot>
+            {/* <Field>
+                <Label>Название</Label>
+                <TextInput
+                    id="name"
+                    value={name}
+                    onChange={value => onNameChange?.(value)}
+                />
+            </Field> */}
+
+            <NameInputContainer>
+                <NameInputRow>
+                    <NameInput
+                        value={name}
+                        onChange={evt => onNameChange?.(evt.target.value)}
+                        placeholder={palette.name}
+                    />
+
+                    <IconButton onClick={() => onNameChange?.(palette.name)}>
+                        <CheckIcon />
+                    </IconButton>
+                </NameInputRow>
+
+                { name ? <NameSuggestion>{ palette.name }</NameSuggestion> : null }
+            </NameInputContainer>
+
             <ColorRectContainer>
                 <ColorRect
                     type="color"
@@ -63,16 +101,16 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
             />
 
             <OkhslColorPicker
-                value={valueProp.color}
-                onChange={value => updateValue({ color: value })}
+                value={okhsl(hexString)}
+                onChange={value => onColorChange?.(formatHex(value))}
             />
 
             <Field>
                 <Label>Метод формирования палитры</Label>
                 <Select
-                    value={valueProp.method}
+                    value={options.method}
                     onValueChange={value => updateValue({
-                        method: value as PaletteSettingBarValue['method'],
+                        method: value as PaletteOptions['method'],
                         ...(value === 'lightness' && {
                             lightnessFuncton: 'linear',
                         })
@@ -88,12 +126,12 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                 </Select>
             </Field>
 
-            { valueProp.method === 'lightness' ? (
+            { options.method === 'lightness' ? (
                 <Field>
                     <Label>Функция изменения светлоты</Label>
                     <Select
-                        value={valueProp.lightnessFuncton}
-                        onValueChange={value => updateValue({ lightnessFuncton: value as PaletteSettingBarValue['lightnessFuncton'] })}
+                        value={options.lightnessFuncton}
+                        onValueChange={value => updateValue({ lightnessFuncton: value as PaletteOptions['lightnessFuncton'] })}
                     >
                         <SelectTrigger>
                             <SelectValue placeholder="Выберете функцию" />
@@ -110,7 +148,7 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                 id="hueShift"
                 labelText="Смещение цветового тона"
                 step={1}
-                value={valueProp.hueShift}
+                value={options.hueShift}
                 onChange={value => updateValue({ hueShift: value })}
             />
 
@@ -120,17 +158,17 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                 min={0}
                 max={100}
                 step={1}
-                value={valueProp.decreaseSaturationRatio * 100}
+                value={options.decreaseSaturationRatio * 100}
                 onChange={value => updateValue({ decreaseSaturationRatio: value / 100 })}
             />
 
             {/* <Checkbox
                 id="fixBase"
                 labelText="Зафиксировать входной цвет"
-                checked={valueProp.fixBase}
+                checked={options.fixBase}
                 onChange={value => updateValue({ fixBase: value })}
             /> */}
-            <Button>
+            <Button onClick={() => onSave?.()}>
                 Сохранить
             </Button>
         </PaletteSettingBarRoot>
@@ -150,6 +188,40 @@ const PaletteSettingBarRoot = styled.div(
         gap: '16px',
         overflowY: 'auto',
     })
+)
+
+const NameInputContainer = styled.div(
+    ({}) => ({
+        display: 'flex',
+        flexDirection: 'column',
+        rowGap: '4px',
+    })
+)
+
+const NameInputRow = styled.div(
+    ({}) => ({
+        display: 'flex',
+        justifyContent: 'space-between',
+    })
+)
+
+const NameSuggestion = styled.div(
+    ({}) => ({
+        fontSize: '.75rem',
+        color: '#acacac',
+    })
+)
+
+export const NameInput = styled.input(
+    resetStyles,
+    {
+        fontSize: '1.5rem',
+        fontWeight: 700,
+
+        '&::placeholder': {
+            color: '#acacac',
+        },
+    }
 )
 
 const ColorRectContainer = styled.div(

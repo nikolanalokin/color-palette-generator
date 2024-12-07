@@ -32,7 +32,7 @@ const ButtonRoot = styled.button(
     resetStyles,
     baseStyles,
     {
-        height: '40px',
+        paddingBlock: '8px',
         paddingInline: '12px',
         lineHeight: '1.25rem',
         fontWeight: 600,
@@ -40,13 +40,5 @@ const ButtonRoot = styled.button(
         alignItems: 'center',
         justifyContent: 'center',
         columnGap: '8px',
-        transition: 'all .2s',
-        backgroundColor: 'rgba(0 0 0 / .1)',
-        '&:hover': {
-            backgroundColor: 'rgba(0 0 0 / .15)',
-        },
-        '&:active': {
-            backgroundColor: 'rgba(0 0 0 / .2)',
-        },
     }
 )
