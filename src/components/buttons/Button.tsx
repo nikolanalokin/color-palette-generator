@@ -32,12 +32,21 @@ const ButtonRoot = styled.button(
     resetStyles,
     baseStyles,
     {
-        paddingBlock: '8px',
+        height: '40px',
         paddingInline: '12px',
         lineHeight: '1.25rem',
         fontWeight: 600,
-        display: 'flex',
+        display: 'inline-flex',
         alignItems: 'center',
+        justifyContent: 'center',
         columnGap: '8px',
+        transition: 'all .2s',
+        backgroundColor: 'rgba(0 0 0 / .1)',
+        '&:hover': {
+            backgroundColor: 'rgba(0 0 0 / .15)',
+        },
+        '&:active': {
+            backgroundColor: 'rgba(0 0 0 / .2)',
+        },
     }
 )

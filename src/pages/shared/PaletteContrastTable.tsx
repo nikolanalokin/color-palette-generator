@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import { contrastAPCA, PaletteInfo } from '../../core'
-import { wcagContrast } from 'culori'
 import { useState } from 'react'
 import { Field, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components'
+import { contrastWCAG } from '../../core/utils'
 
 export type PaletteContrastTableProps = {
     palette?: PaletteInfo
@@ -12,7 +12,7 @@ export const PaletteContrastTable = (props: PaletteContrastTableProps) => {
     const shades = props.palette.shades
     const [method, setMethod] = useState('apca')
     const [level, setLevel] = useState('all')
-    const contrast = method === 'apca' ? contrastAPCA : wcagContrast
+    const contrast = method === 'apca' ? contrastAPCA : contrastWCAG
     return (
         <PaletteContrastTableRoot>
            <Filters>

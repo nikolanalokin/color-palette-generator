@@ -31,6 +31,13 @@ export const GlobalStyles = () => {
                 img, svg {
                     user-select: none;
                 }
+
+                ol {
+                    margin: 0;
+                    padding: 0;
+                    margin-block-start: .5em;
+                    padding-inline-start: 2em;
+                }
             `}
         />
     )

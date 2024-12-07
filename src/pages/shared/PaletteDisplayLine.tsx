@@ -21,7 +21,7 @@ export const PaletteDisplayLine = (props: PaletteDisplayLineProps) => {
                     <StyledPaletteColor
                         key={shade.number}
                         shade={shade}
-                        closest={shade.hex === palette.closestShade.hex}
+                        nearest={shade.hex === palette.nearestShade.hex}
                     />
                 )) }
             </PaletteContainer>

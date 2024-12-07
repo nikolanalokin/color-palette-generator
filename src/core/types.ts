@@ -19,11 +19,21 @@ export type ContrastInfo = {
 
 export type ShadeInfo = ColorInfo & {
     number: number
+    normalized: number
     delta: number
 }
 
 export type PaletteInfo = {
-    input: ColorInfo
+    name: string
+    inputShade: ShadeInfo
     shades: ShadeInfo[]
-    closestShade: ShadeInfo
+    nearestShade: ShadeInfo
+}
+
+export type CreateShadeFnOptions = {}
+
+export interface CreateShadeFn<O extends CreateShadeFnOptions> {
+    (baseColor: string, tone: number, scale: number[], options?: O): ShadeInfo
+    findTone(hex: string, scale: number[]): number
+    findScaleValue(hex: string, scale: number[]): number
 }

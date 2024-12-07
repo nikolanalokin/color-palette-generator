@@ -52,7 +52,7 @@ export const PaletteDisplayBlock = (props: PaletteDisplayBlockProps) => {
                                     <ScaleBlock
                                         key={shade.number}
                                         css={{ color, backgroundColor: shade.hex }}
-                                        data-highlight={highlight && palette.closestShade.number === shade.number}
+                                        data-highlight={highlight && palette.nearestShade.number === shade.number}
                                     >
                                         { shade.number }
                                     </ScaleBlock>

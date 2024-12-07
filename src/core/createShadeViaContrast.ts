@@ -7,77 +7,77 @@ import {
     APCA_WHITE_ON_RANGE,
     BLACK_HEX,
     contrastAPCA,
+    deltaE,
     findNearestValueInScale,
     getColorInfo,
     WHITE_HEX
 } from './utils'
-import { ColorInfo } from './types'
+import { CreateShadeFn, CreateShadeFnOptions, ShadeInfo } from './types'
 
-export type ShadeFnOptions = {
-    baseColor: Color | string
-    baseTone?: number
-    tone: number
-    scale: number[]
-    fixBase?: boolean
+export type CreateShadeViaContrastFnOptions = CreateShadeFnOptions & {
     hueShift?: number
     decreaseSaturationRatio?: number
     contrastScore?: number
 }
-
-export type ShadeFnResult = ColorInfo
+export type CreateShadeViaContrastFn = CreateShadeFn<CreateShadeViaContrastFnOptions>
 
 /**
  * Функция создания оттенка с использованием цветового пространства OKHSL
+ * @param {string} baseHex - опорный цвет в hex
+ * @param {number} tone - желаемый оттенок
+ * @param {number[]} scale - шкала, в рамках которой определяется оттенок (как минимум должны присутствовать первое и последнее значение)
  * @param {object} opts
- * @param {string} opts.baseColor - опорный цвет в hex
- * @param {number} opts.baseTone - желаемый оттенок
- * @param {number} opts.tone - желаемый оттенок
- * @param {number[]} opts.scale - шкала, в рамках которой определяется оттенок (как минимум должны присутствовать первое и последнее значение)
- * @param {boolean} opts.fixBase - зафиксировать входной цвет
  * @param {boolean} opts.hueShift - смещение цветового тона
  * @param {boolean} opts.decreaseSaturationRatio - коэффициент уменьшения насыщенности
  * @param {boolean} opts.contrastScore - фиксированное значение контрастности
  * @returns {string} итоговый цвет оттенка в hex
  */
-export function createShadeViaApca (opts: ShadeFnOptions): ShadeFnResult {
+export const createShadeViaContrast: CreateShadeViaContrastFn = (baseHex: string, tone: number, scale: number[], options?: CreateShadeViaContrastFnOptions): ShadeInfo => {
     const {
-        baseColor,
-        baseTone,
-        tone,
-        scale,
-        fixBase,
         hueShift = 0,
         decreaseSaturationRatio = 0,
         contrastScore,
-    } = opts
+    } = options
 
-    const baseColorShadeNumber = baseTone ?? findClosestShadeNumber(baseColor, scale)
-    const inputScaleValue = invlerp(scale.at(0), scale.at(-1), baseColorShadeNumber)
-    const scaleValue = invlerp(scale.at(0), scale.at(-1), tone)
-    const shadeColor = { ...okhsl(baseColor) }
+    const baseColor = okhsl(baseHex)
+    const baseTone = findTone(baseHex, scale)
+    const baseScaleValue = invlerp(scale.at(0), scale.at(-1), baseTone)
+    const nearestTone = findNearestValueInScale(baseTone, scale)
+    const nearestScaleValue = invlerp(scale.at(0), scale.at(-1), nearestTone)
+    const shadeScaleValue = invlerp(scale.at(0), scale.at(-1), tone)
+    const shadeColor = { ...baseColor }
 
-    // сохраняем исходный цвет если используется подгонка по шкале контрастности
-    if (!fixBase || tone !== baseColorShadeNumber) {
-        if (hueShift !== 0) {
-            shadeColor.h = computeScaleHue(scaleValue, shadeColor.h, inputScaleValue, hueShift)
-        }
-
-        if (0 < decreaseSaturationRatio && decreaseSaturationRatio < 1) {
-            shadeColor.s = computeScaleSaturationWithLocalPeak(scaleValue, shadeColor.s * (1 - decreaseSaturationRatio), shadeColor.s, inputScaleValue)
-        }
-
-        shadeColor.l = computeScaleLightnessByAPCA(scaleValue, shadeColor, contrastScore)
+    if (hueShift !== 0) {
+        shadeColor.h = computeScaleHue(shadeScaleValue, shadeColor.h, nearestScaleValue, hueShift)
     }
 
-    return getColorInfo(shadeColor)
+    if (0 < decreaseSaturationRatio && decreaseSaturationRatio < 1) {
+        shadeColor.s = computeScaleSaturation(shadeScaleValue, shadeColor.s * (1 - decreaseSaturationRatio), shadeColor.s, nearestScaleValue)
+    }
+
+    shadeColor.l = computeScaleLightness(shadeScaleValue, shadeColor, contrastScore)
+
+    return {
+        number: tone,
+        normalized: shadeScaleValue,
+        ...getColorInfo(shadeColor),
+        delta: deltaE(formatHex(baseColor), formatHex(shadeColor)),
+    }
+}
+
+createShadeViaContrast.findTone = (hex: string, scale: number[]) => {
+    return findTone(hex, scale)
+}
+
+createShadeViaContrast.findScaleValue = (hex: string, scale: number[]) => {
+    return invlerp(scale.at(0), scale.at(-1), findTone(hex, scale))
 }
 
 function computeScaleHue (scaleValue: number, baseHue: number, scaleInitial: number = 1, hueShift: number) {
     return linear(scaleValue, -hueShift, scaleInitial, baseHue)
-    // return baseHue + hueShift * (scaleInitial - scaleValue)
 }
 
-function computeScaleSaturationWithLocalPeak (scaleValue: number, minSaturation: number, maxSaturation: number, scalePeak: number) {
+function computeScaleSaturation (scaleValue: number, minSaturation: number, maxSaturation: number, scalePeak: number) {
     if (scaleValue < scalePeak) {
         const a = (minSaturation - maxSaturation) / Math.pow(0 - scalePeak, 2)
         return a * Math.pow(scaleValue - scalePeak, 2) + maxSaturation
@@ -87,7 +87,7 @@ function computeScaleSaturationWithLocalPeak (scaleValue: number, minSaturation:
     return a * Math.pow(scaleValue - scalePeak, 2) + maxSaturation
 }
 
-function computeScaleLightnessByAPCA (scaleValue: number, baseOkhsl: Okhsl, score?: number) {
+function computeScaleLightness (scaleValue: number, baseOkhsl: Okhsl, score?: number) {
     if (scaleValue === 0) return 1
     if (scaleValue === 1) return 0
 
@@ -118,19 +118,19 @@ function findLightnessByContrastScore (baseOkhsl: Okhsl, fgHex: string, contrast
     return result
 }
 
-export function findClosestShadeNumber (inputColor: Color | string, scale: number[]) {
+export function findTone (inputColor: Color | string, scale: number[]) {
     const inputHex = formatHex(inputColor)
     const blackContrastScore = contrastAPCA(BLACK_HEX, inputHex)
     const whiteContrastScore = contrastAPCA(WHITE_HEX, inputHex)
     const blackToneNumber = range(APCA_BLACK_ON_RANGE[0], APCA_BLACK_ON_RANGE[1], scale.at(0), scale.at(-1), blackContrastScore)
     const whiteToneNumber = range(APCA_WHITE_ON_RANGE[0], APCA_WHITE_ON_RANGE[1], scale.at(0), scale.at(-1), whiteContrastScore)
-    let inputScaleNumber = 500
+    let inputTone = 500
     if (whiteContrastScore === 0) {
-        inputScaleNumber = blackToneNumber
+        inputTone = blackToneNumber
     } else if (blackContrastScore === 0) {
-        inputScaleNumber = whiteToneNumber
+        inputTone = whiteToneNumber
     } else {
-        inputScaleNumber = (blackToneNumber + whiteToneNumber) / 2
+        inputTone = (blackToneNumber + whiteToneNumber) / 2
     }
-    return findNearestValueInScale(inputScaleNumber, scale)
+    return inputTone
 }

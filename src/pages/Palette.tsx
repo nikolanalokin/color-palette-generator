@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import styled from '@emotion/styled'
 import { createPalette } from '../core'
 import { PaletteSettingBar, PaletteSettingBarValue } from './shared/PaletteSettingBar'
@@ -12,7 +12,7 @@ export const Palette = () => {
     const [options, setOptions] = useState<PaletteSettingBarValue>({
         color: okhsl('#d03531'),
         fixBase: false,
-        method: 'apca',
+        method: 'contrast',
         lightnessFuncton: null,
         hueShift: 5,
         decreaseSaturationRatio: .15,
@@ -21,10 +21,13 @@ export const Palette = () => {
     const palette = createPalette({
         baseColor: formatHex(options.color),
         method: options.method,
-        fixBase: options.fixBase,
         hueShift: options.hueShift,
         decreaseSaturationRatio: options.decreaseSaturationRatio,
     })
+
+    useEffect(() => {
+        console.log(palette)
+    }, [palette])
 
     return (
         <PaletteRoot>
@@ -79,10 +82,9 @@ const PaletteInfoSection = styled.section({
 })
 
 const PaletteSettingsAside = styled.aside({
-    paddingInline: '24px',
-    paddingBlock: '24px',
-    fontSize: '14px',
-    borderInlineStart: '1px solid',
+    position: 'fixed',
+    insetBlock: '24px',
+    insetInlineEnd: '24px',
 })
 
 

@@ -1,4 +1,4 @@
-import { Color, differenceCiede2000, formatHex, hsl, okhsl, oklch, rgb, wcagContrast } from 'culori'
+import { Color, colorsNamed, differenceCiede2000, formatHex, hsl, nearest, okhsl, oklch, rgb, wcagContrast } from 'culori'
 import { ColorInfo } from './types'
 import { APCAcontrast, sRGBtoY } from 'apca-w3'
 import { clamp } from './math'
@@ -26,25 +26,41 @@ export function getColorInfo (color: Color | string): ColorInfo {
             whiteOn: contrastAPCA(WHITE_HEX,hexColor),
         },
         wcag: {
-            onBlack: wcagContrast(hexColor, BLACK_HEX),
-            onWhite: wcagContrast(hexColor, WHITE_HEX),
-            blackOn: wcagContrast(BLACK_HEX, hexColor),
-            whiteOn: wcagContrast(WHITE_HEX, hexColor),
+            onBlack: contrastWCAG(hexColor, BLACK_HEX),
+            onWhite: contrastWCAG(hexColor, WHITE_HEX),
+            blackOn: contrastWCAG(BLACK_HEX, hexColor),
+            whiteOn: contrastWCAG(WHITE_HEX, hexColor),
         },
     }
 }
 
 export const deltaE = differenceCiede2000()
 
-const contrastScoreCache = new Map()
+export const colorNames = Object.keys(colorsNamed)
+
+export const getNearestColorNames = nearest(colorNames, deltaE)
+
+const contrastWcagScoreCache = new Map()
+
+export function contrastWCAG (fgColor: string, bgColor: string) {
+    const key = `${fgColor}:${bgColor}`
+    if (contrastWcagScoreCache.has(`${fgColor}:${bgColor}`)) {
+        return contrastWcagScoreCache.get(key)
+    }
+    const score = wcagContrast(fgColor, bgColor)
+    contrastWcagScoreCache.set(key, score)
+    return score
+}
+
+const contrastApcaScoreCache = new Map()
 
 export function contrastAPCA (fgColor: string, bgColor: string) {
     const key = `${fgColor}:${bgColor}`
-    if (contrastScoreCache.has(`${fgColor}:${bgColor}`)) {
-        return contrastScoreCache.get(key)
+    if (contrastApcaScoreCache.has(`${fgColor}:${bgColor}`)) {
+        return contrastApcaScoreCache.get(key)
     }
     const score = +APCAcontrast(sRGBtoY(colorToRGB(fgColor)), sRGBtoY(colorToRGB(bgColor)))
-    contrastScoreCache.set(key, score)
+    contrastApcaScoreCache.set(key, score)
     return score
 }
 
@@ -59,6 +75,6 @@ function fixup (value: number) {
 
 export function findNearestValueInScale (value: number, scale: number[]) {
     return scale
-        .map(sValue => ([sValue, sValue - value]))
-        .reduce((sValue1, sValue2) => Math.abs(sValue1[1]) < Math.abs(sValue2[1]) ? sValue1 : sValue2)[0]
+        .map(sValue => ({ sValue,  delta: sValue - value }))
+        .reduce((sValue1, sValue2) => Math.abs(sValue1.delta) < Math.abs(sValue2.delta) ? sValue1 : sValue2).sValue
 }

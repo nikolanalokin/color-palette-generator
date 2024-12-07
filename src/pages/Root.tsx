@@ -34,12 +34,10 @@ const Header = styled.header({
     paddingBlock: '24px',
     fontSize: '18px',
     fontWeight: 600,
-    borderBlockEnd: '1px solid',
 })
 
 const Footer = styled.footer({
     paddingInline: '48px',
     paddingBlock: '24px',
     fontSize: '14px',
-    borderBlockStart: '1px solid',
 })

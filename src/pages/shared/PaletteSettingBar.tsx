@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import { formatHex, okhsl, Okhsl } from 'culori'
-import { Field, Label, OkhslColorPicker, Select, SelectContent, SelectGroup, SelectInput, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../../components'
+import { Button, Field, Label, OkhslColorPicker, Select, SelectContent, SelectGroup, SelectInput, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../../components'
 import { TextInput } from '../../components/inputs/TextInput'
 import { Checkbox } from '../../components/inputs/Checkbox'
 import { NumberInput } from '../../components/inputs/NumberInput'
@@ -9,7 +9,7 @@ import { PaletteInfo } from '../../core'
 
 export type PaletteSettingBarValue = {
     color?: Okhsl
-    method?: 'lightness' | 'apca'
+    method?: 'lightness' | 'contrast'
     lightnessFuncton?: 'linear' | 'bezier'
     fixBase?: boolean
     hueShift?: number
@@ -82,7 +82,7 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                         <SelectValue placeholder="Выберете алгоритм генерации" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="apca">Линейное изменение контрастности по APCA</SelectItem>
+                        <SelectItem value="contrast">Линейное изменение контрастности по APCA</SelectItem>
                         <SelectItem value="lightness">Функциональное изменение светлоты</SelectItem>
                     </SelectContent>
                 </Select>
@@ -124,26 +124,37 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                 onChange={value => updateValue({ decreaseSaturationRatio: value / 100 })}
             />
 
-            <Checkbox
+            {/* <Checkbox
                 id="fixBase"
                 labelText="Зафиксировать входной цвет"
                 checked={valueProp.fixBase}
                 onChange={value => updateValue({ fixBase: value })}
-            />
+            /> */}
+            <Button>
+                Сохранить
+            </Button>
         </PaletteSettingBarRoot>
     )
 }
 
 const PaletteSettingBarRoot = styled.div(
     ({}) => ({
+        paddingInline: '16px',
+        paddingBlock: '16px',
+        borderRadius: '16px',
+        backgroundColor: 'rgba(255 255 255 / 0.2)',
+        border: '1px solid rgba(255 255 255 / 0.3)',
+        backdropFilter: 'blur(10px)',
+        boxShadow: '0 4px 30px rgba(0 0 0 / 0.1)',
         display: 'grid',
         gap: '16px',
+        overflowY: 'auto',
     })
 )
 
 const ColorRectContainer = styled.div(
     ({}) => ({
-        aspectRatio: 16 / 9,
+        height: '64px',
     })
 )
 
