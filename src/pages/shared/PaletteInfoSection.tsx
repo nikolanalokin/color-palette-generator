@@ -9,6 +9,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../../components'
 import { BLACK_HEX, WHITE_HEX } from '../../core/utils'
 import { PaletteGradient } from './PaletteGradient'
 import { InfoIcon } from 'lucide-react'
+import { setThemeColor } from '../../stores/app'
 
 export type PaletteInfoSectionProps = {
     palette?: PaletteInfo
@@ -75,7 +76,7 @@ export const PaletteInfoSection = (props: PaletteInfoSectionProps) => {
                                 </TextCell>
 
                                 <ShadeColorCell>
-                                    <ShadeColorDisplay css={getColorStyles(color, row.hex)}>
+                                    <ShadeColorDisplay css={getColorStyles(color, row.hex)} onClick={() => setThemeColor(row.hex, color)}>
                                         <Text>{ row.hex }</Text>
                                     </ShadeColorDisplay>
                                 </ShadeColorCell>
@@ -212,6 +213,7 @@ const ShadeColorDisplay = styled.div({
     alignItems: 'center',
     justifyContent: 'start',
     paddingInlineStart: '12px',
+    cursor: 'pointer',
 
     [`& > ${Text}`]: {
         opacity: 0,

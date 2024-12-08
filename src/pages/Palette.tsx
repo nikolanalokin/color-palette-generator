@@ -7,7 +7,7 @@ import { PaletteDisplayBlock } from './shared/PaletteDisplayBlock'
 import { PalettePlots } from './shared/PalettePlots'
 import { PaletteContrastTable } from './shared/PaletteContrastTable'
 import { PaletteInfoSection as PaletteInfoSectionBlock } from './shared/PaletteInfoSection'
-import { addPalette, PaletteOptions, setEditedPalette, updatePalette, useAppStore } from '../stores/app'
+import { addPalette, PaletteOptions, setEditedPalette, setThemeColor, updatePalette, useAppStore, useColorStore } from '../stores/app'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { getNearestColorNames } from '../core/utils'
 

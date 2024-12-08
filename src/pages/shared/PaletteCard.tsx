@@ -3,8 +3,9 @@ import styled from '@emotion/styled'
 import { ShadeInfo } from '../../core'
 import { AppPalette, removePalette } from '../../stores/app'
 import { Link } from 'react-router-dom'
-import { IconButton } from '../../components'
-import { DeleteIcon, XIcon } from 'lucide-react'
+import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle, IconButton, useModal } from '../../components'
+import { DeleteIcon, TableIcon, Trash2Icon, XIcon } from 'lucide-react'
+import { PaletteContrastTable } from './PaletteContrastTable'
 
 type BasePaletteCardProps = {
     data: AppPalette
@@ -20,6 +21,12 @@ export const PaletteCard = forwardRef<HTMLDivElement, PaletteCardProps>(
             ...restProps
         } = props
 
+        const {
+            setModal,
+            open,
+            close,
+        } = useModal()
+
         return (
             <PaletteCardRoot ref={forwardedRef} {...restProps}>
                 <PaletteCardScaleContainer to={`/palette/${data.id}`}>
@@ -34,10 +41,28 @@ export const PaletteCard = forwardRef<HTMLDivElement, PaletteCardProps>(
                 <PaletteCardMetaContainer>
                     <Title>{ data.name }</Title>
 
-                    <IconButton onClick={() => removePalette(data)}>
-                        <XIcon />
-                    </IconButton>
+                    <PaletteCardActions>
+                        <IconButton onClick={() => open()}>
+                            <TableIcon />
+                        </IconButton>
+
+                        <IconButton onClick={() => removePalette(data)}>
+                            <Trash2Icon />
+                        </IconButton>
+                    </PaletteCardActions>
                 </PaletteCardMetaContainer>
+
+                <Dialog ref={setModal}>
+                    <DialogHeader>
+                        <DialogTitle>Таблица контрастности</DialogTitle>
+                        <IconButton onClick={() => close()}>
+                            <XIcon />
+                        </IconButton>
+                    </DialogHeader>
+                    <DialogBody>
+                        { open ? <PaletteContrastTable palette={data.palette} /> : null }
+                    </DialogBody>
+                </Dialog>
             </PaletteCardRoot>
         )
     }
@@ -59,6 +84,10 @@ export const Title = styled.h3({
     paddingInline: '16px',
     fontSize: '1rem',
     margin: 0,
+})
+
+const PaletteCardActions = styled.div({
+    display: 'flex',
 })
 
 const PaletteCardScaleContainer = styled(Link)(

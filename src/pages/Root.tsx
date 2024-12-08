@@ -1,13 +1,19 @@
 import styled from '@emotion/styled'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import { GlobalStyles } from '../components'
+import { useEffect } from 'react'
+import { setThemeColor } from '../stores/app'
 
 export const Root = () => {
+    const location = useLocation()
+    useEffect(() => {
+        setThemeColor(null, null)
+    }, [location])
     return (
         <>
             <GlobalStyles />
             <RootRoot>
-                <Header>Генератор цветовых палитр</Header>
+                {/* <Header>Генератор цветовых палитр</Header> */}
                 <Outlet />
                 <Footer>
                     @nikolanalokin { new Date().getFullYear() }

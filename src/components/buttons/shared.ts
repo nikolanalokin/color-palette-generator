@@ -13,6 +13,8 @@ export const baseStyles = css({
     display: 'flex',
     borderRadius: '6px',
     fontSize: '1rem',
+    lineHeight: '1.25rem',
+    fontWeight: 600,
     backgroundColor: 'rgba(0 0 0 / 0)',
     cursor: 'pointer',
     transition: 'all .2s',

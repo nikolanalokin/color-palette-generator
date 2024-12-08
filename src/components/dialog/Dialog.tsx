@@ -24,8 +24,14 @@ const DialogRoot = styled.dialog({
     padding: 0,
     border: 0,
 }, {
-    borderRadius: '12px',
+    borderRadius: '16px',
     backgroundColor: '#ffffff',
+    overflow: 'hidden',
+
+    '&[open]': {
+        display: 'flex',
+        flexDirection: 'column',
+    },
 
     '&::backdrop': {
         backdropFilter: 'blur(2px)',

@@ -18,6 +18,8 @@ export const DialogHeader = (props: DialogHeaderProps) => {
 }
 
 const DialogHeaderRoot = styled.div({
+    display: 'flex',
+    justifyContent: 'space-between',
     paddingBlockStart: '24px',
     paddingInline: '36px',
 })

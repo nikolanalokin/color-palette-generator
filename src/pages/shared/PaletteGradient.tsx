@@ -49,7 +49,7 @@ type PaletteGradientShadePointProps = {
 
 const PaletteGradientShadePoint = ({ shade, ...restProps }: PaletteGradientShadePointProps) => {
     return (
-        <Tooltip>
+        <Tooltip placement="right">
             <TooltipTrigger asChild>
                 <PaletteGradientShadePointRoot shade={shade} {...restProps} />
             </TooltipTrigger>

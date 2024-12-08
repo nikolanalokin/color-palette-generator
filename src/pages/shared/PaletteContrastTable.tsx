@@ -3,6 +3,8 @@ import { contrastAPCA, PaletteInfo } from '../../core'
 import { useState } from 'react'
 import { Field, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components'
 import { contrastWCAG } from '../../core/utils'
+import { ToggleButtonGroup } from '../../components/buttons/ToggleButtonGroup'
+import { ToggleButton } from '../../components/buttons/ToggleButton'
 
 export type PaletteContrastTableProps = {
     palette?: PaletteInfo
@@ -15,53 +17,48 @@ export const PaletteContrastTable = (props: PaletteContrastTableProps) => {
     const contrast = method === 'apca' ? contrastAPCA : contrastWCAG
     return (
         <PaletteContrastTableRoot>
-           <Filters>
+           <PaletteContrastTableFilters>
                 <Field>
                     <Label>Метод расчёта контрастности</Label>
-                    <Select
-                        value={method}
-                        onValueChange={setMethod}
-                    >
-                        <SelectTrigger>
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="apca">APCA</SelectItem>
-                            <SelectItem value="wcag">WCAG</SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <ToggleButtonGroup value={method} onChange={setMethod}>
+                        <ToggleButton value="apca">APCA</ToggleButton>
+                        <ToggleButton value="wcag">WCAG</ToggleButton>
+                    </ToggleButtonGroup>
                 </Field>
 
                 <Field>
                     <Label>Допустимый уровень контрастности</Label>
-                    <Select
-                        value={level}
-                        onValueChange={setLevel}
-                    >
-                        <SelectTrigger>
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">Все уровни</SelectItem>
-                            <SelectItem value="AA">{ {
+                    <ToggleButtonGroup value={level} onChange={setLevel}>
+                        <ToggleButton value="all">
+                            Все уровни
+                        </ToggleButton>
+                        <ToggleButton value="AA">
+                            { {
                                 apca: '60+',
                                 wcag: '4.5+ (AA)',
-                            }[method] }</SelectItem>
-                            <SelectItem value="AAA">{ {
+                            }[method] }
+                        </ToggleButton>
+                        <ToggleButton value="AAA">
+                            { {
                                 apca: '75+',
                                 wcag: '7+ (AAA)',
-                            }[method] }</SelectItem>
-                        </SelectContent>
-                    </Select>
+                            }[method] }
+                        </ToggleButton>
+                    </ToggleButtonGroup>
                 </Field>
-           </Filters>
-           <Table>
+           </PaletteContrastTableFilters>
+
+           <PaletteContrastTableTable>
                <thead>
                    <tr>
-                       <th></th>
+                       <th>
+                           <HeaderCell data-col>
+                               bg\fg
+                           </HeaderCell>
+                        </th>
                        { shades.map(shadeV => (
                            <th key={shadeV.number}>
-                               <HeaderCell>
+                               <HeaderCell data-col>
                                    { shadeV.number }
                                </HeaderCell>
                            </th>
@@ -72,7 +69,7 @@ export const PaletteContrastTable = (props: PaletteContrastTableProps) => {
                    { shades.map((shadeH, rowIndex) => (
                        <tr key={shadeH.number}>
                            <th>
-                               <HeaderCell>
+                               <HeaderCell data-row>
                                    { shadeH.number }
                                </HeaderCell>
                            </th>
@@ -100,7 +97,7 @@ export const PaletteContrastTable = (props: PaletteContrastTableProps) => {
                        </tr>
                    )) }
                </tbody>
-           </Table>
+           </PaletteContrastTableTable>
         </PaletteContrastTableRoot>
     )
 }
@@ -112,36 +109,44 @@ const PaletteContrastTableRoot = styled.div(
     })
 )
 
-const Filters = styled.div(
+const PaletteContrastTableFilters = styled.div(
     () => ({
-        display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
-        gridTemplateRows: 'auto',
-        gap: '12px',
+        display: 'flex',
+        columnGap: '32px',
     })
 )
 
 const HeaderCell = styled.div({
     display: 'grid',
-    height: '48px',
     borderRadius: '4px',
-    placeItems: 'center',
+    alignItems: 'center',
     color: '#a3a3a3',
-    fontSize: '14px',
+    fontSize: '.875rem',
     fontWeight: 400,
+
+    '&[data-col]': {
+        justifyItems: 'center',
+        paddingBlock: '12px',
+    },
+
+    '&[data-row]': {
+        justifyItems: 'start',
+        paddingInlineEnd: '12px',
+    },
 })
 
 const Cell = styled.div({
     display: 'grid',
-    height: '48px',
     borderRadius: '4px',
     placeItems: 'center',
+    width: '72px',
+    height: '48px',
     transition: 'box-shadow .2s ease',
 })
 
 const ColorCell = styled(Cell)({
-    fontSize: '14px',
-    fontWeight: 600,
+    fontSize: '.75rem',
+    fontWeight: 700,
 })
 
 const PlaceholderCell = styled(Cell)({
@@ -149,14 +154,12 @@ const PlaceholderCell = styled(Cell)({
     transition: 'box-shadow .2s ease',
 })
 
-const Table = styled.table<any>({
+const PaletteContrastTableTable = styled.table<any>({
     borderCollapse: 'collapse',
     borderColor: 'inherit',
     textIndent: 0,
-    tableLayout: 'fixed',
-    width: '1240px',
 
     '& th, & td': {
-        padding: '3px',
+        padding: '2px',
     },
 })

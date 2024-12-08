@@ -34,8 +34,6 @@ const ButtonRoot = styled.button(
     {
         paddingBlock: '8px',
         paddingInline: '12px',
-        lineHeight: '1.25rem',
-        fontWeight: 600,
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',

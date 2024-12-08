@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 export const Field = styled.div({
     display: 'flex',
     flexDirection: 'column',
-    rowGap: '6px',
+    rowGap: '8px',
 })
 
 export const Label = styled.label({

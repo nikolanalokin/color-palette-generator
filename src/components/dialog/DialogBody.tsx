@@ -20,4 +20,5 @@ export const DialogBody = (props: DialogBodyProps) => {
 const DialogBodyRoot = styled.div({
     paddingBlock: '24px',
     paddingInline: '36px',
+    overflowY: 'auto',
 })
