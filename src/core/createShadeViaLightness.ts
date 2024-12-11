@@ -11,7 +11,7 @@ export type CreateShadeViaLightnessFn = CreateShadeFn<CreateShadeViaLightnessFnO
 
 /**
  * Функция создания оттенка с использованием цветового пространства OKHSL
- * @param {string} baseHex - опорный цвет в hex
+ * @param {string} inputColor - опорный цвет в hex
  * @param {number} tone - желаемый оттенок
  * @param {number[]} scale - шкала, в рамках которой определяется оттенок (как минимум должны присутствовать первое и последнее значение)
  * @param {object} opts
@@ -19,13 +19,13 @@ export type CreateShadeViaLightnessFn = CreateShadeFn<CreateShadeViaLightnessFnO
  * @param {boolean} opts.decreaseSaturationRatio - коэффициент уменьшения насыщенности
  * @returns {ShadeInfo} итоговый цвет оттенка в hex
  */
-export const createShadeViaLightness: CreateShadeViaLightnessFn = (baseHex: string, tone: number, scale: number[], options?: CreateShadeViaLightnessFnOptions): ShadeInfo => {
+export const createShadeViaLightness: CreateShadeViaLightnessFn = (inputColor: string | Color, tone: number, scale: number[], options?: CreateShadeViaLightnessFnOptions): ShadeInfo => {
     const {
         hueShift = 0,
         decreaseSaturationRatio = 0,
     } = options
 
-    const baseColor = okhsl(baseHex)
+    const baseColor = okhsl(inputColor)
     const baseScaleValue = findScaleValue(baseColor.l)
     const baseTone = lerp(scale.at(0), scale.at(-1), baseScaleValue)
     const nearestTone = findNearestValueInScale(baseTone, scale)
@@ -51,12 +51,12 @@ export const createShadeViaLightness: CreateShadeViaLightnessFn = (baseHex: stri
     }
 }
 
-createShadeViaLightness.findTone = (hex: string, scale: number[]) => {
-    return lerp(scale.at(0), scale.at(-1), findScaleValue(okhsl(hex).l))
+createShadeViaLightness.findTone = (color: string | Color, scale: number[]) => {
+    return lerp(scale.at(0), scale.at(-1), findScaleValue(okhsl(color).l))
 }
 
-createShadeViaLightness.findScaleValue = (hex: string, scale: number[]) => {
-    return findScaleValue(okhsl(hex).l)
+createShadeViaLightness.findScaleValue = (color: string | Color, scale: number[]) => {
+    return findScaleValue(okhsl(color).l)
 }
 
 const MAX_YELLOW_SHIFT = 10

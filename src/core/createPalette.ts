@@ -2,6 +2,7 @@ import { getColorInfo, getNearestColorNames } from './utils'
 import { PaletteInfo } from './types'
 import { createShadeViaContrast } from './createShadeViaContrast'
 import { createShadeViaLightness } from './createShadeViaLightness'
+import { Color } from 'culori'
 
 export const DEFAULT_TONES_SCALE = [0, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950, 1000]
 
@@ -12,7 +13,7 @@ export type PaletteFnProps = {
     decreaseSaturationRatio?: number
 }
 
-export function createPalette (baseColor: string, props: PaletteFnProps): PaletteInfo {
+export function createPalette (inputColor: string | Color, props: PaletteFnProps): PaletteInfo {
     const {
         scale = DEFAULT_TONES_SCALE,
         method = 'contrast',
@@ -26,7 +27,7 @@ export function createPalette (baseColor: string, props: PaletteFnProps): Palett
     }[method]
     scale.forEach(tone => {
         const shade = shadeFn(
-            baseColor,
+            inputColor,
             tone,
             scale,
             {
@@ -38,11 +39,11 @@ export function createPalette (baseColor: string, props: PaletteFnProps): Palett
     })
     let nearestShade = shadesMap.values().reduce((shade1, shade2) => shade1.delta < shade2.delta ? shade1 : shade2)
     return {
-        name: getNearestColorNames(baseColor).at(0),
+        name: getNearestColorNames(inputColor).at(0),
         inputShade: {
-            number: shadeFn.findTone(baseColor, scale),
-            normalized: shadeFn.findScaleValue(baseColor, scale),
-            ...getColorInfo(baseColor),
+            number: shadeFn.findTone(inputColor, scale),
+            normalized: shadeFn.findScaleValue(inputColor, scale),
+            ...getColorInfo(inputColor),
             delta: 0,
         },
         shades: scale.map(tone => shadesMap.get(tone)),

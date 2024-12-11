@@ -11,6 +11,7 @@ export const GlobalStyles = () => {
                 html {
                     font-family: "IBM Plex Mono", 'Courier New', Courier, monospace;
                     -webkit-font-smoothing: antialiased;
+                    font-optical-sizing: auto;
                 }
 
                 body {

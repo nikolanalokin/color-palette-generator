@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 import { ShadeInfo } from '../../core'
 import { AppPalette, removePalette } from '../../stores/app'
 import { Link } from 'react-router-dom'
-import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle, IconButton, useModal } from '../../components'
+import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle, IconButton, InfoTooltip, useModal } from '../../components'
 import { DeleteIcon, TableIcon, Trash2Icon, XIcon } from 'lucide-react'
 import { PaletteContrastTable } from './PaletteContrastTable'
 
@@ -42,9 +42,11 @@ export const PaletteCard = forwardRef<HTMLDivElement, PaletteCardProps>(
                     <Title>{ data.name }</Title>
 
                     <PaletteCardActions>
-                        <IconButton onClick={() => open()}>
-                            <TableIcon />
-                        </IconButton>
+                        <InfoTooltip message="Открыть таблицу контрастности">
+                            <IconButton onClick={() => open()}>
+                                <TableIcon />
+                            </IconButton>
+                        </InfoTooltip>
 
                         <IconButton onClick={() => removePalette(data)}>
                             <Trash2Icon />
@@ -99,7 +101,7 @@ const PaletteCardScaleContainer = styled(Link)(
         backdropFilter: 'blur(10px)',
         boxShadow: '0 4px 30px rgba(0 0 0 / 0.1)',
         overflow: 'hidden',
-        transition: 'all .2s',
+        transition: 'translate   .2s',
 
         '&:hover': {
             translate: '0 -8px',

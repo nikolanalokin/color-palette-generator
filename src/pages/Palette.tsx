@@ -1,17 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import styled from '@emotion/styled'
 import { createPalette } from '../core'
-import { PaletteSettingBar, PaletteSettingBarValue } from './shared/PaletteSettingBar'
-import { formatHex, okhsl } from 'culori'
-import { PaletteDisplayBlock } from './shared/PaletteDisplayBlock'
-import { PalettePlots } from './shared/PalettePlots'
-import { PaletteContrastTable } from './shared/PaletteContrastTable'
+import { PaletteSettingBar } from './shared/PaletteSettingBar'
 import { PaletteInfoSection as PaletteInfoSectionBlock } from './shared/PaletteInfoSection'
-import { addPalette, PaletteOptions, setEditedPalette, setThemeColor, updatePalette, useAppStore, useColorStore } from '../stores/app'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { getNearestColorNames } from '../core/utils'
+import { addPalette, PaletteOptions, setEditedPalette, updatePalette, useAppStore } from '../stores/app'
+import { useNavigate, useParams } from 'react-router-dom'
+import { Okhsl, okhsl } from 'culori'
 
-const DEFAULT_COLOR = '#d03531'
+const DEFAULT_COLOR = okhsl('#d03531')
 const DEFAULT_OPTIONS: PaletteOptions = {
     method: 'contrast',
     lightnessFuncton: null,
@@ -53,7 +49,7 @@ export const Palette = () => {
         setEditedPalette({ ...editedPalette, name })
     }
 
-    const updateColor = (color: string) => {
+    const updateColor = (color: Okhsl) => {
         console.log('updateColor', color)
         const newPalette = createPalette(color, editedPalette.options)
         setEditedPalette({ ...editedPalette, color, palette: newPalette })

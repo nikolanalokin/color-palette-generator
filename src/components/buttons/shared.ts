@@ -17,10 +17,10 @@ export const baseStyles = css({
     fontWeight: 600,
     backgroundColor: 'rgba(0 0 0 / 0)',
     cursor: 'pointer',
-    transition: 'all .2s',
+    transition: 'background-color .2s',
 
     '&:focus': {
-        boxShadow: '0 0 0 1px white, 0 0 0 3px black',
+        outline: '2px solid black',
     },
 
     '&:hover': {

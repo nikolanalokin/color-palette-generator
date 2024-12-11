@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import { formatHex, formatHsl, wcagContrast } from 'culori'
 import { contrastAPCA, PaletteInfo, ShadeInfo } from '../../core'
 import { formatOkhsl } from './format-utils'
-import { Tooltip, TooltipContent, TooltipTrigger } from '../../components'
+import { InfoTooltip, Tooltip, TooltipContent, TooltipTrigger } from '../../components'
 
 type BasePaletteGradientProps = {
     palette?: PaletteInfo
@@ -49,14 +49,9 @@ type PaletteGradientShadePointProps = {
 
 const PaletteGradientShadePoint = ({ shade, ...restProps }: PaletteGradientShadePointProps) => {
     return (
-        <Tooltip placement="right">
-            <TooltipTrigger asChild>
-                <PaletteGradientShadePointRoot shade={shade} {...restProps} />
-            </TooltipTrigger>
-            <TooltipContent>
-                { shade.number }
-            </TooltipContent>
-        </Tooltip>
+        <InfoTooltip message={shade.number}>
+            <PaletteGradientShadePointRoot shade={shade} {...restProps} />
+        </InfoTooltip>
     )
 }
 

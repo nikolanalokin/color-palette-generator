@@ -185,7 +185,8 @@ export const TooltipContent = forwardRef<
 const TooltipContentRoot = styled.div({
     display: 'flex',
     flexDirection: 'column',
-    padding: '12px',
+    paddingBlock: '8px',
+    paddingInline: '12px',
     borderRadius: '8px',
     fontSize: '0.75rem',
     backgroundColor: 'rgba(255 255 255 / 0.5)',
@@ -193,3 +194,21 @@ const TooltipContentRoot = styled.div({
     backdropFilter: 'blur(10px)',
     boxShadow: '0 4px 30px rgba(0 0 0 / 0.1)',
 })
+
+export type InfoTooltipProps = TooltipProps & {
+    message?: React.ReactNode
+}
+
+export const InfoTooltip: React.FC<React.PropsWithChildren<InfoTooltipProps>> = props => {
+    const { message, children, ...restProps } = props
+    return (
+        <Tooltip {...restProps}>
+            <TooltipTrigger asChild>
+                { children }
+            </TooltipTrigger>
+            <TooltipContent>
+                { message }
+            </TooltipContent>
+        </Tooltip>
+    )
+}

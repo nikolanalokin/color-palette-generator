@@ -23,7 +23,7 @@ export type CreateShadeViaContrastFn = CreateShadeFn<CreateShadeViaContrastFnOpt
 
 /**
  * Функция создания оттенка с использованием цветового пространства OKHSL
- * @param {string} baseHex - опорный цвет в hex
+ * @param {string} inputColor - опорный цвет в hex
  * @param {number} tone - желаемый оттенок
  * @param {number[]} scale - шкала, в рамках которой определяется оттенок (как минимум должны присутствовать первое и последнее значение)
  * @param {object} opts
@@ -32,15 +32,15 @@ export type CreateShadeViaContrastFn = CreateShadeFn<CreateShadeViaContrastFnOpt
  * @param {boolean} opts.contrastScore - фиксированное значение контрастности
  * @returns {string} итоговый цвет оттенка в hex
  */
-export const createShadeViaContrast: CreateShadeViaContrastFn = (baseHex: string, tone: number, scale: number[], options?: CreateShadeViaContrastFnOptions): ShadeInfo => {
+export const createShadeViaContrast: CreateShadeViaContrastFn = (inputColor: string | Color, tone: number, scale: number[], options?: CreateShadeViaContrastFnOptions): ShadeInfo => {
     const {
         hueShift = 0,
         decreaseSaturationRatio = 0,
         contrastScore,
     } = options
 
-    const baseColor = okhsl(baseHex)
-    const baseTone = findTone(baseHex, scale)
+    const baseColor = okhsl(inputColor)
+    const baseTone = findTone(inputColor, scale)
     const baseScaleValue = invlerp(scale.at(0), scale.at(-1), baseTone)
     const nearestTone = findNearestValueInScale(baseTone, scale)
     const nearestScaleValue = invlerp(scale.at(0), scale.at(-1), nearestTone)
@@ -65,12 +65,12 @@ export const createShadeViaContrast: CreateShadeViaContrastFn = (baseHex: string
     }
 }
 
-createShadeViaContrast.findTone = (hex: string, scale: number[]) => {
-    return findTone(hex, scale)
+createShadeViaContrast.findTone = (color: string | Color, scale: number[]) => {
+    return findTone(color, scale)
 }
 
-createShadeViaContrast.findScaleValue = (hex: string, scale: number[]) => {
-    return invlerp(scale.at(0), scale.at(-1), findTone(hex, scale))
+createShadeViaContrast.findScaleValue = (color: string | Color, scale: number[]) => {
+    return invlerp(scale.at(0), scale.at(-1), findTone(color, scale))
 }
 
 function computeScaleHue (scaleValue: number, baseHue: number, scaleInitial: number = 1, hueShift: number) {
@@ -118,7 +118,7 @@ function findLightnessByContrastScore (baseOkhsl: Okhsl, fgHex: string, contrast
     return result
 }
 
-export function findTone (inputColor: Color | string, scale: number[]) {
+export function findTone (inputColor: string | Color, scale: number[]) {
     const inputHex = formatHex(inputColor)
     const blackContrastScore = contrastAPCA(BLACK_HEX, inputHex)
     const whiteContrastScore = contrastAPCA(WHITE_HEX, inputHex)

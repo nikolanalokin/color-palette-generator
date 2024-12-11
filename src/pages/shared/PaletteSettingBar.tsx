@@ -1,29 +1,27 @@
 import styled from '@emotion/styled'
 import { formatHex, okhsl, Okhsl } from 'culori'
-import { Button, Field, IconButton, Label, OkhslColorPicker, Select, SelectContent, SelectGroup, SelectInput, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../../components'
+import {
+    Button,
+    Field,
+    IconButton,
+    Label,
+    OkhslColorPicker,
+    Option2,
+    Select2,
+} from '../../components'
 import { TextInput } from '../../components/inputs/TextInput'
-import { Checkbox } from '../../components/inputs/Checkbox'
 import { NumberInput } from '../../components/inputs/NumberInput'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { PaletteInfo } from '../../core'
 import { PaletteOptions } from '../../stores/app'
 import { resetStyles } from '../../components/buttons/shared'
 import { CheckIcon } from 'lucide-react'
 
-export type PaletteSettingBarValue = {
-    color?: Okhsl
-    method?: 'lightness' | 'contrast'
-    lightnessFuncton?: 'linear' | 'bezier'
-    fixBase?: boolean
-    hueShift?: number
-    decreaseSaturationRatio?: number
-}
-
 export type PaletteSettingBarProps = {
     name?: string
     onNameChange?(value: string): void
-    color?: string
-    onColorChange?(value: string): void
+    color?: Okhsl
+    onColorChange?(value: Okhsl): void
     options?: PaletteOptions
     onOptionsChange?(value: PaletteOptions): void
     palette?: PaletteInfo
@@ -41,7 +39,7 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
         palette,
         onSave,
     } = props
-    const hex = color
+    const hex = useMemo(() => formatHex(color), [color])
     const [hexString, setHexString] = useState(hex)
     useEffect(() => {
         setHexString(hex)
@@ -53,11 +51,11 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
         })
         onOptionsChange?.(valueCopy)
     }
-    const handleHexColorChange = (evt: React.ChangeEvent<HTMLInputElement>) => onColorChange?.(formatHex(evt.target.value))
+    const handleHexColorChange = (evt: React.ChangeEvent<HTMLInputElement>) => onColorChange?.(okhsl(evt.target.value))
     const handleHexStringChange = (value: string) => {
         setHexString(value)
         const valueOkhsl = okhsl(value)
-        if (valueOkhsl) onColorChange?.(value)
+        if (valueOkhsl) onColorChange?.(valueOkhsl)
     }
     return (
         <PaletteSettingBarRoot>
@@ -101,11 +99,11 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
             />
 
             <OkhslColorPicker
-                value={okhsl(hexString)}
-                onChange={value => onColorChange?.(formatHex(value))}
+                value={color}
+                onChange={value => onColorChange?.(value)}
             />
 
-            <Field>
+            {/* <Field>
                 <Label>Метод формирования палитры</Label>
                 <Select
                     value={options.method}
@@ -124,23 +122,34 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                         <SelectItem value="lightness">Функциональное изменение светлоты</SelectItem>
                     </SelectContent>
                 </Select>
+            </Field> */}
+
+            <Field>
+                <Label>Метод формирования палитры</Label>
+                <Select2
+                    value={options.method}
+                    onValueChange={value => updateValue({
+                        method: value as PaletteOptions['method'],
+                        ...(value === 'lightness' && {
+                            lightnessFuncton: 'linear',
+                        })
+                    })}
+                >
+                    <Option2 value="contrast">Линейное изменение контрастности по APCA</Option2>
+                    <Option2 value="lightness">Функциональное изменение светлоты</Option2>
+                </Select2>
             </Field>
 
             { options.method === 'lightness' ? (
                 <Field>
                     <Label>Функция изменения светлоты</Label>
-                    <Select
+                    <Select2
                         value={options.lightnessFuncton}
                         onValueChange={value => updateValue({ lightnessFuncton: value as PaletteOptions['lightnessFuncton'] })}
                     >
-                        <SelectTrigger>
-                            <SelectValue placeholder="Выберете функцию" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="linear">Линейная</SelectItem>
-                            <SelectItem value="bezier">Безье</SelectItem>
-                        </SelectContent>
-                    </Select>
+                        <Option2 value="linear">Линейная</Option2>
+                        <Option2 value="bezier">Безье</Option2>
+                    </Select2>
                 </Field>
             ) : null }
 
@@ -168,6 +177,7 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                 checked={options.fixBase}
                 onChange={value => updateValue({ fixBase: value })}
             /> */}
+
             <Button onClick={() => onSave?.()}>
                 Сохранить
             </Button>
@@ -177,10 +187,11 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
 
 const PaletteSettingBarRoot = styled.div(
     ({}) => ({
+        width: '384px',
         paddingInline: '16px',
         paddingBlock: '16px',
         borderRadius: '16px',
-        backgroundColor: 'rgba(255 255 255 / 0.2)',
+        backgroundColor: 'rgba(255 255 255 / 0.5)',
         border: '1px solid rgba(255 255 255 / 0.3)',
         backdropFilter: 'blur(10px)',
         boxShadow: '0 4px 30px rgba(0 0 0 / 0.1)',
@@ -208,7 +219,7 @@ const NameInputRow = styled.div(
 const NameSuggestion = styled.div(
     ({}) => ({
         fontSize: '.75rem',
-        color: '#acacac',
+        color: 'rgba(0 0 0 / .6)',
     })
 )
 
@@ -219,7 +230,7 @@ export const NameInput = styled.input(
         fontWeight: 700,
 
         '&::placeholder': {
-            color: '#acacac',
+            color: 'rgba(0 0 0 / .6)',
         },
     }
 )

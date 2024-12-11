@@ -106,7 +106,7 @@ const Footer = styled.footer({
     gridArea: 'footer',
     paddingInline: '48px',
     paddingBlock: '24px',
-    fontSize: '14px',
+    fontSize: '0.875rem',
     borderBlockStart: '1px solid',
 })
 
@@ -114,6 +114,6 @@ const Sidebar = styled.aside({
     gridArea: 'aside',
     paddingInline: '24px',
     paddingBlock: '24px',
-    fontSize: '14px',
+    fontSize: '0.875rem',
     borderInlineStart: '1px solid',
 })

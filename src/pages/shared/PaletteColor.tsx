@@ -90,14 +90,14 @@ const PaletteColorDescriptionContainer = styled.div(
 
 const Title = styled.div(
     () => ({
-        fontSize: '14px',
+        fontSize: '0.875rem',
         fontWeight: '600',
     })
 )
 
 const Subtitle = styled.div(
     () => ({
-        fontSize: '14px',
+        fontSize: '0.875rem',
     })
 )
 

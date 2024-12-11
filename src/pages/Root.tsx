@@ -2,17 +2,20 @@ import styled from '@emotion/styled'
 import { Outlet, useLocation } from 'react-router-dom'
 import { GlobalStyles } from '../components'
 import { useEffect } from 'react'
-import { setThemeColor } from '../stores/app'
+import { setThemeShade, useColorStore } from '../stores/app'
+import { formatCss } from 'culori'
+import { ShadeInfo } from '../core'
 
 export const Root = () => {
     const location = useLocation()
+    const shade = useColorStore(state => state.shade)
     useEffect(() => {
-        setThemeColor(null, null)
+        setThemeShade(null)
     }, [location])
     return (
         <>
             <GlobalStyles />
-            <RootRoot>
+            <RootRoot shade={shade}>
                 {/* <Header>Генератор цветовых палитр</Header> */}
                 <Outlet />
                 <Footer>
@@ -24,16 +27,22 @@ export const Root = () => {
 }
 
 
-const RootRoot = styled.div({
-    // maxWidth: '100%',
-    // minHeight: '100%',
-    // display: 'flex',
-    // flexDirection: 'column',
+const RootRoot = styled.div<{ shade?: ShadeInfo }>(
+    ({ shade }) => ({
+        // maxWidth: '100%',
+        // minHeight: '100%',
+        // display: 'flex',
+        // flexDirection: 'column',
 
-    display: 'grid',
-    gridTemplateRows: 'auto 1fr auto',
-    minHeight: 'inherit',
-})
+        display: 'grid',
+        gridTemplateRows: 'auto 1fr auto',
+        minHeight: 'inherit',
+
+        backgroundImage: shade
+            ? `linear-gradient(to left, ${formatCss(shade.rgb)}, ${formatCss({...shade.rgb, alpha: 0})} 50%)`
+            : null,
+    })
+)
 
 const Header = styled.header({
     paddingInline: '48px',
@@ -45,5 +54,5 @@ const Header = styled.header({
 const Footer = styled.footer({
     paddingInline: '48px',
     paddingBlock: '24px',
-    fontSize: '14px',
+    fontSize: '0.875rem',
 })

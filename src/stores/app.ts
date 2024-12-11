@@ -1,7 +1,8 @@
 import { create } from 'zustand'
 import { combine } from 'zustand/middleware'
 import { storage } from '../services/storage'
-import { PaletteInfo } from '../core'
+import { PaletteInfo, ShadeInfo } from '../core'
+import { Okhsl } from 'culori'
 
 export type PaletteOptions = {
     method: 'lightness' | 'contrast'
@@ -13,7 +14,7 @@ export type PaletteOptions = {
 export type AppPalette = {
     id: string
     name: string
-    color: string
+    color: Okhsl
     options: PaletteOptions
     palette: PaletteInfo
 }
@@ -58,14 +59,10 @@ export function removePalette (palette: AppPalette) {
     storage.set('palettes', useAppStore.getState().palettes)
 }
 
-export const useColorStore = create(
-    combine({
-        selectedColor: null
-    }, () => ({}))
-)
+export const useColorStore = create<{ shade: ShadeInfo }>(() => ({
+    shade: null
+}))
 
-export function setThemeColor (bgColor: string, fgColor: string) {
-    useColorStore.setState(state => ({ selectedColor: bgColor }))
-    document.body.style.backgroundColor = bgColor
-    document.body.style.color = fgColor
+export function setThemeShade (shade: ShadeInfo) {
+    useColorStore.setState(state => ({ shade }))
 }
