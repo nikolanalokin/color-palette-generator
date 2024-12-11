@@ -1,4 +1,4 @@
-import { Hsl, Okhsl, Oklch, Rgb } from 'culori'
+import { Color, Hsl, Okhsl, Oklch, Rgb } from 'culori'
 
 export type ColorInfo = {
     hex: string
@@ -19,11 +19,21 @@ export type ContrastInfo = {
 
 export type ShadeInfo = ColorInfo & {
     number: number
+    normalized: number
     delta: number
 }
 
-export type Palette = {
-    input: ColorInfo
+export type PaletteInfo = {
+    name: string
+    inputShade: ShadeInfo
     shades: ShadeInfo[]
-    closestShade: ShadeInfo
+    nearestShade: ShadeInfo
+}
+
+export type CreateShadeFnOptions = {}
+
+export interface CreateShadeFn<O extends CreateShadeFnOptions> {
+    (inputColor: string | Color, tone: number, scale: number[], options?: O): ShadeInfo
+    findTone(color: string | Color, scale: number[]): number
+    findScaleValue(color: string | Color, scale: number[]): number
 }

@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
-import { Palette } from '../../core'
+import { PaletteInfo } from '../../core'
 import { PaletteColor } from './PaletteColor'
 
 export type PaletteDisplayLineProps = {
-    palette?: Palette
+    palette?: PaletteInfo
 }
 
 export const PaletteDisplayLine = (props: PaletteDisplayLineProps) => {
@@ -21,7 +21,7 @@ export const PaletteDisplayLine = (props: PaletteDisplayLineProps) => {
                     <StyledPaletteColor
                         key={shade.number}
                         shade={shade}
-                        closest={shade.hex === palette.closestShade.hex}
+                        nearest={shade.hex === palette.nearestShade.hex}
                     />
                 )) }
             </PaletteContainer>

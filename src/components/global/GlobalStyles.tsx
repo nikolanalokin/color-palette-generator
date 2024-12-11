@@ -11,6 +11,7 @@ export const GlobalStyles = () => {
                 html {
                     font-family: "IBM Plex Mono", 'Courier New', Courier, monospace;
                     -webkit-font-smoothing: antialiased;
+                    font-optical-sizing: auto;
                 }
 
                 body {
@@ -20,6 +21,7 @@ export const GlobalStyles = () => {
                 #root {
                     height: 100%;
                     width: 100%;
+                    min-height: inherit;
                 }
 
                 a {
@@ -29,6 +31,13 @@ export const GlobalStyles = () => {
 
                 img, svg {
                     user-select: none;
+                }
+
+                ol {
+                    margin: 0;
+                    padding: 0;
+                    margin-block-start: .5em;
+                    padding-inline-start: 2em;
                 }
             `}
         />

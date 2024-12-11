@@ -1,11 +1,11 @@
-import { Palette } from '../core'
+import { PaletteInfo } from '../core'
 
 export type PaletteToBlobOptions = {
     size?: number
     orientation?: 'horizontal' | 'vertical'
 }
 
-export function paletteToBlob (palette: Palette, opts: PaletteToBlobOptions = {}) {
+export function paletteToBlob (palette: PaletteInfo, opts: PaletteToBlobOptions = {}) {
     const { size = 50, orientation = 'vertical' } = opts
     const canvas = document.createElement('canvas')
     const context = canvas.getContext('2d')

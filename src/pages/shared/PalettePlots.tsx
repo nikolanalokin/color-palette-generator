@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
-import { Palette } from '../../core'
+import { PaletteInfo } from '../../core'
 import { Field, Label, PlotLinePlot, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components'
 import { useState } from 'react'
 import { Section } from './primitives'
 
 export type PalettePlotsProps = {
-    palette?: Palette
+    palette?: PaletteInfo
 }
 
 export const PalettePlots = (props: PalettePlotsProps) => {

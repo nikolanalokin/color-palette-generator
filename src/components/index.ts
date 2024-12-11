@@ -1,4 +1,7 @@
+export * from './buttons'
+export * from './dialog'
 export * from './global'
 export * from './inputs'
 export * from './plots'
+export * from './toolbar'
 export * from './tooltip'

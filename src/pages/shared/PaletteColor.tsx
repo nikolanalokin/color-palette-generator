@@ -5,14 +5,14 @@ import { formatOkhsl } from './format-utils'
 
 type BasePaletteColorProps = {
     shade?: ShadeInfo
-    closest?: boolean
+    nearest?: boolean
 }
 
 export type PaletteColorProps = Omit<React.HTMLAttributes<HTMLDivElement>, keyof BasePaletteColorProps> & BasePaletteColorProps
 
 export const PaletteColor = (props: PaletteColorProps) => {
     if (!props.shade) return
-    const { shade, closest, ...restProps } = props
+    const { shade, nearest, ...restProps } = props
     let wcagBlack = wcagContrast(shade.hex, 'black')
     let wcagWhite = wcagContrast(shade.hex, 'white')
     let apcaBlack = contrastAPCA('black', shade.hex)
@@ -21,7 +21,7 @@ export const PaletteColor = (props: PaletteColorProps) => {
     return (
         <PaletteColorRoot {...restProps}>
             <PaletteColorRect
-                data-highlight={closest}
+                data-highlight={nearest}
                 {...props}
                 style={{ backgroundColor: shade.hex }}
             >
@@ -90,14 +90,14 @@ const PaletteColorDescriptionContainer = styled.div(
 
 const Title = styled.div(
     () => ({
-        fontSize: '14px',
+        fontSize: '0.875rem',
         fontWeight: '600',
     })
 )
 
 const Subtitle = styled.div(
     () => ({
-        fontSize: '14px',
+        fontSize: '0.875rem',
     })
 )
 

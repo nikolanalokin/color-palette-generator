@@ -11,15 +11,13 @@ import { PaletteDisplayBlock } from './shared/PaletteDisplayBlock'
 export const App = () => {
     const [options, setOptions] = useState<PaletteSettingBarValue>({
         color: okhsl('#d03531'),
-        fixBase: false,
-        method: 'apca',
+        method: 'contrast',
         hueShift: 5,
         decreaseSaturationRatio: .15,
     })
     const palette = createPalette({
         baseColor: formatHex(options.color),
         method: options.method,
-        fixBase: options.fixBase,
         hueShift: options.hueShift,
         decreaseSaturationRatio: options.decreaseSaturationRatio,
     })
@@ -108,7 +106,7 @@ const Footer = styled.footer({
     gridArea: 'footer',
     paddingInline: '48px',
     paddingBlock: '24px',
-    fontSize: '14px',
+    fontSize: '0.875rem',
     borderBlockStart: '1px solid',
 })
 
@@ -116,6 +114,6 @@ const Sidebar = styled.aside({
     gridArea: 'aside',
     paddingInline: '24px',
     paddingBlock: '24px',
-    fontSize: '14px',
+    fontSize: '0.875rem',
     borderInlineStart: '1px solid',
 })
