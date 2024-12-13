@@ -1,38 +1,40 @@
 import styled from '@emotion/styled'
-import { Toolbar } from '../components'
+import { Button, Toolbar } from '../components'
 import { PaletteCardAdd } from './shared/PaletteCardAdd'
 import { useNavigate } from 'react-router-dom'
-import { useAppStore } from '../stores/app'
+import { $appPalettes } from '../stores/app'
 import { PaletteCard } from './shared/PaletteCard'
+import { useUnit } from 'effector-react'
 
 export const Dashboard = () => {
-    const { palettes } = useAppStore()
+    const appPalettes = useUnit($appPalettes)
     const navigate = useNavigate()
     return (
-        <>
-            <Toolbar>Палитры</Toolbar>
-            <DashboardRoot>
-                <PalettesGrid>
-                    { palettes.map(palette => (
-                        <PaletteCard
-                            key={palette.id}
-                            data={palette}
-                        />
-                    )) }
-                    <PaletteCardAdd to="/palette/new" />
-                </PalettesGrid>
-            </DashboardRoot>
-        </>
+        <DashboardRoot>
+            <Toolbar>
+                <Button onClick={() => navigate('/palette/new')}>Добавить палитру</Button>
+            </Toolbar>
+
+            <PalettesGrid>
+                { appPalettes.map(palette => (
+                    <PaletteCard
+                        key={palette.id}
+                        data={palette}
+                    />
+                )) }
+                {/* <PaletteCardAdd to="/palette/new" /> */}
+            </PalettesGrid>
+        </DashboardRoot>
     )
 }
 
 const DashboardRoot = styled.main({
     flexGrow: 1,
-    paddingInline: '48px',
-    paddingBlock: '24px',
 })
 
 const PalettesGrid = styled.section({
+    paddingInline: '48px',
+    paddingBlock: '24px',
     display: 'flex',
     columnGap: '24px',
 })

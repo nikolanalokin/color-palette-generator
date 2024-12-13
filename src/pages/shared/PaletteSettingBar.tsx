@@ -44,18 +44,14 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
     useEffect(() => {
         setHexString(hex)
     }, [hex])
-    const updateValue = (changes: Partial<PaletteOptions>) => {
-        const valueCopy = { ...options }
-        Object.keys(changes).forEach(key => {
-            valueCopy[key] = changes[key]
-        })
-        onOptionsChange?.(valueCopy)
-    }
     const handleHexColorChange = (evt: React.ChangeEvent<HTMLInputElement>) => onColorChange?.(okhsl(evt.target.value))
     const handleHexStringChange = (value: string) => {
         setHexString(value)
         const valueOkhsl = okhsl(value)
         if (valueOkhsl) onColorChange?.(valueOkhsl)
+    }
+    const updateOptions = (changes: Partial<PaletteOptions>) => {
+        onOptionsChange?.({ ...options, ...changes })
     }
     return (
         <PaletteSettingBarRoot>
@@ -107,7 +103,7 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                 <Label>Метод формирования палитры</Label>
                 <Select
                     value={options.method}
-                    onValueChange={value => updateValue({
+                    onValueChange={value => updateOptions({
                         method: value as PaletteOptions['method'],
                         ...(value === 'lightness' && {
                             lightnessFuncton: 'linear',
@@ -128,11 +124,9 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                 <Label>Метод формирования палитры</Label>
                 <Select2
                     value={options.method}
-                    onValueChange={value => updateValue({
+                    onValueChange={value => updateOptions({
                         method: value as PaletteOptions['method'],
-                        ...(value === 'lightness' && {
-                            lightnessFuncton: 'linear',
-                        })
+                        lightnessFuncton: value === 'lightness' ? 'linear' : null,
                     })}
                 >
                     <Option2 value="contrast">Линейное изменение контрастности по APCA</Option2>
@@ -145,7 +139,9 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                     <Label>Функция изменения светлоты</Label>
                     <Select2
                         value={options.lightnessFuncton}
-                        onValueChange={value => updateValue({ lightnessFuncton: value as PaletteOptions['lightnessFuncton'] })}
+                        onValueChange={value => updateOptions({
+                            lightnessFuncton: value as PaletteOptions['lightnessFuncton']
+                        })}
                     >
                         <Option2 value="linear">Линейная</Option2>
                         <Option2 value="bezier">Безье</Option2>
@@ -158,7 +154,9 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                 labelText="Смещение цветового тона"
                 step={1}
                 value={options.hueShift}
-                onChange={value => updateValue({ hueShift: value })}
+                onChange={value => updateOptions({
+                    hueShift: value
+                })}
             />
 
             <NumberInput
@@ -168,14 +166,16 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                 max={100}
                 step={1}
                 value={options.decreaseSaturationRatio * 100}
-                onChange={value => updateValue({ decreaseSaturationRatio: value / 100 })}
+                onChange={value => updateOptions({
+                    decreaseSaturationRatio: value / 100
+                })}
             />
 
             {/* <Checkbox
                 id="fixBase"
                 labelText="Зафиксировать входной цвет"
                 checked={options.fixBase}
-                onChange={value => updateValue({ fixBase: value })}
+                onChange={value => updateOptions({ fixBase: value })}
             /> */}
 
             <Button onClick={() => onSave?.()}>

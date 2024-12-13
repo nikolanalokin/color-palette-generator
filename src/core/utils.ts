@@ -78,3 +78,19 @@ export function findNearestValueInScale (value: number, scale: number[]) {
         .map(sValue => ({ sValue,  delta: sValue - value }))
         .reduce((sValue1, sValue2) => Math.abs(sValue1.delta) < Math.abs(sValue2.delta) ? sValue1 : sValue2).sValue
 }
+
+export function uniqueId () {
+    // Generate random hexadecimal digits
+    const digits = '0123456789abcdef'
+
+    // Generate random hexadecimal digits and concatenate them to form the UUID
+    let uuid = '';
+    for (let i = 0; i < 32; i++) {
+      uuid += digits[Math.floor(Math.random() * digits.length)]
+    }
+
+    // Add hyphens to the UUID to separate it into groups
+    uuid = uuid.substring(0, 8) + '-' + uuid.substring(8, 4) + '-' + uuid.substring(12, 4) + '-' + uuid.substring(16, 4) + '-' + uuid.substring(20, 12)
+
+    return uuid
+}

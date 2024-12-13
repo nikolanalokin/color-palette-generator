@@ -1,7 +1,7 @@
 import { forwardRef } from 'react'
 import styled from '@emotion/styled'
 import { ShadeInfo } from '../../core'
-import { AppPalette, removePalette } from '../../stores/app'
+import { AppPalette, removeAppPalette } from '../../stores/app'
 import { Link } from 'react-router-dom'
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle, IconButton, InfoTooltip, useModal } from '../../components'
 import { DeleteIcon, TableIcon, Trash2Icon, XIcon } from 'lucide-react'
@@ -48,7 +48,7 @@ export const PaletteCard = forwardRef<HTMLDivElement, PaletteCardProps>(
                             </IconButton>
                         </InfoTooltip>
 
-                        <IconButton onClick={() => removePalette(data)}>
+                        <IconButton onClick={() => removeAppPalette(data)}>
                             <Trash2Icon />
                         </IconButton>
                     </PaletteCardActions>

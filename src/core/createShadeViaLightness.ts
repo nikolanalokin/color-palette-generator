@@ -1,6 +1,6 @@
 import { Color, formatHex, okhsl } from 'culori'
 import { bezier, invlerp, lerp, linear, Point } from './math'
-import { deltaE, findNearestValueInScale, getColorInfo } from './utils'
+import { deltaE, findNearestValueInScale, getColorInfo, uniqueId } from './utils'
 import { CreateShadeFn, CreateShadeFnOptions, ShadeInfo } from './types'
 
 export type CreateShadeViaLightnessFnOptions = CreateShadeFnOptions & {
@@ -44,6 +44,7 @@ export const createShadeViaLightness: CreateShadeViaLightnessFn = (inputColor: s
     shadeColor.l = computeScaleLightness(shadeScaleValue)
 
     return {
+        id: uniqueId(),
         number: tone,
         normalized: shadeScaleValue,
         ...getColorInfo(shadeColor),

@@ -2,15 +2,16 @@ import styled from '@emotion/styled'
 import { Outlet, useLocation } from 'react-router-dom'
 import { GlobalStyles } from '../components'
 import { useEffect } from 'react'
-import { setThemeShade, useColorStore } from '../stores/app'
+import { $themeShade, setThemeTone } from '../stores/app'
 import { formatCss } from 'culori'
 import { ShadeInfo } from '../core'
+import { useUnit } from 'effector-react'
 
 export const Root = () => {
     const location = useLocation()
-    const shade = useColorStore(state => state.shade)
+    const shade = useUnit($themeShade)
     useEffect(() => {
-        setThemeShade(null)
+        setThemeTone(null)
     }, [location])
     return (
         <>
@@ -35,7 +36,7 @@ const RootRoot = styled.div<{ shade?: ShadeInfo }>(
         // flexDirection: 'column',
 
         display: 'grid',
-        gridTemplateRows: 'auto 1fr auto',
+        gridTemplateRows: '1fr auto',
         minHeight: 'inherit',
 
         backgroundImage: shade
