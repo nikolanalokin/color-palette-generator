@@ -21,12 +21,13 @@
         "@visx/tooltip": "^3.3.0",
         "apca-w3": "^0.1.9",
         "culori": "^4.0.1",
+        "effector": "^23.2.3",
+        "effector-react": "^23.3.0",
         "lucide-react": "^0.454.0",
         "normalize.css": "^8.0.1",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
-        "react-router-dom": "^6.28.0",
-        "zustand": "^5.0.1"
+        "react-router-dom": "^6.28.0"
     },
     "devDependencies": {
         "@types/culori": "^2.1.1",

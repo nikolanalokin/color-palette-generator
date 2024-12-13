@@ -7,6 +7,7 @@ type BasePaletteCardAddProps = {}
 
 export type PaletteCardAddProps = Omit<React.ComponentPropsWithoutRef<typeof Link>, keyof BasePaletteCardAddProps> & BasePaletteCardAddProps
 
+/** @deprecated */
 export const PaletteCardAdd = forwardRef<React.ElementRef<typeof Link>, PaletteCardAddProps>(
     (props, forwardedRef) => {
         const {

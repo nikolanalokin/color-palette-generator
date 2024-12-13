@@ -3,66 +3,77 @@ import styled from '@emotion/styled'
 import { createPalette } from '../core'
 import { PaletteSettingBar } from './shared/PaletteSettingBar'
 import { PaletteInfoSection as PaletteInfoSectionBlock } from './shared/PaletteInfoSection'
-import { addPalette, PaletteOptions, setEditedPalette, updatePalette, useAppStore } from '../stores/app'
+import { $appPalettes, $editedPalette, addAppPalette, PaletteOptions, setEditedAppPalette, updateAppPalette } from '../stores/app'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Okhsl, okhsl } from 'culori'
+import { useUnit } from 'effector-react'
 
-const DEFAULT_COLOR = okhsl('#d03531')
-const DEFAULT_OPTIONS: PaletteOptions = {
-    method: 'contrast',
-    lightnessFuncton: null,
-    hueShift: 5,
-    decreaseSaturationRatio: .15,
+function createDefaultColor () {
+    return okhsl('#d03531')
+}
+
+function createDefaultOptions (): PaletteOptions {
+    return {
+        scale: [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
+        method: 'contrast',
+        lightnessFuncton: null,
+        hueShift: 5,
+        decreaseSaturationRatio: .15,
+    }
 }
 
 export const Palette = () => {
     const { paletteId } = useParams()
     const navigate = useNavigate()
 
-    const palettes = useAppStore(state => state.palettes)
-    const editedPalette = useAppStore(state => state.editedPalette)
+    const palettes = useUnit($appPalettes)
+    const editedPalette = useUnit($editedPalette)
 
     useEffect(() => {
         if (paletteId) {
             const p = palettes.find(palette => palette.id === paletteId)
-            if (p) setEditedPalette(p)
-            else setEditedPalette({
+            if (p) setEditedAppPalette(p)
+            else setEditedAppPalette({
                 id: null,
-                color: DEFAULT_COLOR,
+                color: createDefaultColor(),
                 name: '',
-                options: DEFAULT_OPTIONS,
-                palette: createPalette(DEFAULT_COLOR, DEFAULT_OPTIONS),
+                options: createDefaultOptions(),
+                palette: createPalette(createDefaultColor(), createDefaultOptions()),
             })
         } else {
-            setEditedPalette({
+            setEditedAppPalette({
                 id: null,
-                color: DEFAULT_COLOR,
+                color: createDefaultColor(),
                 name: '',
-                options: DEFAULT_OPTIONS,
-                palette: createPalette(DEFAULT_COLOR, DEFAULT_OPTIONS),
+                options: createDefaultOptions(),
+                palette: createPalette(createDefaultColor(), createDefaultOptions()),
             })
         }
     }, [paletteId])
 
+    if (!editedPalette) {
+        return null
+    }
+
+    const {
+        name,
+        color,
+        options,
+        palette,
+    } = editedPalette
+
     const updateName = (name: string) => {
-        console.log('updateName', name)
-        setEditedPalette({ ...editedPalette, name })
+        setEditedAppPalette({ ...editedPalette, name })
     }
 
     const updateColor = (color: Okhsl) => {
-        console.log('updateColor', color)
-        const newPalette = createPalette(color, editedPalette.options)
-        setEditedPalette({ ...editedPalette, color, palette: newPalette })
+        const newPalette = createPalette(color, options)
+        setEditedAppPalette({ ...editedPalette, color, palette: newPalette })
     }
 
     const updateOptions = (options: PaletteOptions) => {
-        console.log('updateOptions', options)
-        const newPalette = createPalette(editedPalette.color, options)
-        setEditedPalette({ ...editedPalette, options, palette: newPalette })
-    }
-
-    if (!editedPalette) {
-        return null
+        const newPalette = createPalette(color, options)
+        setEditedAppPalette({ ...editedPalette, options, palette: newPalette })
     }
 
     return (
@@ -70,7 +81,9 @@ export const Palette = () => {
             <PaletteInfoSection>
                 <DisplaySection>
                     <PaletteInfoSectionBlock
-                        palette={editedPalette.palette}
+                        palette={palette}
+                        options={options}
+                        onOptionsChange={value => updateOptions(value)}
                     />
                 </DisplaySection>
 
@@ -95,22 +108,22 @@ export const Palette = () => {
 
             <PaletteSettingsAside>
                 <PaletteSettingBar
-                    name={editedPalette.name}
+                    name={name}
                     onNameChange={value => updateName(value)}
-                    color={editedPalette.color}
+                    color={color}
                     onColorChange={value => updateColor(value)}
-                    options={editedPalette.options}
+                    options={options}
                     onOptionsChange={value => updateOptions(value)}
                     onSave={() => {
                         if (paletteId) {
-                            updatePalette(editedPalette)
+                            updateAppPalette(editedPalette)
                         } else {
-                            addPalette(editedPalette)
+                            addAppPalette(editedPalette)
                         }
                         navigate('/dashboard', { replace: true })
-                        setEditedPalette(null)
+                        setEditedAppPalette(null)
                     }}
-                    palette={editedPalette.palette}
+                    palette={palette}
                 />
             </PaletteSettingsAside>
         </PaletteRoot>
@@ -119,6 +132,7 @@ export const Palette = () => {
 
 const PaletteRoot = styled.main({
     display: 'flex',
+    flexGrow: 1,
 })
 
 const PaletteInfoSection = styled.section({

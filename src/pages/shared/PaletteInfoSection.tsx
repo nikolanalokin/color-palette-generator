@@ -1,22 +1,64 @@
+import { useEffect, useMemo, useState } from 'react'
 import styled from '@emotion/styled'
-import { invlerp, PaletteInfo, ShadeInfo } from '../../core'
-import { Checkbox } from '../../components/inputs/Checkbox'
-import { useState } from 'react'
+import { InfoIcon, PlusIcon, Trash2Icon } from 'lucide-react'
+import { PaletteInfo, ShadeInfo } from '../../core'
 import { formatHsl, formatOkhsl } from './format-utils'
-import { keyframes } from '@emotion/react'
-import { paletteToBlob } from '../../utils/paletteToImage'
-import { Tooltip, TooltipContent, TooltipTrigger } from '../../components'
+import { IconButton, Tooltip, TooltipContent, TooltipTrigger } from '../../components'
 import { BLACK_HEX, WHITE_HEX } from '../../core/utils'
 import { PaletteGradient } from './PaletteGradient'
-import { InfoIcon } from 'lucide-react'
-import { setThemeShade } from '../../stores/app'
+import { PaletteOptions, setThemeTone } from '../../stores/app'
 
 export type PaletteInfoSectionProps = {
     palette?: PaletteInfo
+    options?: PaletteOptions
+    onOptionsChange?(value: PaletteOptions): void
+}
+
+function scaleToMap (scale: number[]) {
+    return scale.reduce((acc, tone) => (acc.set(tone, String(tone)), acc), new Map<number, string>())
+}
+
+function mapToScale (map: Map<number, string>) {
+    const scale = [...map.values()].map(parseFloat)
+    scale.sort((a, b) => a - b)
+    return scale
 }
 
 export const PaletteInfoSection = (props: PaletteInfoSectionProps) => {
-    const { palette } = props
+    const { palette, options, onOptionsChange } = props
+    const [tonesMap, setTonesMap] = useState(scaleToMap(options.scale))
+    useEffect(() => {
+        setTonesMap(scaleToMap(options.scale))
+    }, [options.scale])
+    const paletteShadesMap = useMemo(() => {
+        return palette.shades.reduce((acc, shade) => acc.set(shade.number, shade), new Map<number, ShadeInfo>())
+    }, [palette])
+    const updateOptions = (map: Map<number, string>) => {
+        onOptionsChange?.({ ...options, scale: mapToScale(map) })
+    }
+    const handleToneChange = (tone: number, value: string) => {
+        if (!/\d*/.test(value)) {
+            return
+        }
+        tonesMap.set(tone, value)
+        setTonesMap(new Map(tonesMap))
+    }
+    const handleToneRemove = (tone: number) => {
+        tonesMap.delete(tone)
+        const tonesMapCopy = new Map(tonesMap)
+        setTonesMap(tonesMapCopy)
+        updateOptions(tonesMapCopy)
+    }
+    const handleToneAddAfter = (tone: number) => {
+        const newTone = Math.round(tone + options.scale[options.scale.findIndex(t => t === tone) + 1]) / 2
+        tonesMap.set(newTone, String(newTone))
+        const tonesMapCopy = new Map(tonesMap)
+        setTonesMap(tonesMapCopy)
+        updateOptions(tonesMapCopy)
+    }
+    const handleSubmit = () => {
+        updateOptions(tonesMap)
+    }
     const tip = (
         <Tooltip>
             <TooltipTrigger asChild>
@@ -34,96 +76,143 @@ export const PaletteInfoSection = (props: PaletteInfoSectionProps) => {
         </Tooltip>
     )
     return (
-        <PaletteInfoSectionRoot>
-            <PaletteGradientContainer>
-                <PaletteGradient palette={palette} />
-            </PaletteGradientContainer>
-            <Table>
-                <thead>
-                    <TableHeadRow>
-                        <TextCell></TextCell>
+        <form
+            css={{ display: 'contents' }}
+            onSubmit={evt => {
+                evt.preventDefault()
+                handleSubmit()
+            }}
+        >
+            <PaletteInfoSectionRoot>
+                <PaletteGradientContainer>
+                    <PaletteGradient palette={palette} />
+                </PaletteGradientContainer>
+                    <TableContainer>
+                        <Table>
+                            <thead>
+                                <TableHeadRow>
+                                    <TextCell></TextCell>
 
-                        <ShadeColorCell></ShadeColorCell>
+                                    <ShadeColorCell></ShadeColorCell>
 
-                        <ContrastCell>
-                            <Heading>
-                                <span>WCAG</span>
-                                { tip }
-                            </Heading>
-                        </ContrastCell>
+                                    <ContrastCell>
+                                        <Heading>
+                                            <span>WCAG</span>
+                                            { tip }
+                                        </Heading>
+                                    </ContrastCell>
 
-                        <ContrastCell>
-                            <Heading>
-                                <span>APCA</span>
-                                { tip }
-                            </Heading>
-                        </ContrastCell>
+                                    <ContrastCell>
+                                        <Heading>
+                                            <span>APCA</span>
+                                            { tip }
+                                        </Heading>
+                                    </ContrastCell>
 
-                        <TextCell>
-                            <Heading>ΔE</Heading>
-                        </TextCell>
-                    </TableHeadRow>
-                </thead>
-                <tbody>
-                    { palette.shades.map((shade) => {
-                        const color = Math.abs(shade.apca.blackOn) >= 45 ? 'black' :'white'
-                        const row = createRow(shade)
-                        const highlight = palette.nearestShade.number === shade.number
-                        return (
-                            <TableRow key={shade.number} data-highlight={highlight}>
-                                <TextCell>
-                                    <Text>{ shade.number }</Text>
-                                </TextCell>
+                                    <TextCell>
+                                        <Heading>ΔE</Heading>
+                                    </TextCell>
+                                </TableHeadRow>
+                            </thead>
+                            <tbody>
+                                { options.scale.map((tone, index) => {
+                                    const shade = paletteShadesMap.get(tone)
+                                    const color = Math.abs(shade.apca.blackOn) >= 45 ? 'black' :'white'
+                                    const row = createRow(shade)
+                                    const highlight = palette.nearestShade.number === shade.number
+                                    return (
+                                        <TableRow key={shade.id} data-highlight={highlight}>
+                                            <ToneCell>
+                                                <ToneInput
+                                                    type="text"
+                                                    value={tonesMap.get(shade.number)}
+                                                    onChange={evt => handleToneChange(shade.number, evt.target.value)}
+                                                />
+                                            </ToneCell>
 
-                                <ShadeColorCell>
-                                    <ShadeColorDisplay css={getColorStyles(color, row.hex)} onClick={() => setThemeShade(shade)}>
-                                        <Text>{ row.hex }</Text>
-                                    </ShadeColorDisplay>
-                                </ShadeColorCell>
+                                            <ShadeColorCell>
+                                                <ShadeColorDisplay css={getColorStyles(color, row.hex)} onClick={() => setThemeTone(shade.number)}>
+                                                    <Text>{ row.hex }</Text>
+                                                </ShadeColorDisplay>
+                                            </ShadeColorCell>
 
-                                <ContrastCell>
-                                    <ContrastDisplayGrid>
-                                        <ContrastDisplay css={getColorStyles(BLACK_HEX, row.hex)}>
-                                            <Text>{ row.wcag.blackOn.toFixed(2) }</Text>
-                                        </ContrastDisplay>
-                                        <ContrastDisplay css={getColorStyles(row.hex, BLACK_HEX)}>
-                                            <Text>{ row.wcag.onBlack.toFixed(2) }</Text>
-                                        </ContrastDisplay>
-                                        <ContrastDisplay css={getColorStyles(WHITE_HEX, row.hex)}>
-                                            <Text>{ row.wcag.whiteOn.toFixed(2) }</Text>
-                                        </ContrastDisplay>
-                                        <ContrastDisplay css={getColorStyles(row.hex, WHITE_HEX)}>
-                                            <Text>{ row.wcag.onWhite.toFixed(2) }</Text>
-                                        </ContrastDisplay>
-                                    </ContrastDisplayGrid>
-                                </ContrastCell>
+                                            <ContrastCell>
+                                                <ContrastDisplayGrid>
+                                                    <ContrastDisplay css={getColorStyles(BLACK_HEX, row.hex)}>
+                                                        <Text>{ row.wcag.blackOn.toFixed(2) }</Text>
+                                                    </ContrastDisplay>
+                                                    <ContrastDisplay css={getColorStyles(row.hex, BLACK_HEX)}>
+                                                        <Text>{ row.wcag.onBlack.toFixed(2) }</Text>
+                                                    </ContrastDisplay>
+                                                    <ContrastDisplay css={getColorStyles(WHITE_HEX, row.hex)}>
+                                                        <Text>{ row.wcag.whiteOn.toFixed(2) }</Text>
+                                                    </ContrastDisplay>
+                                                    <ContrastDisplay css={getColorStyles(row.hex, WHITE_HEX)}>
+                                                        <Text>{ row.wcag.onWhite.toFixed(2) }</Text>
+                                                    </ContrastDisplay>
+                                                </ContrastDisplayGrid>
+                                            </ContrastCell>
 
-                                <ContrastCell>
-                                    <ContrastDisplayGrid>
-                                        <ContrastDisplay css={getColorStyles(BLACK_HEX, row.hex)}>
-                                            <Text>{ row.apca.blackOn.toFixed(2) }</Text>
-                                        </ContrastDisplay>
-                                        <ContrastDisplay css={getColorStyles(row.hex, BLACK_HEX)}>
-                                            <Text>{ row.apca.onBlack.toFixed(2) }</Text>
-                                        </ContrastDisplay>
-                                        <ContrastDisplay css={getColorStyles(WHITE_HEX, row.hex)}>
-                                            <Text>{ row.apca.whiteOn.toFixed(2) }</Text>
-                                        </ContrastDisplay>
-                                        <ContrastDisplay css={getColorStyles(row.hex, WHITE_HEX)}>
-                                            <Text>{ row.apca.onWhite.toFixed(2) }</Text>
-                                        </ContrastDisplay>
-                                    </ContrastDisplayGrid>
-                                </ContrastCell>
+                                            <ContrastCell>
+                                                <ContrastDisplayGrid>
+                                                    <ContrastDisplay css={getColorStyles(BLACK_HEX, row.hex)}>
+                                                        <Text>{ row.apca.blackOn.toFixed(2) }</Text>
+                                                    </ContrastDisplay>
+                                                    <ContrastDisplay css={getColorStyles(row.hex, BLACK_HEX)}>
+                                                        <Text>{ row.apca.onBlack.toFixed(2) }</Text>
+                                                    </ContrastDisplay>
+                                                    <ContrastDisplay css={getColorStyles(WHITE_HEX, row.hex)}>
+                                                        <Text>{ row.apca.whiteOn.toFixed(2) }</Text>
+                                                    </ContrastDisplay>
+                                                    <ContrastDisplay css={getColorStyles(row.hex, WHITE_HEX)}>
+                                                        <Text>{ row.apca.onWhite.toFixed(2) }</Text>
+                                                    </ContrastDisplay>
+                                                </ContrastDisplayGrid>
+                                            </ContrastCell>
 
-                                <TextCell>
-                                    <Text>{ row.deltaE }</Text>
-                                </TextCell>
-                            </TableRow>
-                        )
-                    }) }
-                </tbody>
-            </Table>
-        </PaletteInfoSectionRoot>
+                                            <TextCell>
+                                                <Text>{ row.deltaE }</Text>
+                                            </TextCell>
+
+                                            <ActionsCell>
+                                                <Actions>
+                                                    <IconButton
+                                                        type="button"
+                                                        onClick={() => handleToneRemove(shade.number)}
+                                                    >
+                                                        <Trash2Icon />
+                                                    </IconButton>
+                                                </Actions>
+                                            </ActionsCell>
+                                        </TableRow>
+                                    )
+                                }) }
+                            </tbody>
+                        </Table>
+
+                        <AddToneActionsContainer>
+                            { options.scale.slice(0, -1).map((tone, index) => {
+                                const shade = paletteShadesMap.get(tone)
+                                return (
+                                    <AddToneActionsItem key={shade.id}>
+                                        <AddToneButtonContainer>
+                                            <AddToneButton
+                                                type="button"
+                                                variant="blur"
+                                                onClick={() => handleToneAddAfter(shade.number)}
+                                            >
+                                                <PlusIcon />
+                                            </AddToneButton>
+                                        </AddToneButtonContainer>
+                                    </AddToneActionsItem>
+                                )
+                            }) }
+                        </AddToneActionsContainer>
+                    </TableContainer>
+            </PaletteInfoSectionRoot>
+
+            <input type="submit" hidden />
+        </form>
     )
 }
 
@@ -157,6 +246,10 @@ const PaletteGradientContainer = styled.div({
     paddingBlockStart: '64px',
 })
 
+const TableContainer = styled.div({
+    position: 'relative',
+})
+
 const Table = styled.table({
     position: 'relative',
     borderCollapse: 'collapse',
@@ -167,12 +260,24 @@ const TableHeadRow = styled.tr({
     height: '64px',
 })
 
-const TableRow = styled.tr({
-    '&[data-highlight="true"]': {
-        position: 'relative',
-        boxShadow: '0 0 0 1px white, 0 0 0 3px black',
-    }
-})
+const TableRow = styled.tr(
+    ({}) => ({
+        '&[data-highlight="true"]': {
+            position: 'relative',
+            boxShadow: '0 0 0 1px white, 0 0 0 3px black',
+        },
+
+        [`&:hover ${Actions}`]: {
+            opacity: 1,
+            visibility: 'visible',
+        },
+
+        [`&:hover ${AddToneButtonContainer}`]: {
+            opacity: 1,
+            visibility: 'visible',
+        },
+    })
+)
 
 const Cell = styled.td({
     padding: 0,
@@ -186,9 +291,11 @@ const Cell = styled.td({
     },
 })
 
-const TextCell = styled(Cell)({
-
-})
+const ToneCell = styled(Cell)()
+const TextCell = styled(Cell)()
+const ShadeColorCell = styled(Cell)()
+const ContrastCell = styled(Cell)()
+const ActionsCell = styled(Cell)()
 
 const Heading = styled.div({
     fontSize: '1rem',
@@ -203,7 +310,19 @@ const Text = styled.div({
     fontWeight: 500,
 })
 
-const ShadeColorCell = styled(Cell)({
+const Actions = styled.div({
+    opacity: 0,
+    visibility: 'hidden',
+    display: 'flex',
+})
+
+const ToneInput = styled.input({
+    margin: 0,
+    border: 0,
+    padding: 0,
+    fontSize: '0.875rem',
+    fontWeight: 500,
+    width: '56px',
 })
 
 const ShadeColorDisplay = styled.div({
@@ -224,9 +343,6 @@ const ShadeColorDisplay = styled.div({
     },
 })
 
-const ContrastCell = styled(Cell)({
-})
-
 const ContrastDisplayGrid = styled.div({
     width: '160px',
     height: '100%',
@@ -242,4 +358,42 @@ const ContrastDisplay = styled.div({
     alignItems: 'center',
     justifyContent: 'center',
     padding: '4px',
+})
+
+const AddToneActionsContainer = styled.div({
+    position: 'absolute',
+    inset: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    paddingBlock: '96px 32px',
+    pointerEvents: 'none',
+})
+
+const AddToneActionsItem = styled.div(
+    ({}) => ({
+        flexGrow: 1,
+        flexShrink: 0,
+        height: 0,
+        display: 'flex',
+        alignItems: 'center',
+        paddingInlineStart: '216px',
+    })
+)
+
+const AddToneButtonContainer = styled.div(
+    ({}) => ({
+        translate: '-50%',
+        padding: '13px',
+        pointerEvents: 'all',
+
+        [`&:hover ${AddToneButton}`]: {
+            opacity: 1,
+            visibility: 'visible',
+        },
+    })
+)
+
+const AddToneButton = styled(IconButton)({
+    opacity: 0,
+    visibility: 'hidden',
 })

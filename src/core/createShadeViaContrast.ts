@@ -10,6 +10,7 @@ import {
     deltaE,
     findNearestValueInScale,
     getColorInfo,
+    uniqueId,
     WHITE_HEX
 } from './utils'
 import { CreateShadeFn, CreateShadeFnOptions, ShadeInfo } from './types'
@@ -58,6 +59,7 @@ export const createShadeViaContrast: CreateShadeViaContrastFn = (inputColor: str
     shadeColor.l = computeScaleLightness(shadeScaleValue, shadeColor, contrastScore)
 
     return {
+        id: uniqueId(),
         number: tone,
         normalized: shadeScaleValue,
         ...getColorInfo(shadeColor),

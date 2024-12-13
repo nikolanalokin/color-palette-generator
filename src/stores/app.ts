@@ -1,10 +1,10 @@
-import { create } from 'zustand'
-import { combine } from 'zustand/middleware'
-import { storage } from '../services/storage'
-import { PaletteInfo, ShadeInfo } from '../core'
+import { combine, createEvent, createStore } from 'effector'
 import { Okhsl } from 'culori'
+import { storage } from '../services/storage'
+import { PaletteInfo } from '../core'
 
 export type PaletteOptions = {
+    scale: number[]
     method: 'lightness' | 'contrast'
     lightnessFuncton?: 'linear' | 'bezier'
     hueShift?: number
@@ -19,50 +19,40 @@ export type AppPalette = {
     palette: PaletteInfo
 }
 
-export const useAppStore = create<{
-    palettes: AppPalette[]
-    editedPalette: AppPalette
-}>(() => ({
-    palettes: storage.get('palettes') || [],
-    editedPalette: null,
-}))
+export const addAppPalette = createEvent<AppPalette>()
+export const updateAppPalette = createEvent<AppPalette>()
+export const removeAppPalette = createEvent<AppPalette>()
 
-export function setEditedPalette (palette: AppPalette | null) {
-    useAppStore.setState(state => ({ editedPalette: palette }))
-}
-
-export function addPalette (palette: AppPalette) {
-    console.log('addPalette')
-    useAppStore.setState(state => ({ palettes: state.palettes.concat({
-        ...palette,
-        id: state.palettes.length > 0 ? String(Math.max(...state.palettes.map(p => +p.id)) + 1) : '1',
-    }) }))
-    storage.set('palettes', useAppStore.getState().palettes)
-}
-
-export function updatePalette (palette: AppPalette) {
-    console.log('updatePalette')
-    useAppStore.setState(state => {
-        const palettesCopy = [...state.palettes]
-        const pIndex = palettesCopy.findIndex(p => p.id === palette.id)
-        palettesCopy[pIndex] = palette
-        return { palettes: palettesCopy }
+export const $appPalettes = createStore<AppPalette[]>(storage.get('palettes') || [])
+    .on(addAppPalette, (state, payload) => {
+        return state.concat({
+            ...payload,
+            id: state.length > 0 ? String(Math.max(...state.map(p => +p.id)) + 1) : '1',
+        })
     })
-    storage.set('palettes', useAppStore.getState().palettes)
-}
-
-export function removePalette (palette: AppPalette) {
-    console.log('removePalette')
-    useAppStore.setState(state => {
-        return { palettes: state.palettes.filter(p => p.id !== palette.id) }
+    .on(updateAppPalette, (state, payload) => {
+        const palettesCopy = [...state]
+        const pIndex = palettesCopy.findIndex(p => p.id === payload.id)
+        palettesCopy[pIndex] = payload
+        return palettesCopy
     })
-    storage.set('palettes', useAppStore.getState().palettes)
-}
+    .on(removeAppPalette, (state, payload) => {
+        return state.filter(p => p.id !== payload.id)
+    })
 
-export const useColorStore = create<{ shade: ShadeInfo }>(() => ({
-    shade: null
-}))
+$appPalettes.watch(state => storage.set('palettes', state))
 
-export function setThemeShade (shade: ShadeInfo) {
-    useColorStore.setState(state => ({ shade }))
-}
+export const setEditedAppPalette = createEvent<AppPalette>()
+
+export const $editedPalette = createStore<AppPalette>(null)
+    .on(setEditedAppPalette, (_, payload) => payload)
+
+export const setThemeTone = createEvent<number>()
+
+export const $themeTone = createStore<number>(null)
+    .on(setThemeTone, (_, payload) => payload)
+
+export const $themeShade = combine(
+    [$themeTone, $editedPalette],
+    ([themeTone, editedPalette]) => editedPalette?.palette.shades.find(shade => shade.number === themeTone) || null
+)

@@ -23,8 +23,10 @@ export const Toolbar = forwardRef<HTMLDivElement, ToolbarProps>(
 )
 
 const ToolbarRoot = styled.header({
+    height: '64px',
     paddingInline: '48px',
-    paddingBlock: '24px',
+    display: 'flex',
+    alignItems: 'center',
     fontSize: '18px',
     fontWeight: 600,
 })

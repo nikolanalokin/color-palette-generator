@@ -41,7 +41,7 @@ export type SelectProps = React.HTMLAttributes<HTMLDivElement> & {
 }
 
 export const Select2: React.FC<SelectProps> = props => {
-    const { value, onValueChange, placeholder, children, ...restProps } = props
+    const { value: valueProp, onValueChange, placeholder, children, ...restProps } = props
 
     const [isOpen, setIsOpen] = useState(false)
     const [activeIndex, setActiveIndex] = useState<number | null>(null)
@@ -82,7 +82,7 @@ export const Select2: React.FC<SelectProps> = props => {
             setSelectedLabel(labelsRef.current[index])
         }
         onValueChange?.(value)
-    }, [])
+    }, [onValueChange])
 
     const listNav = useListNavigation(context, {
         listRef: elementsRef,
@@ -103,14 +103,14 @@ export const Select2: React.FC<SelectProps> = props => {
 
     const selectContext = useMemo(
         () => ({
-            value,
+            value: valueProp,
             valueNode,
             activeIndex,
             selectedIndex,
             getItemProps,
             handleSelect,
         }),
-        [value, valueNode, activeIndex, selectedIndex, getItemProps, handleSelect]
+        [valueProp, valueNode, activeIndex, selectedIndex, getItemProps, handleSelect]
     )
 
     return (

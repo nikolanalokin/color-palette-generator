@@ -18,6 +18,7 @@ export type ContrastInfo = {
 }
 
 export type ShadeInfo = ColorInfo & {
+    id: string
     number: number
     normalized: number
     delta: number
