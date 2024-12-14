@@ -33,7 +33,7 @@ const ButtonRoot = styled.button(
     baseStyles,
     {
         paddingBlock: '8px',
-        paddingInline: '12px',
+        paddingInline: '16px',
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',

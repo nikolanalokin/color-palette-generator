@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import styled from '@emotion/styled'
-import { InfoIcon, PlusIcon, Trash2Icon } from 'lucide-react'
+import { BetweenHorizontalStartIcon, InfoIcon, PlusIcon, Trash2Icon } from 'lucide-react'
 import { PaletteInfo, ShadeInfo } from '../../core'
 import { formatHsl, formatOkhsl } from './format-utils'
 import { IconButton, Tooltip, TooltipContent, TooltipTrigger } from '../../components'
@@ -201,7 +201,7 @@ export const PaletteInfoSection = (props: PaletteInfoSectionProps) => {
                                                 variant="blur"
                                                 onClick={() => handleToneAddAfter(shade.number)}
                                             >
-                                                <PlusIcon />
+                                                <BetweenHorizontalStartIcon />
                                             </AddToneButton>
                                         </AddToneButtonContainer>
                                     </AddToneActionsItem>

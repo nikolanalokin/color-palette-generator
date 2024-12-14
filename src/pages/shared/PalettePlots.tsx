@@ -1,66 +1,126 @@
 import styled from '@emotion/styled'
-import { PaletteInfo } from '../../core'
-import { Field, Label, PlotLinePlot, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components'
-import { useState } from 'react'
+import { PaletteInfo, ShadeInfo } from '../../core'
+import { PlotLinePlot, PlotLinePlotProps } from '../../components'
+import { useMemo, useState } from 'react'
 import { Section } from './primitives'
+import { ToggleButtonGroup } from '../../components/buttons/ToggleButtonGroup'
+import { ToggleButton } from '../../components/buttons/ToggleButton'
+import { useUnit } from 'effector-react'
+import { $editedPaletteShadesMap } from '../../stores/app'
 
 export type PalettePlotsProps = {
     palette?: PaletteInfo
 }
 
+type ColorSpace =
+    | 'okhsl'
+    | 'hsl'
+    | 'rgb'
+
+type PlotDef = Pick<PlotLinePlotProps, 'getY' | 'yDomain' | 'yLabel'>
+
+const plotsPropsDict: Record<ColorSpace, PlotDef[]> = {
+    okhsl: [
+        {
+            getY: (d: ShadeInfo) => d.okhsl.h,
+            yDomain: [0, 360],
+            yLabel: 'hue',
+        },
+        {
+            getY: (d: ShadeInfo) => d.okhsl.s,
+            yDomain: [0, 1],
+            yLabel: 'saturation',
+        },
+        {
+            getY: (d: ShadeInfo) => d.okhsl.l,
+            yDomain: [0, 1],
+            yLabel: 'lightness',
+        },
+    ],
+    hsl: [
+        {
+            getY: (d: ShadeInfo) => d.hsl.h,
+            yDomain: [0, 360],
+            yLabel: 'hue',
+        },
+        {
+            getY: (d: ShadeInfo) => d.hsl.s,
+            yDomain: [0, 1],
+            yLabel: 'saturation',
+        },
+        {
+            getY: (d: ShadeInfo) => d.hsl.l,
+            yDomain: [0, 1],
+            yLabel: 'lightness',
+        },
+    ],
+    rgb: [
+        {
+            getY: (d: ShadeInfo) => d.rgb.r * 255,
+            yDomain: [0, 255],
+            yLabel: 'red',
+        },
+        {
+            getY: (d: ShadeInfo) => d.rgb.g * 255,
+            yDomain: [0, 255],
+            yLabel: 'green',
+        },
+        {
+            getY: (d: ShadeInfo) => d.rgb.b * 255,
+            yDomain: [0, 255],
+            yLabel: 'blue',
+        },
+    ],
+}
+
+const options: Array<{ value: ColorSpace, label: string }> = [
+    { value: 'okhsl', label: 'OKHSL' },
+    { value: 'hsl', label: 'HSL' },
+    { value: 'rgb', label: 'RGB' },
+]
+
 export const PalettePlots = (props: PalettePlotsProps) => {
     const { palette } = props
-    const [colorSpace, setColorSpace] = useState('okhsl')
+    const editedPaletteShadesMap = useUnit($editedPaletteShadesMap)
+    const [colorSpace, setColorSpace] = useState<string>(options[0].value)
     const data = palette.shades.slice(1, -1)
+    const plotsProps = useMemo<PlotDef[]>(() => {
+        return plotsPropsDict[colorSpace]
+    }, [colorSpace])
     return (
         <PalettePlotsRoot>
-            <Field>
-                <Label>Цветовое пространство</Label>
-                <Select
-                    value={colorSpace}
-                    onValueChange={setColorSpace}
-                >
-                    <SelectTrigger>
-                        <SelectValue placeholder="Выберете цветовое пространство" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="okhsl">OKHSL</SelectItem>
-                        <SelectItem value="hsl">HSL</SelectItem>
-                    </SelectContent>
-                </Select>
-            </Field>
+            <ToggleButtonGroup value={colorSpace} onChange={setColorSpace}>
+                { options.map(option => (
+                    <ToggleButton key={option.value} value={option.value}>
+                        { option.label }
+                    </ToggleButton>
+                )) }
+            </ToggleButtonGroup>
+
             <PlotsContainer>
-                <Section area="huePlot">
+                { plotsProps.map((plotProps) => (
+                    <Section key={plotProps.yLabel}>
+                        <PlotLinePlot
+                            data={data}
+                            getX={d => d.number}
+                            xDomain={[0, 1000]}
+                            xLabel="tone"
+                            dotFill={d => editedPaletteShadesMap.get(d[0]).hex}
+                            {...plotProps}
+                        />
+                    </Section>
+                )) }
+
+                <Section>
                     <PlotLinePlot
                         data={data}
                         getX={d => d.number}
-                        getY={d => d[colorSpace].h}
+                        getY={d => d.delta}
                         xDomain={[0, 1000]}
-                        yDomain={[0, 360]}
+                        yDomain={[0, 100]}
                         xLabel="tone"
-                        yLabel="hue"
-                    />
-                </Section>
-                <Section area="saturationPlot">
-                    <PlotLinePlot
-                        data={data}
-                        getX={d => d.number}
-                        getY={d => d[colorSpace].s}
-                        xDomain={[0, 1000]}
-                        yDomain={[0, 1]}
-                        xLabel="tone"
-                        yLabel="saturation"
-                    />
-                </Section>
-                <Section area="lightnessPlot">
-                    <PlotLinePlot
-                        data={data}
-                        getX={d => d.number}
-                        getY={d => d[colorSpace].l}
-                        xDomain={[0, 1000]}
-                        yDomain={[0, 1]}
-                        xLabel="tone"
-                        yLabel="lightness"
+                        yLabel="ΔE"
+                        dotFill={d => editedPaletteShadesMap.get(d[0]).hex}
                     />
                 </Section>
             </PlotsContainer>
@@ -79,7 +139,8 @@ const PalettePlotsRoot = styled.div(
 
 const PlotsContainer = styled.div(
     ({}) => ({
-        display: 'flex',
-        columnGap: '24px',
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: '24px',
     })
 )

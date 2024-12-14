@@ -6,13 +6,14 @@ import { useEffect, useRef } from 'react'
 const defaultMargin = { top: 20, right: 20, bottom: 32, left: 40 }
 
 export type PlotLinePlotProps = React.HTMLAttributes<HTMLDivElement> & {
-    data: any[]
+    data: ShadeInfo[]
     getX: (d: ShadeInfo) => number
     getY: (d: ShadeInfo) => number
     xDomain: [number, number]
     yDomain: [number, number]
     xLabel: string
     yLabel: string
+    dotFill?(d: [number, number]): string
     width?: number
     height?: number
     margin?: { top: number; right: number; bottom: number; left: number }
@@ -27,6 +28,7 @@ export const PlotLinePlot = (props: PlotLinePlotProps) => {
         yDomain,
         xLabel,
         yLabel,
+        dotFill = () => 'white',
         width,
         height,
         margin = defaultMargin,
@@ -44,8 +46,8 @@ export const PlotLinePlot = (props: PlotLinePlotProps) => {
             x: { domain: xDomain, label: xLabel },
             y: { domain: yDomain, label: yLabel },
             marks: [
-                Plot.dot(data.map(d => [getX(d), getY(d)]), { tip: { fontSize: 12 } }),
                 Plot.line(data.map(d => [getX(d), getY(d)]), { curve: 'linear', strokeWidth: 1 }),
+                Plot.dot(data.map(d => [getX(d), getY(d)]), { tip: { fontSize: 12 }, r: 4, fill: dotFill, stroke: 'black' }),
             ]
         })
         containerRef.current.append(plot)

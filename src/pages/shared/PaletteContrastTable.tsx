@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import { contrastAPCA, PaletteInfo } from '../../core'
 import { useState } from 'react'
-import { Field, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components'
+import { Field, FieldLabel, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components'
 import { contrastWCAG } from '../../core/utils'
 import { ToggleButtonGroup } from '../../components/buttons/ToggleButtonGroup'
 import { ToggleButton } from '../../components/buttons/ToggleButton'
@@ -19,7 +19,7 @@ export const PaletteContrastTable = (props: PaletteContrastTableProps) => {
         <PaletteContrastTableRoot>
            <PaletteContrastTableFilters>
                 <Field>
-                    <Label>Метод расчёта контрастности</Label>
+                    <FieldLabel>Метод расчёта контрастности</FieldLabel>
                     <ToggleButtonGroup value={method} onChange={setMethod}>
                         <ToggleButton value="apca">APCA</ToggleButton>
                         <ToggleButton value="wcag">WCAG</ToggleButton>
@@ -27,7 +27,7 @@ export const PaletteContrastTable = (props: PaletteContrastTableProps) => {
                 </Field>
 
                 <Field>
-                    <Label>Допустимый уровень контрастности</Label>
+                    <FieldLabel>Допустимый уровень контрастности</FieldLabel>
                     <ToggleButtonGroup value={level} onChange={setLevel}>
                         <ToggleButton value="all">
                             Все уровни

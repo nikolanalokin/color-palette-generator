@@ -2,9 +2,10 @@ import { Color, formatHex, okhsl } from 'culori'
 import { bezier, invlerp, lerp, linear, Point } from './math'
 import { deltaE, findNearestValueInScale, getColorInfo, uniqueId } from './utils'
 import { CreateShadeFn, CreateShadeFnOptions, ShadeInfo } from './types'
+import { computeScaleHue, HueShiftOptions } from './processing'
 
 export type CreateShadeViaLightnessFnOptions = CreateShadeFnOptions & {
-    hueShift?: number
+    hueShift?: HueShiftOptions
     decreaseSaturationRatio?: number
 }
 export type CreateShadeViaLightnessFn = CreateShadeFn<CreateShadeViaLightnessFnOptions>
@@ -33,8 +34,8 @@ export const createShadeViaLightness: CreateShadeViaLightnessFn = (inputColor: s
     const shadeScaleValue = invlerp(scale.at(0), scale.at(-1), tone)
     const shadeColor = { ...baseColor }
 
-    if (hueShift !== 0) {
-        shadeColor.h = computeScaleHue(shadeScaleValue, shadeColor.h, nearestScaleValue)
+    if (hueShift) {
+        shadeColor.h = computeScaleHue(shadeScaleValue, shadeColor.h, nearestScaleValue, hueShift)
     }
 
     if (0 < decreaseSaturationRatio && decreaseSaturationRatio < 1) {
@@ -60,22 +61,22 @@ createShadeViaLightness.findScaleValue = (color: string | Color, scale: number[]
     return findScaleValue(okhsl(color).l)
 }
 
-const MAX_YELLOW_SHIFT = 10
-const YELLOW_HUE = 110
-const MAX_BLUE_SHIFT = -20
-const BLUE_HUE = 264
+// const MAX_YELLOW_SHIFT = 10
+// const YELLOW_HUE = 110
+// const MAX_BLUE_SHIFT = -10
+// const BLUE_HUE = 264
 
-function computeScaleHue (scaleValue: number, baseHue: number, scaleInitial: number = 1) {
-    let hueShift = 0
-    if (YELLOW_HUE <= baseHue && baseHue < BLUE_HUE) {
-        const shftedBaseHue = (baseHue - 110) % 360
-        hueShift = ((MAX_BLUE_SHIFT - MAX_YELLOW_SHIFT) / (BLUE_HUE - YELLOW_HUE)) * shftedBaseHue + MAX_YELLOW_SHIFT
-    } else {
-        const shftedBaseHue = (baseHue + 96) % 360
-        hueShift = ((MAX_YELLOW_SHIFT - MAX_BLUE_SHIFT) / (YELLOW_HUE + 96)) * shftedBaseHue + MAX_BLUE_SHIFT
-    }
-    return linear(scaleValue, -hueShift, scaleInitial, baseHue)
-}
+// function computeScaleHue (scaleValue: number, baseHue: number, scaleInitial: number = 1) {
+//     let hueShift = 0
+//     if (YELLOW_HUE <= baseHue && baseHue < BLUE_HUE) {
+//         const shiftedBaseHue = (baseHue - YELLOW_HUE) % 360
+//         hueShift = ((MAX_BLUE_SHIFT - MAX_YELLOW_SHIFT) / (BLUE_HUE - YELLOW_HUE)) * shiftedBaseHue + MAX_YELLOW_SHIFT
+//     } else {
+//         const shiftedBaseHue = (baseHue - (BLUE_HUE - 360)) % 360
+//         hueShift = ((MAX_YELLOW_SHIFT - MAX_BLUE_SHIFT) / (YELLOW_HUE - (BLUE_HUE - 360))) * shiftedBaseHue + MAX_BLUE_SHIFT
+//     }
+//     return linear(scaleValue, -hueShift, scaleInitial, baseHue)
+// }
 
 const P0: Point = [0, 0]
 const P1: Point = [0.7, 0.15]
@@ -86,7 +87,6 @@ function computeScaleLightness (scaleValue: number) {
     // const l = 1 - Math.pow(scaleValue, 2)
     // const l = 1 - Math.pow(scaleValue, 3)
     // const l = bezier(scaleValue, [0, 1], [0.2, 0.8], [0.4, 0.6], [1, 0])[1]
-    // console.log(`x: ${scaleValue}, l: ${l}`)
 
     // далее для bezier
     const scalePoint = bezier(scaleValue, P0, P1, P2)
@@ -126,11 +126,11 @@ export function findScaleValue (lightness: number) {
     return 1 - lightness
     // далее для bezier
     const b = 1 - lightness
-    const p0 = P0[1]
-    const p1 = P1[1]
-    const p2 = P2[1]
+    const y0 = P0[1]
+    const y1 = P1[1]
+    const y2 = P2[1]
 
-    return (p0 - p1 + Math.sqrt(b * (p0 - 2 * p1 + p2) + Math.pow(p1, 2) - p0 * p2)) / (p0 - 2 * p1 + p2)
+    return (y0 - y1 + Math.sqrt(b * (y0 - 2 * y1 + y2) + Math.pow(y1, 2) - y0 * y2)) / (y0 - 2 * y1 + y2)
 }
 
 export function findClosestShadeNumber (inputColor: Color | string, scale: number[]) {
@@ -156,11 +156,11 @@ export function findClosestShadeNumber (inputColor: Color | string, scale: numbe
 // function computeScaleHue (scaleValue: number, baseHue: number, scaleInitial: number = 1) {
 //     let hueShift = 0
 //     if (YELLOW_HUE <= baseHue && baseHue < BLUE_HUE) {
-//         const shftedBaseHue = (baseHue - 110) % 360
-//         hueShift = ((MAX_BLUE_SHIFT - MAX_YELLOW_SHIFT) / (BLUE_HUE - YELLOW_HUE)) * shftedBaseHue + MAX_YELLOW_SHIFT
+//         const shiftedBaseHue = (baseHue - 110) % 360
+//         hueShift = ((MAX_BLUE_SHIFT - MAX_YELLOW_SHIFT) / (BLUE_HUE - YELLOW_HUE)) * shiftedBaseHue + MAX_YELLOW_SHIFT
 //     } else {
-//         const shftedBaseHue = (baseHue + 96) % 360
-//         hueShift = ((MAX_YELLOW_SHIFT - MAX_BLUE_SHIFT) / (YELLOW_HUE + 96)) * shftedBaseHue + MAX_BLUE_SHIFT
+//         const shiftedBaseHue = (baseHue + 96) % 360
+//         hueShift = ((MAX_YELLOW_SHIFT - MAX_BLUE_SHIFT) / (YELLOW_HUE + 96)) * shiftedBaseHue + MAX_BLUE_SHIFT
 //     }
 //     return baseHue + hueShift * (scaleInitial - scaleValue)
 // }

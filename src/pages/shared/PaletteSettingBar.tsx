@@ -3,16 +3,18 @@ import { formatHex, okhsl, Okhsl } from 'culori'
 import {
     Button,
     Field,
+    FormGroup,
     IconButton,
-    Label,
+    FieldLabel,
     OkhslColorPicker,
     Option2,
     Select2,
+    Switch,
 } from '../../components'
 import { TextInput } from '../../components/inputs/TextInput'
 import { NumberInput } from '../../components/inputs/NumberInput'
 import { useEffect, useMemo, useState } from 'react'
-import { PaletteInfo } from '../../core'
+import { ComplexHueShiftOptions, HueShiftOptions, PaletteInfo } from '../../core'
 import { PaletteOptions } from '../../stores/app'
 import { resetStyles } from '../../components/buttons/shared'
 import { CheckIcon } from 'lucide-react'
@@ -53,10 +55,13 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
     const updateOptions = (changes: Partial<PaletteOptions>) => {
         onOptionsChange?.({ ...options, ...changes })
     }
+    const updateHueShiftOptions = (changes: Partial<ComplexHueShiftOptions>) => {
+        onOptionsChange?.({ ...options, hueShift: { ...options.hueShift as ComplexHueShiftOptions, ...changes } })
+    }
     return (
         <PaletteSettingBarRoot>
             {/* <Field>
-                <Label>Название</Label>
+                <FieldLabel>Название</FieldLabel>
                 <TextInput
                     id="name"
                     value={name}
@@ -100,7 +105,7 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
             />
 
             {/* <Field>
-                <Label>Метод формирования палитры</Label>
+                <FieldLabel>Метод формирования палитры</FieldLabel>
                 <Select
                     value={options.method}
                     onValueChange={value => updateOptions({
@@ -121,7 +126,7 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
             </Field> */}
 
             <Field>
-                <Label>Метод формирования палитры</Label>
+                <FieldLabel>Метод формирования палитры</FieldLabel>
                 <Select2
                     value={options.method}
                     onValueChange={value => updateOptions({
@@ -136,7 +141,7 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
 
             { options.method === 'lightness' ? (
                 <Field>
-                    <Label>Функция изменения светлоты</Label>
+                    <FieldLabel>Функция изменения светлоты</FieldLabel>
                     <Select2
                         value={options.lightnessFuncton}
                         onValueChange={value => updateOptions({
@@ -149,27 +154,86 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                 </Field>
             ) : null }
 
-            <NumberInput
-                id="hueShift"
-                labelText="Смещение цветового тона"
-                step={1}
-                value={options.hueShift}
-                onChange={value => updateOptions({
-                    hueShift: value
-                })}
-            />
+            <FormGroup labelText="Изменение цветового тона">
+                <SwitchContainer>
+                    <Switch
+                        checked={typeof options.hueShift === 'number'}
+                        onValueChange={value => {
+                            if (value) {
+                                updateOptions({
+                                    hueShift: 0
+                                })
+                            } else {
+                                updateOptions({
+                                    hueShift: {
+                                        point1: 110,
+                                        point2: 264,
+                                        shift1: 0,
+                                        shift2: 0,
+                                    }
+                                })
+                            }
+                        }}
+                    />
+                    <FieldLabel>Использовать фиксированный сдвиг</FieldLabel>
+                </SwitchContainer>
 
-            <NumberInput
-                id="decreaseSaturationRatio"
-                labelText="Коэффициент уменьшения насыщенности (%)"
-                min={0}
-                max={100}
-                step={1}
-                value={options.decreaseSaturationRatio * 100}
-                onChange={value => updateOptions({
-                    decreaseSaturationRatio: value / 100
-                })}
-            />
+                { typeof options.hueShift === 'number' ? (
+                    <NumberInput
+                        labelText="Величина сдвига"
+                        step={1}
+                        value={options.hueShift}
+                        onValueChange={value => updateOptions({
+                            hueShift: value
+                        })}
+                    />
+                ) : (
+                    <ComplexHueShiftContainer>
+                        <NumberInput
+                            labelText="hue 1"
+                            min={0}
+                            max={360}
+                            step={1}
+                            value={options.hueShift.point1}
+                            onValueChange={value => updateHueShiftOptions({ point1: value })}
+                        />
+                        <NumberInput
+                            labelText="hue 2"
+                            min={0}
+                            max={360}
+                            step={1}
+                            value={options.hueShift.point2}
+                            onValueChange={value => updateHueShiftOptions({ point2: value })}
+                        />
+                        <NumberInput
+                            labelText="hue shift 1"
+                            step={1}
+                            value={options.hueShift.shift1}
+                            onValueChange={value => updateHueShiftOptions({ shift1: value })}
+                        />
+                        <NumberInput
+                            labelText="hue shift 2"
+                            step={1}
+                            value={options.hueShift.shift2}
+                            onValueChange={value => updateHueShiftOptions({ shift2: value })}
+                        />
+                    </ComplexHueShiftContainer>
+                ) }
+            </FormGroup>
+
+            <FormGroup labelText="Изменение насыщенности">
+                <NumberInput
+                    id="decreaseSaturationRatio"
+                    labelText="Коэффициент уменьшения насыщенности (%)"
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={options.decreaseSaturationRatio * 100}
+                    onValueChange={value => updateOptions({
+                        decreaseSaturationRatio: value / 100
+                    })}
+                />
+            </FormGroup>
 
             {/* <Checkbox
                 id="fixBase"
@@ -187,8 +251,10 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
 
 const PaletteSettingBarRoot = styled.div(
     ({}) => ({
+        maxHeight: '100%',
         width: '384px',
-        paddingInline: '16px',
+        paddingInlineStart: '16px',
+        paddingInlineEnd: '4px',
         paddingBlock: '16px',
         borderRadius: '16px',
         backgroundColor: 'rgba(255 255 255 / 0.5)',
@@ -196,8 +262,10 @@ const PaletteSettingBarRoot = styled.div(
         backdropFilter: 'blur(10px)',
         boxShadow: '0 4px 30px rgba(0 0 0 / 0.1)',
         display: 'grid',
-        gap: '16px',
+        rowGap: '16px',
         overflowY: 'auto',
+        scrollbarGutter: 'stable',
+        overscrollBehaviorY: 'contain',
     })
 )
 
@@ -260,3 +328,19 @@ const ColorRect = styled.input`
         border: none;
     }
 `
+
+const SwitchContainer = styled.div(
+    ({}) => ({
+        display: 'flex',
+        columnGap: '8px',
+        alignItems: 'center',
+    })
+)
+
+const ComplexHueShiftContainer = styled.div(
+    ({}) => ({
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: '8px',
+    })
+)

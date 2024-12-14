@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import { BaseInput, Field, Label } from './shared'
+import { BaseInput, Field, FieldLabel } from './shared'
+import { useId } from 'react'
 
 type BaseTextInputProps = {
     labelText?: string
@@ -12,18 +13,18 @@ export type TextInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, k
 export const TextInput = (props: TextInputProps) => {
     const {
         labelText,
-        id,
+        id: idProp,
         value,
         onChange,
         ...restProps
     } = props
-
+    const id = idProp || useId()
     return (
         <TextInputRoot>
             { labelText ? (
-                <Label htmlFor={id}>
+                <FieldLabel htmlFor={id}>
                     { labelText }
-                </Label>
+                </FieldLabel>
             ) : null }
 
             <BaseInput
