@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import { Field, Label } from './shared'
+import { Field, FieldLabel } from './shared'
+import { useId } from 'react'
 
 type BaseRangeInputProps = {
     labelText?: string
@@ -12,12 +13,13 @@ export type RangeInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 
 export const RangeInput = (props: RangeInputProps) => {
     const {
         labelText,
-        id,
+        id: idProp,
         step = 1,
         value,
         onChange,
         ...restProps
     } = props
+    const id = idProp || useId()
     return (
         <RangeInputRoot>
             <RangeInputLabel htmlFor={id}>
@@ -43,7 +45,7 @@ const RangeInputRoot = styled(Field)(
     })
 )
 
-const RangeInputLabel = styled(Label)(
+const RangeInputLabel = styled(FieldLabel)(
     () => ({
         display: 'flex',
         justifyContent: 'space-between',

@@ -7,6 +7,8 @@ import { $appPalettes, $editedPalette, addAppPalette, PaletteOptions, setEditedA
 import { useNavigate, useParams } from 'react-router-dom'
 import { Okhsl, okhsl } from 'culori'
 import { useUnit } from 'effector-react'
+import { PalettePlots } from './shared/PalettePlots'
+import { Tab, TabList, TabPanel, Tabs } from '../components'
 
 function createDefaultColor () {
     return okhsl('#d03531')
@@ -79,31 +81,30 @@ export const Palette = () => {
     return (
         <PaletteRoot>
             <PaletteInfoSection>
-                <DisplaySection>
-                    <PaletteInfoSectionBlock
-                        palette={palette}
-                        options={options}
-                        onOptionsChange={value => updateOptions(value)}
-                    />
-                </DisplaySection>
+                <Tabs defaultValue="palette">
+                    <TabList>
+                        <Tab value="palette">Палитра</Tab>
+                        <Tab value="plots">Графики</Tab>
+                    </TabList>
 
-                {/* <DisplaySection>
-                    <PaletteDisplayBlock
-                        palette={palette}
-                    />
-                </DisplaySection> */}
-{/*
-                <PlotsSection>
-                    <PalettePlots
-                        palette={palette}
-                    />
-                </PlotsSection>
+                    <TabPanel value="palette">
+                        <DisplaySection>
+                            <PaletteInfoSectionBlock
+                                palette={palette}
+                                options={options}
+                                onOptionsChange={value => updateOptions(value)}
+                            />
+                        </DisplaySection>
+                    </TabPanel>
 
-                <ContrastTableSection>
-                    <PaletteContrastTable
-                        palette={palette}
-                    />
-                </ContrastTableSection> */}
+                    <TabPanel value="plots">
+                        <PlotsSection>
+                            <PalettePlots
+                                palette={palette}
+                            />
+                        </PlotsSection>
+                    </TabPanel>
+                </Tabs>
             </PaletteInfoSection>
 
             <PaletteSettingsAside>
@@ -136,10 +137,12 @@ const PaletteRoot = styled.main({
 })
 
 const PaletteInfoSection = styled.section({
+    width: '100%',
     display: 'grid',
     paddingInline: '48px',
+    paddingInlineEnd: 'calc(24px + 384px + 24px)',
     paddingBlock: '24px',
-    gap: '24px',
+    rowGap: '24px',
 })
 
 const PaletteSettingsAside = styled.aside({
@@ -151,8 +154,6 @@ const PaletteSettingsAside = styled.aside({
 
 const Section = styled.section()
 
-const PlotsSection = styled(Section)()
-
 const DisplaySection = styled(Section)()
 
-const ContrastTableSection = styled(Section)()
+const PlotsSection = styled(Section)()

@@ -14,9 +14,10 @@ import {
     WHITE_HEX
 } from './utils'
 import { CreateShadeFn, CreateShadeFnOptions, ShadeInfo } from './types'
+import { computeScaleHue, HueShiftOptions } from './processing'
 
 export type CreateShadeViaContrastFnOptions = CreateShadeFnOptions & {
-    hueShift?: number
+    hueShift?: HueShiftOptions
     decreaseSaturationRatio?: number
     contrastScore?: number
 }
@@ -48,7 +49,7 @@ export const createShadeViaContrast: CreateShadeViaContrastFn = (inputColor: str
     const shadeScaleValue = invlerp(scale.at(0), scale.at(-1), tone)
     const shadeColor = { ...baseColor }
 
-    if (hueShift !== 0) {
+    if (hueShift) {
         shadeColor.h = computeScaleHue(shadeScaleValue, shadeColor.h, nearestScaleValue, hueShift)
     }
 
@@ -73,10 +74,6 @@ createShadeViaContrast.findTone = (color: string | Color, scale: number[]) => {
 
 createShadeViaContrast.findScaleValue = (color: string | Color, scale: number[]) => {
     return invlerp(scale.at(0), scale.at(-1), findTone(color, scale))
-}
-
-function computeScaleHue (scaleValue: number, baseHue: number, scaleInitial: number = 1, hueShift: number) {
-    return linear(scaleValue, -hueShift, scaleInitial, baseHue)
 }
 
 function computeScaleSaturation (scaleValue: number, minSaturation: number, maxSaturation: number, scalePeak: number) {

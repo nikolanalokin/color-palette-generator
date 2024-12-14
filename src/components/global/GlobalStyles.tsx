@@ -39,6 +39,22 @@ export const GlobalStyles = () => {
                     margin-block-start: .5em;
                     padding-inline-start: 2em;
                 }
+
+                *::-webkit-scrollbar {
+                    width: 12px;
+                }
+
+                *::-webkit-scrollbar-track {
+                    background-color: transparent;
+                }
+
+                *::-webkit-scrollbar-thumb {
+                    border: 4px solid transparent;
+                    border-radius: 6px;
+                    background-color: rgba(0 0 0 / 0.1);
+                    background-clip: content-box;
+                    min-height: 60px;
+                }
             `}
         />
     )

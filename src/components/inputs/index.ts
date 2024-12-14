@@ -6,6 +6,7 @@ export * from './OklchColorPicker'
 export * from './RangeInput'
 export * from './Select'
 export * from './SelectInput'
+export * from './Switch'
 export * from './TextInput'
 
 export * from './shared'

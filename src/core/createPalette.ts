@@ -1,7 +1,7 @@
 import { getColorInfo, getNearestColorNames, uniqueId } from './utils'
 import { PaletteInfo } from './types'
-import { createShadeViaContrast } from './createShadeViaContrast'
-import { createShadeViaLightness } from './createShadeViaLightness'
+import { createShadeViaContrast, CreateShadeViaContrastFnOptions } from './createShadeViaContrast'
+import { createShadeViaLightness, CreateShadeViaLightnessFnOptions } from './createShadeViaLightness'
 import { Color } from 'culori'
 
 export const DEFAULT_TONES_SCALE = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
@@ -9,9 +9,7 @@ export const DEFAULT_TONES_SCALE = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 export type PaletteFnProps = {
     scale?: number[]
     method?: 'lightness' | 'contrast'
-    hueShift?: number
-    decreaseSaturationRatio?: number
-}
+} & (CreateShadeViaContrastFnOptions | CreateShadeViaLightnessFnOptions)
 
 export function createPalette (inputColor: string | Color, props: PaletteFnProps): PaletteInfo {
     const {

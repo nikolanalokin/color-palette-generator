@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import { Label } from './shared'
+import { FieldLabel } from './shared'
+import { useId } from 'react'
 
 type BaseCheckboxProps = {
     labelText?: string
@@ -12,12 +13,12 @@ export type CheckboxProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, ke
 export const Checkbox = (props: CheckboxProps) => {
     const {
         labelText,
-        id,
+        id: idProp,
         checked,
         onChange,
         ...restProps
     } = props
-
+    const id = idProp || useId()
     return (
         <CheckboxRoot>
             <input
@@ -29,9 +30,9 @@ export const Checkbox = (props: CheckboxProps) => {
             />
 
             { labelText ? (
-                <Label htmlFor={id}>
+                <FieldLabel htmlFor={id}>
                     { labelText }
-                </Label>
+                </FieldLabel>
             ) : null }
         </CheckboxRoot>
     )

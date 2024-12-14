@@ -1,13 +1,13 @@
 import { combine, createEvent, createStore } from 'effector'
 import { Okhsl } from 'culori'
 import { storage } from '../services/storage'
-import { PaletteInfo } from '../core'
+import { HueShiftOptions, PaletteInfo, ShadeInfo } from '../core'
 
 export type PaletteOptions = {
     scale: number[]
     method: 'lightness' | 'contrast'
     lightnessFuncton?: 'linear' | 'bezier'
-    hueShift?: number
+    hueShift?: HueShiftOptions
     decreaseSaturationRatio?: number
 }
 
@@ -46,6 +46,10 @@ export const setEditedAppPalette = createEvent<AppPalette>()
 
 export const $editedPalette = createStore<AppPalette>(null)
     .on(setEditedAppPalette, (_, payload) => payload)
+
+export const $editedPaletteShadesMap = $editedPalette.map<Map<number, ShadeInfo>>(
+    p => p?.palette.shades.reduce((acc, shade) => acc.set(shade.number, shade), new Map()) ?? new Map()
+)
 
 export const setThemeTone = createEvent<number>()
 
