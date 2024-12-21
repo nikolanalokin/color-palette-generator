@@ -66,9 +66,9 @@ export function useTooltip (props: TooltipProps = {}) {
     const hover = useHover(context, {
         move: false,
         enabled: controlledOpen == null,
-        handleClose: safePolygon({
-            blockPointerEvents: true,
-        }),
+        // handleClose: safePolygon({
+        //     blockPointerEvents: true,
+        // }),
     })
     const focus = useFocus(context, {
         enabled: controlledOpen == null

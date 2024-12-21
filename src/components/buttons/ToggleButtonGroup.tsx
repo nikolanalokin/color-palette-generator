@@ -5,7 +5,7 @@ import { ToggleButtonRoot } from './ToggleButton'
 
 type BaseToggleButtonGroupProps = {
     value?: string
-    onChange?(value: string): void
+    onValueChange?(value: string): void
     orientation?: 'horizontal' | 'vertical'
 }
 
@@ -26,7 +26,7 @@ export const ToggleButtonGroup = forwardRef<HTMLDivElement, ToggleButtonGroupPro
     (props, forwardedRef) => {
         const {
             value,
-            onChange,
+            onValueChange,
             orientation = 'horizontal',
             children,
             ...restProps
@@ -34,9 +34,9 @@ export const ToggleButtonGroup = forwardRef<HTMLDivElement, ToggleButtonGroupPro
         const childContext = useMemo(() => ({
             value,
             onChange(_, value) {
-                onChange?.(value)
+                onValueChange?.(value)
             }
-        }), [value, onChange])
+        }), [value, onValueChange])
         return (
             <ToggleButtonGroupContext.Provider value={childContext}>
                 <ToggleButtonGroupRoot

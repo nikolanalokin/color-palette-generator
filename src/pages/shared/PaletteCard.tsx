@@ -1,10 +1,10 @@
 import { forwardRef } from 'react'
 import styled from '@emotion/styled'
-import { ShadeInfo } from '../../core'
-import { AppPalette, removeAppPalette } from '../../stores/app'
 import { Link } from 'react-router-dom'
-import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle, IconButton, InfoTooltip, useModal } from '../../components'
-import { DeleteIcon, TableIcon, Trash2Icon, XIcon } from 'lucide-react'
+import { CopyIcon, TableIcon, Trash2Icon, XIcon } from 'lucide-react'
+import { ShadeInfo } from '../../core'
+import { AppPalette, copyAppPalette, removeAppPalette } from '../../stores/app'
+import { Dialog, DialogBody, DialogHeader, DialogTitle, IconButton, InfoTooltip, useModal } from '../../components'
 import { PaletteContrastTable } from './PaletteContrastTable'
 
 type BasePaletteCardProps = {
@@ -42,11 +42,15 @@ export const PaletteCard = forwardRef<HTMLDivElement, PaletteCardProps>(
                     <Title>{ data.name }</Title>
 
                     <PaletteCardActions>
-                        <InfoTooltip message="Открыть таблицу контрастности">
+                        <InfoTooltip message="Таблица контрастности">
                             <IconButton onClick={() => open()}>
                                 <TableIcon />
                             </IconButton>
                         </InfoTooltip>
+
+                        <IconButton onClick={() => copyAppPalette(data)}>
+                            <CopyIcon />
+                        </IconButton>
 
                         <IconButton onClick={() => removeAppPalette(data)}>
                             <Trash2Icon />
@@ -70,11 +74,13 @@ export const PaletteCard = forwardRef<HTMLDivElement, PaletteCardProps>(
     }
 )
 
-const PaletteCardRoot = styled.div({
-    display: 'flex',
-    flexDirection: 'column',
-    rowGap: '16px',
-})
+const PaletteCardRoot = styled.div(
+    ({}) => ({
+        display: 'flex',
+        flexDirection: 'column',
+        rowGap: '16px',
+    })
+)
 
 const PaletteCardMetaContainer = styled.div({
     display: 'flex',
@@ -94,7 +100,7 @@ const PaletteCardActions = styled.div({
 
 const PaletteCardScaleContainer = styled(Link)(
     ({}) => ({
-        width: '256px',
+        minWidth: '256px',
         borderRadius: '16px',
         backgroundColor: 'rgba(255 255 255 / 0.2)',
         border: '1px solid rgba(255 255 255 / 0.3)',

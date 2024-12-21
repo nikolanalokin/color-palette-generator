@@ -27,6 +27,7 @@ const ToolbarRoot = styled.header({
     paddingInline: '48px',
     display: 'flex',
     alignItems: 'center',
+    columnGap: '32px',
     fontSize: '18px',
     fontWeight: 600,
 })

@@ -3,26 +3,13 @@ import styled from '@emotion/styled'
 import { createPalette } from '../core'
 import { PaletteSettingBar } from './shared/PaletteSettingBar'
 import { PaletteInfoSection as PaletteInfoSectionBlock } from './shared/PaletteInfoSection'
-import { $appPalettes, $editedPalette, addAppPalette, PaletteOptions, setEditedAppPalette, updateAppPalette } from '../stores/app'
+import { $appPalettes, $editedPalette, addAppPalette, createDefaultAppPalette, PaletteOptions, setEditedAppPalette, updateAppPalette } from '../stores/app'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Okhsl, okhsl } from 'culori'
+import { Okhsl } from 'culori'
 import { useUnit } from 'effector-react'
 import { PalettePlots } from './shared/PalettePlots'
-import { Tab, TabList, TabPanel, Tabs } from '../components'
-
-function createDefaultColor () {
-    return okhsl('#d03531')
-}
-
-function createDefaultOptions (): PaletteOptions {
-    return {
-        scale: [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
-        method: 'contrast',
-        lightnessFuncton: null,
-        hueShift: 5,
-        decreaseSaturationRatio: .15,
-    }
-}
+import { Button, IconButton, Tab, TabList, TabPanel, Tabs, Toolbar } from '../components'
+import { ArrowLeftIcon } from 'lucide-react'
 
 export const Palette = () => {
     const { paletteId } = useParams()
@@ -35,21 +22,9 @@ export const Palette = () => {
         if (paletteId) {
             const p = palettes.find(palette => palette.id === paletteId)
             if (p) setEditedAppPalette(p)
-            else setEditedAppPalette({
-                id: null,
-                color: createDefaultColor(),
-                name: '',
-                options: createDefaultOptions(),
-                palette: createPalette(createDefaultColor(), createDefaultOptions()),
-            })
+            else setEditedAppPalette(createDefaultAppPalette())
         } else {
-            setEditedAppPalette({
-                id: null,
-                color: createDefaultColor(),
-                name: '',
-                options: createDefaultOptions(),
-                palette: createPalette(createDefaultColor(), createDefaultOptions()),
-            })
+            setEditedAppPalette(createDefaultAppPalette())
         }
     }, [paletteId])
 
@@ -80,6 +55,15 @@ export const Palette = () => {
 
     return (
         <PaletteRoot>
+            <Toolbar>
+                <Button
+                    startIcon={<ArrowLeftIcon />}
+                    onClick={() => navigate('/dashboard', { replace: true })}
+                >
+                    Назад к набору
+                </Button>
+            </Toolbar>
+
             <PaletteInfoSection>
                 <Tabs defaultValue="palette">
                     <TabList>
@@ -133,7 +117,7 @@ export const Palette = () => {
 
 const PaletteRoot = styled.main({
     display: 'flex',
-    flexGrow: 1,
+    flexDirection: 'column',
 })
 
 const PaletteInfoSection = styled.section({
@@ -141,7 +125,7 @@ const PaletteInfoSection = styled.section({
     display: 'grid',
     paddingInline: '48px',
     paddingInlineEnd: 'calc(24px + 384px + 24px)',
-    paddingBlock: '24px',
+    paddingBlock: '0 24px',
     rowGap: '24px',
 })
 

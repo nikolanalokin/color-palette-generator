@@ -40,6 +40,7 @@ const TabRoot = styled.button(
     {
         position: 'relative',
         fontSize: '1rem',
+        lineHeight: '1.25',
         fontWeight: 600,
         paddingBlock: '16px',
         paddingInline: '24px',

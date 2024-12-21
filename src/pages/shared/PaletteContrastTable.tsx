@@ -20,7 +20,7 @@ export const PaletteContrastTable = (props: PaletteContrastTableProps) => {
            <PaletteContrastTableFilters>
                 <Field>
                     <FieldLabel>Метод расчёта контрастности</FieldLabel>
-                    <ToggleButtonGroup value={method} onChange={setMethod}>
+                    <ToggleButtonGroup value={method} onValueChange={setMethod}>
                         <ToggleButton value="apca">APCA</ToggleButton>
                         <ToggleButton value="wcag">WCAG</ToggleButton>
                     </ToggleButtonGroup>
@@ -28,7 +28,7 @@ export const PaletteContrastTable = (props: PaletteContrastTableProps) => {
 
                 <Field>
                     <FieldLabel>Допустимый уровень контрастности</FieldLabel>
-                    <ToggleButtonGroup value={level} onChange={setLevel}>
+                    <ToggleButtonGroup value={level} onValueChange={setLevel}>
                         <ToggleButton value="all">
                             Все уровни
                         </ToggleButton>

@@ -157,13 +157,9 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
             <FormGroup labelText="Изменение цветового тона">
                 <SwitchContainer>
                     <Switch
-                        checked={typeof options.hueShift === 'number'}
+                        checked={typeof options.hueShift !== 'number'}
                         onValueChange={value => {
                             if (value) {
-                                updateOptions({
-                                    hueShift: 0
-                                })
-                            } else {
                                 updateOptions({
                                     hueShift: {
                                         point1: 110,
@@ -172,10 +168,14 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
                                         shift2: 0,
                                     }
                                 })
+                            } else {
+                                updateOptions({
+                                    hueShift: 0
+                                })
                             }
                         }}
                     />
-                    <FieldLabel>Использовать фиксированный сдвиг</FieldLabel>
+                    <FieldLabel>Использовать продвинутые настройки</FieldLabel>
                 </SwitchContainer>
 
                 { typeof options.hueShift === 'number' ? (

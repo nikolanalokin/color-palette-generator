@@ -24,7 +24,6 @@ export const Switch: React.FC<SwitchProps> = (props) => {
     })
     return (
         <SwitchRoot
-            htmlFor={id}
             data-checked={value}
         >
             <SwitchInput
@@ -38,7 +37,7 @@ export const Switch: React.FC<SwitchProps> = (props) => {
     )
 }
 
-const SwitchRoot = styled.label(
+const SwitchRoot = styled.div(
     ({}) => ({
         position: 'relative',
         backgroundColor: 'rgba(0 0 0 / .1)',
@@ -46,13 +45,10 @@ const SwitchRoot = styled.label(
         height: '24px',
         width: '48px',
 
-        '&:focus': {
-            outline: '2px solid black',
-        },
-
         '&::after': {
             boxSizing: 'border-box',
             content: '""',
+            zIndex: -1,
             position: 'absolute',
             insetBlockStart: '2px',
             insetInlineStart: '2px',
@@ -77,15 +73,18 @@ const SwitchRoot = styled.label(
 
 const SwitchInput = styled.input(
     ({}) => ({
+        appearance: 'none',
+        margin: 0,
+        border: 0,
+        padding: 0,
+        outlineOffset: 0,
         position: 'absolute',
-        overflow: 'hidden',
-        padding: '0',
-        border: '0',
-        margin: '-1px',
-        blockSize: '1px',
-        clip: 'rect(0, 0, 0, 0)',
-        inlineSize: '1px',
-        visibility: 'inherit',
-        whiteSpace: 'nowrap',
+        inset: 0,
+        borderRadius: 'inherit',
+        cursor: 'pointer',
+
+        '&:focus': {
+            outline: '2px solid black',
+        },
     })
 )

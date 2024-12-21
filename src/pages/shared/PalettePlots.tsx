@@ -89,7 +89,7 @@ export const PalettePlots = (props: PalettePlotsProps) => {
     }, [colorSpace])
     return (
         <PalettePlotsRoot>
-            <ToggleButtonGroup value={colorSpace} onChange={setColorSpace}>
+            <ToggleButtonGroup value={colorSpace} onValueChange={setColorSpace}>
                 { options.map(option => (
                     <ToggleButton key={option.value} value={option.value}>
                         { option.label }

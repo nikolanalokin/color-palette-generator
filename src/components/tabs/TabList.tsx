@@ -28,5 +28,6 @@ export const TabList = forwardRef<HTMLDivElement, TabListProps>(
 const TabListRoot = styled.div(
     {
         display: 'flex',
+        alignItems: 'center',
     }
 )

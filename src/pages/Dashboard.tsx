@@ -1,46 +1,115 @@
 import styled from '@emotion/styled'
-import { Button, Toolbar } from '../components'
+import { Button, Tab, TabList, TabPanel, Tabs, Toolbar } from '../components'
 import { PaletteCardAdd } from './shared/PaletteCardAdd'
 import { useNavigate } from 'react-router-dom'
 import { $appPalettes } from '../stores/app'
 import { PaletteCard } from './shared/PaletteCard'
 import { useUnit } from 'effector-react'
 import { css, keyframes } from '@emotion/react'
-import { formatHex, okhsl } from 'culori'
+import { formatHex } from 'culori'
+import { useState } from 'react'
+import { PalettesComparisonTable } from './shared/PalettesComparisonTable'
+import { ToggleButtonGroup } from '../components/buttons/ToggleButtonGroup'
+import { ToggleButton } from '../components/buttons/ToggleButton'
+import { PalettesTable } from './shared/PalettesTable'
 
 export const Dashboard = () => {
-    const appPalettes = useUnit($appPalettes)
     const navigate = useNavigate()
+    const [isComparisonMode, setIsComparisonMode] = useState(false)
+    const [viewMode, setViewMode] = useState('table')
+    const appPalettes = useUnit($appPalettes)
     return (
         <DashboardRoot>
-            <Toolbar>
-                <AddButton onClick={() => navigate('/palette/new')}>
-                    <span>Добавить палитру</span>
-                </AddButton>
-            </Toolbar>
+            {/* <Toolbar></Toolbar> */}
 
-            <PalettesContainer>
-                { appPalettes.map(palette => (
-                    <PaletteCard
-                        key={palette.id}
-                        data={palette}
-                    />
-                )) }
-                {/* <PaletteCardAdd to="/palette/new" /> */}
-            </PalettesContainer>
+            <DashboardMainSection>
+                <Tabs defaultValue="view">
+                    <TabList>
+                        <Tab value="view">Обзор</Tab>
+                        <Tab value="comparison">Сравнение</Tab>
+
+                        <div css={{ flexGrow: 1 }}></div>
+
+                        <AddButton onClick={() => navigate('/palette/new')}>
+                            <span>Добавить палитру</span>
+                        </AddButton>
+                    </TabList>
+
+                    <TabPanel value="view">
+                        <PalettesViewContainer>
+                            <PalettesViewToolbarContainer>
+                                <ToggleButtonGroup value={viewMode} onValueChange={setViewMode}>
+                                    <ToggleButton value="grid">Сетка</ToggleButton>
+                                    <ToggleButton value="table">Таблица</ToggleButton>
+                                </ToggleButtonGroup>
+                            </PalettesViewToolbarContainer>
+
+                            { viewMode === 'grid' ? (
+                                <PalettesViewGridContainer>
+                                    { appPalettes.map(palette => (
+                                        <PaletteCard
+                                            key={palette.id}
+                                            data={palette}
+                                        />
+                                    )) }
+                                </PalettesViewGridContainer>
+                            ) : viewMode === 'table' ? (
+                                <PalettesViewTableContainer>
+                                    <PalettesTable palettes={appPalettes} />
+                                </PalettesViewTableContainer>
+                            ) : null }
+                        </PalettesViewContainer>
+                    </TabPanel>
+
+                    <TabPanel value="comparison">
+                        <PalettesComparisonTableContainer>
+                            <PalettesComparisonTable palettes={appPalettes} />
+                        </PalettesComparisonTableContainer>
+                    </TabPanel>
+                </Tabs>
+            </DashboardMainSection>
         </DashboardRoot>
     )
 }
 
 const DashboardRoot = styled.main({
-    flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'column',
 })
 
-const PalettesContainer = styled.section({
+const DashboardMainSection = styled.main({
+    display: 'flex',
+    flexDirection: 'column',
+    rowGap: '24px',
     paddingInline: '48px',
     paddingBlock: '24px',
+})
+
+const PalettesViewToolbarContainer = styled.section({
     display: 'flex',
-    columnGap: '24px',
+    colGap: '8px',
+})
+
+const PalettesViewContainer = styled.section({
+    display: 'flex',
+    flexDirection: 'column',
+    rowGap: '24px',
+})
+
+const PalettesViewGridContainer = styled.div({
+    display: 'grid',
+    gridTemplateColumns: 'repeat(6, 1fr)',
+    gap: '24px',
+})
+
+const PalettesViewTableContainer = styled.div({
+    display: 'grid',
+})
+
+const PalettesComparisonTableContainer = styled.section({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
 })
 
 const rotate = keyframes`

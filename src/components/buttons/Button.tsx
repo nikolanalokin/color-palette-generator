@@ -38,5 +38,10 @@ const ButtonRoot = styled.button(
         alignItems: 'center',
         justifyContent: 'center',
         columnGap: '8px',
+
+        'svg': {
+            width: '1.25rem',
+            height: '1.25rem',
+        },
     }
 )
