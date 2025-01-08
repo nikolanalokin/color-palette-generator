@@ -1,19 +1,23 @@
 import { useEffect } from 'react'
 import styled from '@emotion/styled'
-import { createPalette } from '../core'
-import { PaletteSettingBar } from './shared/PaletteSettingBar'
-import { PaletteInfoSection as PaletteInfoSectionBlock } from './shared/PaletteInfoSection'
-import { $appPalettes, $editedPalette, addAppPalette, createDefaultAppPalette, PaletteOptions, setEditedAppPalette, updateAppPalette } from '../stores/app'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Okhsl } from 'culori'
 import { useUnit } from 'effector-react'
-import { PalettePlots } from './shared/PalettePlots'
-import { Button, IconButton, Tab, TabList, TabPanel, Tabs, Toolbar } from '../components'
 import { ArrowLeftIcon } from 'lucide-react'
+import { ContentLoader, Toolbar, IconButton, Tabs, TabList, Tab, TabPanel } from '../../components'
+import { createPalette } from '../../core'
+import { $appPalettes, $editedPalette, setEditedAppPalette, createDefaultAppPalette, PaletteOptions, updateAppPalette, addAppPalette } from '../../stores'
+import { PalettePlots } from '../shared/PalettePlots'
+import { PaletteSettingBar } from '../shared/PaletteSettingBar'
+import { VerticalDivider, PageTitle } from '../shared/primitives'
+import { PaletteInfoSection as PaletteInfoSectionBlock } from '../shared/PaletteInfoSection'
+import { usePageNav } from '../shared/usePageNav'
 
 export const Palette = () => {
     const { paletteId } = useParams()
     const navigate = useNavigate()
+
+    usePageNav('Редактирование палитры', { to: '/dashboard' })
 
     const palettes = useUnit($appPalettes)
     const editedPalette = useUnit($editedPalette)
@@ -29,7 +33,7 @@ export const Palette = () => {
     }, [paletteId])
 
     if (!editedPalette) {
-        return null
+        return <ContentLoader />
     }
 
     const {
@@ -55,15 +59,6 @@ export const Palette = () => {
 
     return (
         <PaletteRoot>
-            <Toolbar>
-                <Button
-                    startIcon={<ArrowLeftIcon />}
-                    onClick={() => navigate('/dashboard', { replace: true })}
-                >
-                    Назад к набору
-                </Button>
-            </Toolbar>
-
             <PaletteInfoSection>
                 <Tabs defaultValue="palette">
                     <TabList>
@@ -116,21 +111,21 @@ export const Palette = () => {
 }
 
 const PaletteRoot = styled.main({
+    position: 'relative',
     display: 'flex',
     flexDirection: 'column',
+    padding: '24px',
 })
 
 const PaletteInfoSection = styled.section({
     width: '100%',
     display: 'grid',
-    paddingInline: '48px',
     paddingInlineEnd: 'calc(24px + 384px + 24px)',
-    paddingBlock: '0 24px',
     rowGap: '24px',
 })
 
 const PaletteSettingsAside = styled.aside({
-    position: 'fixed',
+    position: 'absolute',
     insetBlock: '24px',
     insetInlineEnd: '24px',
 })

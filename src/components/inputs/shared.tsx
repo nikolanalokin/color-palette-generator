@@ -1,5 +1,11 @@
 import styled from '@emotion/styled'
 
+export const Form = styled.div({
+    display: 'flex',
+    flexDirection: 'column',
+    rowGap: '16px',
+})
+
 export const Field = styled.div({
     display: 'flex',
     flexDirection: 'column',

@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import { AppPalette } from '../../stores/app'
+import { AppPalette } from '../../stores'
 import { useMemo } from 'react'
 import { ShadeInfo } from '../../core'
 

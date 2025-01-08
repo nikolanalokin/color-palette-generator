@@ -6,7 +6,7 @@ import { Section } from './primitives'
 import { ToggleButtonGroup } from '../../components/buttons/ToggleButtonGroup'
 import { ToggleButton } from '../../components/buttons/ToggleButton'
 import { useUnit } from 'effector-react'
-import { $editedPaletteShadesMap } from '../../stores/app'
+import { $editedPaletteShadesMap } from '../../stores'
 
 export type PalettePlotsProps = {
     palette?: PaletteInfo

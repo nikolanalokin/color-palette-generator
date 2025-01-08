@@ -23,11 +23,12 @@ export const Toolbar = forwardRef<HTMLDivElement, ToolbarProps>(
 )
 
 const ToolbarRoot = styled.header({
+    width: '100%',
     height: '64px',
     paddingInline: '48px',
     display: 'flex',
     alignItems: 'center',
-    columnGap: '32px',
+    columnGap: '24px',
     fontSize: '18px',
     fontWeight: 600,
 })

@@ -38,7 +38,7 @@ export const PaletteDisplayBlock = (props: PaletteDisplayBlockProps) => {
                         id="highlight"
                         labelText="Подсветить наиболее близкий тон"
                         checked={highlight}
-                        onChange={setHighlight}
+                        onValueChange={setHighlight}
                     />
                 </HeaderScaleBlock>
 

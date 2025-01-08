@@ -1,6 +1,7 @@
 import { forwardRef } from 'react'
 import styled from '@emotion/styled'
 import { baseStyles, resetStyles } from './shared'
+import { css } from '@emotion/react'
 
 type BaseButtonProps = {
     startIcon?: React.ReactNode
@@ -28,8 +29,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     }
 )
 
-const ButtonRoot = styled.button(
-    resetStyles,
+export const buttonStyles = css(
     baseStyles,
     {
         paddingBlock: '8px',
@@ -43,5 +43,15 @@ const ButtonRoot = styled.button(
             width: '1.25rem',
             height: '1.25rem',
         },
+
+        '&:disabled': {
+            cursor: 'not-allowed',
+            pointerEvents: 'none',
+        }
     }
+)
+
+const ButtonRoot = styled.button(
+    resetStyles,
+    buttonStyles,
 )

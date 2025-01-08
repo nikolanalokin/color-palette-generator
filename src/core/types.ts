@@ -25,10 +25,17 @@ export type ShadeInfo = ColorInfo & {
 }
 
 export type PaletteInfo = {
+    id: string
     name: string
     inputShade: ShadeInfo
     shades: ShadeInfo[]
     nearestShade: ShadeInfo
+}
+
+export type SetInfo = {
+    id: string
+    name: string
+    palettes: PaletteInfo[]
 }
 
 export type CreateShadeFnOptions = {}

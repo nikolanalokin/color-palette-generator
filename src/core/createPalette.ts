@@ -37,6 +37,7 @@ export function createPalette (inputColor: string | Color, props: PaletteFnProps
     })
     let nearestShade = shadesMap.values().reduce((shade1, shade2) => shade1.delta < shade2.delta ? shade1 : shade2)
     return {
+        id: uniqueId(),
         name: getNearestColorNames(inputColor).at(0),
         inputShade: {
             id: uniqueId(),

@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 import { Link } from 'react-router-dom'
 import { CopyIcon, TableIcon, Trash2Icon, XIcon } from 'lucide-react'
 import { ShadeInfo } from '../../core'
-import { AppPalette, copyAppPalette, removeAppPalette } from '../../stores/app'
+import { AppPalette, copyAppPalette, removeAppPalette } from '../../stores'
 import { Dialog, DialogBody, DialogHeader, DialogTitle, IconButton, InfoTooltip, useModal } from '../../components'
 import { PaletteContrastTable } from './PaletteContrastTable'
 
@@ -29,7 +29,7 @@ export const PaletteCard = forwardRef<HTMLDivElement, PaletteCardProps>(
 
         return (
             <PaletteCardRoot ref={forwardedRef} {...restProps}>
-                <PaletteCardScaleContainer to={`/palette/${data.id}`}>
+                <PaletteCardScaleContainer to={`/palettes/${data.id}`}>
                     { data.palette.shades.map(shade => (
                         <PaletteCardShadeColor
                             key={shade.number}

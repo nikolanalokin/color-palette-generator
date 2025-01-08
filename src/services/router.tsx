@@ -1,8 +1,10 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { Root } from '../pages/Root'
 import { Index } from '../pages/Index'
-import { Dashboard } from '../pages/Dashboard'
-import { Palette } from '../pages/Palette'
+import { Palette, PaletteIndex } from '../pages/palette'
+import { Set, SetAdd, SetIndex } from '../pages/set'
+import { DashboardIndex, DashboardLayout } from '../pages/dashboard'
+import { TemplateIndex } from '../pages/template'
 
 export const router = createBrowserRouter([
     {
@@ -14,20 +16,57 @@ export const router = createBrowserRouter([
                 element: <Index />
             },
             {
-                path: '/dashboard',
-                element: <Dashboard />,
-            },
-            {
-                path: '/palette',
-                element: <Palette />,
-            },
-            {
-                path: '/palette/new',
-                element: <Palette />,
-            },
-            {
-                path: '/palette/:paletteId',
-                element: <Palette />,
+                path: 'dashboard',
+                element: <DashboardLayout />,
+                children: [
+                    {
+                        index: true,
+                        element: <DashboardIndex />
+                    },
+                    {
+                        path: 'sets',
+                        children: [
+                            {
+                                index: true,
+                                element: <SetIndex />,
+                            },
+                            {
+                                path: 'new',
+                                element: <SetAdd />,
+                            },
+                            {
+                                path: ':setId',
+                                element: <Set />,
+                            },
+                        ],
+                    },
+                    {
+                        path: 'palettes',
+                        children: [
+                            {
+                                index: true,
+                                element: <PaletteIndex />,
+                            },
+                            {
+                                path: 'new',
+                                element: <Palette />, // <PaletteAdd />,
+                            },
+                            {
+                                path: ':paletteId',
+                                element: <Palette />,
+                            },
+                        ]
+                    },
+                    {
+                        path: 'templates',
+                        children: [
+                            {
+                                index: true,
+                                element: <TemplateIndex />,
+                            },
+                        ]
+                    },
+                ]
             },
         ]
     },

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import styled from '@emotion/styled'
 import { TableIcon, CopyIcon, Trash2Icon, Settings2Icon, XIcon } from 'lucide-react'
-import { AppPalette, copyAppPalette, removeAppPalette } from '../../stores/app'
+import { AppPalette, copyAppPalette, removeAppPalette } from '../../stores'
 import { ShadeInfo } from '../../core'
 import { Dialog, DialogBody, DialogHeader, DialogTitle, IconButton, InfoTooltip, useModal } from '../../components'
 import { useNavigate } from 'react-router-dom'
@@ -33,74 +33,76 @@ export const PalettesTable = (props: PalettesTableProps) => {
     }, [palettes])
     return (
         <PalettesTableRoot>
-            <PalettesTableTable>
-                <thead>
-                    <tr>
-                        <th />
-                        { allTones.map(tone => (
-                            <td key={tone}>
-                                <Header>
-                                    { tone }
-                                </Header>
-                            </td>
-                        )) }
-                        <th />
-                    </tr>
-                </thead>
-                <tbody>
-                    { palettes.map((palette) => (
-                        <tr key={palette.id}>
-                            <td>
-                                <PaletteName data-suggestion={!palette.name}>
-                                    { palette.name || palette.palette.name }
-                                </PaletteName>
-                            </td>
-                            { allTones.map(tone => {
-                                    const shadesMap = allPalettesShadesMap[palette.id]
-                                    const shade = shadesMap.get(tone)
-                                    return  (
-                                        <td key={`${palette.id}_${tone}`}>
-                                            { shade ? (
-                                                <ColorCell
-                                                    style={{
-                                                        backgroundColor: shadesMap.get(tone).hex,
-                                                        color: shade.normalized >= .5 ? 'white' : 'black'
-                                                    }}
-                                                >
-                                                    { shade.normalized >= .5 ? Math.round(shade.apca.whiteOn) : Math.round(shade.apca.blackOn) }
-                                                </ColorCell>
-                                            ) : null }
-                                        </td>
-                                    )
-                            }) }
-                            <td>
-                                <PaletteActions>
-                                    <InfoTooltip message="Таблица контрастности">
-                                        <IconButton onClick={() => {
-                                            setContrastTablePalette(palette)
-                                            open()
-                                        }}>
-                                            <TableIcon />
-                                        </IconButton>
-                                    </InfoTooltip>
-
-                                    <IconButton onClick={() => navigate(`/palette/${palette.id}`)}>
-                                        <Settings2Icon />
-                                    </IconButton>
-
-                                    <IconButton onClick={() => copyAppPalette(palette)}>
-                                        <CopyIcon />
-                                    </IconButton>
-
-                                    <IconButton onClick={() => removeAppPalette(palette)}>
-                                        <Trash2Icon />
-                                    </IconButton>
-                                </PaletteActions>
-                            </td>
+            <PalettesTableContainer>
+                <PalettesTableTable>
+                    <thead>
+                        <tr>
+                            <th />
+                            { allTones.map(tone => (
+                                <th key={tone}>
+                                    <Header>
+                                        { tone }
+                                    </Header>
+                                </th>
+                            )) }
+                            <th />
                         </tr>
-                    )) }
-                </tbody>
-            </PalettesTableTable>
+                    </thead>
+                    <tbody>
+                        { palettes.map((palette) => (
+                            <tr key={palette.id}>
+                                <td>
+                                    <PaletteName data-suggestion={!palette.name}>
+                                        { palette.name || palette.palette.name }
+                                    </PaletteName>
+                                </td>
+                                { allTones.map(tone => {
+                                        const shadesMap = allPalettesShadesMap[palette.id]
+                                        const shade = shadesMap.get(tone)
+                                        return  (
+                                            <td key={`${palette.id}_${tone}`}>
+                                                { shade ? (
+                                                    <ColorCell
+                                                        style={{
+                                                            backgroundColor: shadesMap.get(tone).hex,
+                                                            color: shade.normalized >= .5 ? 'white' : 'black'
+                                                        }}
+                                                    >
+                                                        { shade.normalized >= .5 ? Math.round(shade.apca.whiteOn) : Math.round(shade.apca.blackOn) }
+                                                    </ColorCell>
+                                                ) : null }
+                                            </td>
+                                        )
+                                }) }
+                                <td>
+                                    <PaletteActions>
+                                        <InfoTooltip message="Таблица контрастности">
+                                            <IconButton onClick={() => {
+                                                setContrastTablePalette(palette)
+                                                open()
+                                            }}>
+                                                <TableIcon />
+                                            </IconButton>
+                                        </InfoTooltip>
+
+                                        <IconButton onClick={() => navigate(`/dashboard/palettes/${palette.id}`)}>
+                                            <Settings2Icon />
+                                        </IconButton>
+
+                                        <IconButton onClick={() => copyAppPalette(palette)}>
+                                            <CopyIcon />
+                                        </IconButton>
+
+                                        <IconButton onClick={() => removeAppPalette(palette)}>
+                                            <Trash2Icon />
+                                        </IconButton>
+                                    </PaletteActions>
+                                </td>
+                            </tr>
+                        )) }
+                    </tbody>
+                </PalettesTableTable>
+            </PalettesTableContainer>
 
             <Dialog ref={setModal}>
                 <DialogHeader>
@@ -120,9 +122,13 @@ export const PalettesTable = (props: PalettesTableProps) => {
     )
 }
 
-const PalettesTableRoot = styled.div(
+const PalettesTableRoot = styled.div({
+    display: 'flex',
+})
+
+const PalettesTableContainer = styled.div(
     () => ({
-        // display: 'grid',
+        display: 'flex',
     })
 )
 

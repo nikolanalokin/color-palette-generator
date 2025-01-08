@@ -45,7 +45,7 @@ export const ToggleButtonRoot = styled.button(
     baseStyles,
     {
         paddingBlock: '8px',
-        paddingInline: '8px',
+        paddingInline: '12px',
 
         '&[data-selected="true"]': {
             backgroundColor: 'rgba(0 0 0 / .1)',

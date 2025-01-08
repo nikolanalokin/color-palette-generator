@@ -6,7 +6,7 @@ import { formatHsl, formatOkhsl } from './format-utils'
 import { IconButton, Tooltip, TooltipContent, TooltipTrigger } from '../../components'
 import { BLACK_HEX, WHITE_HEX } from '../../core/utils'
 import { PaletteGradient } from './PaletteGradient'
-import { PaletteOptions, setThemeTone } from '../../stores/app'
+import { PaletteOptions, setThemeTone } from '../../stores'
 
 export type PaletteInfoSectionProps = {
     palette?: PaletteInfo
