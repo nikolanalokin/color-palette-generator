@@ -1,4 +1,26 @@
+import { Color } from 'culori'
 import { linear } from './math'
+
+type PaletteProcessing = {
+    preProcessings?: Processing[]
+    postProcessings?: Processing[]
+}
+
+type Processing = {
+    channel: Omit<Color, 'mode'>
+    method: ProcessingType
+    options: ProcessingOptions
+}
+
+type ProcessingOptions = {
+
+}
+
+type ProcessingType =
+    | 'hueLinear'
+    | 'hueRotate'
+    | 'saturationParabolaPeak'
+    | 'saturationParabola'
 
 export type ComplexHueShiftOptions = {
     point1: number
@@ -22,4 +44,18 @@ export function computeScaleHue (scaleValue: number, baseHue: number, scaleIniti
         computeHueShift = ((hueShift.shift1 - hueShift.shift2) / (hueShift.point1 - (hueShift.point2 - 360))) * shiftedBaseHue + hueShift.shift2
     }
     return linear(scaleValue, -computeHueShift, scaleInitial, baseHue)
+}
+
+export function computeScaleHueLinear (scaleValue: number, baseHue: number, scaleInitial: number = 1, hueShift: number) {
+    return linear(scaleValue, -hueShift, scaleInitial, baseHue)
+}
+
+export function computeScaleSaturation (scaleValue: number, scalePeak: number, minSaturation: number, maxSaturation: number) {
+    if (scaleValue < scalePeak) {
+        const a = (minSaturation - maxSaturation) / Math.pow(0 - scalePeak, 2)
+        return a * Math.pow(scaleValue - scalePeak, 2) + maxSaturation
+    }
+
+    const a = (minSaturation - maxSaturation) / Math.pow(1 - scalePeak, 2)
+    return a * Math.pow(scaleValue - scalePeak, 2) + maxSaturation
 }

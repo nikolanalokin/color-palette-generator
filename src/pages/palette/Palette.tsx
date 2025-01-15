@@ -9,7 +9,7 @@ import { createPalette } from '../../core'
 import { $appPalettes, $editedPalette, setEditedAppPalette, createDefaultAppPalette, PaletteOptions, updateAppPalette, addAppPalette } from '../../stores'
 import { PalettePlots } from '../shared/PalettePlots'
 import { PaletteSettingBar } from '../shared/PaletteSettingBar'
-import { VerticalDivider, PageTitle } from '../shared/primitives'
+import { VerticalDivider, PageTitle, Section } from '../shared/primitives'
 import { PaletteInfoSection as PaletteInfoSectionBlock } from '../shared/PaletteInfoSection'
 import { usePageNav } from '../shared/usePageNav'
 
@@ -59,53 +59,59 @@ export const Palette = () => {
 
     return (
         <PaletteRoot>
-            <PaletteInfoSection>
-                <Tabs defaultValue="palette">
-                    <TabList>
-                        <Tab value="palette">Палитра</Tab>
-                        <Tab value="plots">Графики</Tab>
-                    </TabList>
+            <PaletteMainSection>
+                <Section>
+                    <PaletteInfoSection>
+                        <Tabs defaultValue="palette">
+                            <TabList>
+                                <Tab value="palette">Палитра</Tab>
+                                <Tab value="plots">Графики</Tab>
+                            </TabList>
 
-                    <TabPanel value="palette">
-                        <DisplaySection>
-                            <PaletteInfoSectionBlock
-                                palette={palette}
-                                options={options}
-                                onOptionsChange={value => updateOptions(value)}
-                            />
-                        </DisplaySection>
-                    </TabPanel>
+                            <TabPanel value="palette">
+                                <DisplaySection>
+                                    <PaletteInfoSectionBlock
+                                        palette={palette}
+                                        options={options}
+                                        onOptionsChange={value => updateOptions(value)}
+                                    />
+                                </DisplaySection>
+                            </TabPanel>
 
-                    <TabPanel value="plots">
-                        <PlotsSection>
-                            <PalettePlots
-                                palette={palette}
-                            />
-                        </PlotsSection>
-                    </TabPanel>
-                </Tabs>
-            </PaletteInfoSection>
+                            <TabPanel value="plots">
+                                <PlotsSection>
+                                    <PalettePlots
+                                        palette={palette}
+                                    />
+                                </PlotsSection>
+                            </TabPanel>
+                        </Tabs>
+                    </PaletteInfoSection>
+                </Section>
 
-            <PaletteSettingsAside>
-                <PaletteSettingBar
-                    name={name}
-                    onNameChange={value => updateName(value)}
-                    color={color}
-                    onColorChange={value => updateColor(value)}
-                    options={options}
-                    onOptionsChange={value => updateOptions(value)}
-                    onSave={() => {
-                        if (paletteId) {
-                            updateAppPalette(editedPalette)
-                        } else {
-                            addAppPalette(editedPalette)
-                        }
-                        navigate('/dashboard', { replace: true })
-                        setEditedAppPalette(null)
-                    }}
-                    palette={palette}
-                />
-            </PaletteSettingsAside>
+                <Section>
+                    <PaletteSettingsAside>
+                        <PaletteSettingBar
+                            name={name}
+                            onNameChange={value => updateName(value)}
+                            color={color}
+                            onColorChange={value => updateColor(value)}
+                            options={options}
+                            onOptionsChange={value => updateOptions(value)}
+                            onSave={() => {
+                                if (paletteId) {
+                                    updateAppPalette(editedPalette)
+                                } else {
+                                    addAppPalette(editedPalette)
+                                }
+                                navigate('/dashboard', { replace: true })
+                                setEditedAppPalette(null)
+                            }}
+                            palette={palette}
+                        />
+                    </PaletteSettingsAside>
+                </Section>
+            </PaletteMainSection>
         </PaletteRoot>
     )
 }
@@ -114,25 +120,28 @@ const PaletteRoot = styled.main({
     position: 'relative',
     display: 'flex',
     flexDirection: 'column',
-    padding: '24px',
+    padding: '16px',
+})
+
+const PaletteMainSection = styled.main({
+    display: 'grid',
+    gridTemplateColumns: '1fr 384px',
+    gap: '6px',
 })
 
 const PaletteInfoSection = styled.section({
     width: '100%',
     display: 'grid',
-    paddingInlineEnd: 'calc(24px + 384px + 24px)',
+    // paddingInlineEnd: 'calc(24px + 384px + 24px)',
     rowGap: '24px',
 })
 
 const PaletteSettingsAside = styled.aside({
-    position: 'absolute',
-    insetBlock: '24px',
-    insetInlineEnd: '24px',
+    // position: 'absolute',
+    // insetBlock: '24px',
+    // insetInlineEnd: '24px',
 })
 
+const DisplaySection = styled.section()
 
-const Section = styled.section()
-
-const DisplaySection = styled(Section)()
-
-const PlotsSection = styled(Section)()
+const PlotsSection = styled.section()

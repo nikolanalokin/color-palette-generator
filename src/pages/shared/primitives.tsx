@@ -2,9 +2,13 @@ import styled from '@emotion/styled'
 
 export const Section = styled.section<{ area?: string }>(
     ({ area }) => ({
-        // padding: '24px',
-        // backgroundColor: 'rgba(0 0 0 / .05)',
-        // borderRadius: '16px',
+        paddingInline: '24px',
+        paddingBlock: '24px',
+        borderRadius: '16px',
+        backgroundColor: 'rgba(255 255 255 / 0.8)',
+        border: '1px solid rgba(255 255 255 / 0.3)',
+        backdropFilter: 'blur(10px)',
+        boxShadow: '0 0 2px rgba(0 0 0 / 0.1)',
 
         ...(area && {
             gridArea: area,

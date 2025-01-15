@@ -17,11 +17,10 @@ export const Root = () => {
         <>
             <GlobalStyles />
             <RootRoot shade={shade}>
-                {/* <Header>Генератор цветовых палитр</Header> */}
                 <Outlet />
-                <Footer>
+                {/* <Footer>
                     @nikolanalokin { new Date().getFullYear() }
-                </Footer>
+                </Footer> */}
             </RootRoot>
         </>
     )
@@ -42,18 +41,14 @@ const RootRoot = styled.div<{ shade?: ShadeInfo }>(
         backgroundImage: shade
             ? `linear-gradient(to left, ${formatCss(shade.rgb)}, ${formatCss({...shade.rgb, alpha: 0})} 50%)`
             : null,
+
+        backgroundColor: 'rgba(238 245 245 / 1)',
     })
 )
 
-const Header = styled.header({
-    paddingInline: '48px',
-    paddingBlock: '24px',
-    fontSize: '18px',
-    fontWeight: 600,
-})
-
 const Footer = styled.footer({
-    paddingInline: '48px',
+    paddingInline: '88px 48px',
     paddingBlock: '24px',
     fontSize: '0.875rem',
+    textAlign: 'end',
 })

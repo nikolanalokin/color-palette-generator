@@ -23,7 +23,7 @@ export function getColorInfo (color: Color | string): ColorInfo {
             onBlack: contrastAPCA(hexColor, BLACK_HEX),
             onWhite: contrastAPCA(hexColor, WHITE_HEX),
             blackOn: contrastAPCA(BLACK_HEX, hexColor),
-            whiteOn: contrastAPCA(WHITE_HEX,hexColor),
+            whiteOn: contrastAPCA(WHITE_HEX, hexColor),
         },
         wcag: {
             onBlack: contrastWCAG(hexColor, BLACK_HEX),

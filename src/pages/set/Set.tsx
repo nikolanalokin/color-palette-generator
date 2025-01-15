@@ -10,7 +10,7 @@ import { ToggleButton } from '../../components/buttons/ToggleButton'
 import { PalettesTable } from '../shared/PalettesTable'
 import { AddPaletteButton } from '../shared/AddPaletteButton'
 import { ArrowLeftIcon } from 'lucide-react'
-import { PageTitle, Spacer, VerticalDivider } from '../shared/primitives'
+import { PageTitle, Section, Spacer, VerticalDivider } from '../shared/primitives'
 import { usePageNav } from '../shared/usePageNav'
 
 export const Set = () => {
@@ -42,39 +42,38 @@ export const Set = () => {
 
     return (
         <SetRoot>
-            <Toolbar>
-                <ToggleButtonGroup value={viewMode} onValueChange={setViewMode}>
-                    <ToggleButton value="grid">Сетка</ToggleButton>
-                    <ToggleButton value="table">Таблица</ToggleButton>
-                </ToggleButtonGroup>
-
-                <Spacer />
-
-                <AddPaletteButton onClick={() => navigate('new')}>
-                    <span>Добавить палитру</span>
-                </AddPaletteButton>
-            </Toolbar>
-
             <SetMainSection>
-                <PalettesViewContainer>
-                    <PalettesViewToolbarContainer>
-                    </PalettesViewToolbarContainer>
+                <Section>
+                    <PalettesViewContainer>
+                        <PalettesViewToolbarContainer>
+                            <ToggleButtonGroup value={viewMode} onValueChange={setViewMode}>
+                                <ToggleButton value="grid">Сетка</ToggleButton>
+                                <ToggleButton value="table">Таблица</ToggleButton>
+                            </ToggleButtonGroup>
 
-                    { viewMode === 'grid' ? (
-                        <PalettesViewGridContainer>
-                            { palettes.map(palette => (
-                                <PaletteCard
-                                    key={palette.id}
-                                    data={palette}
-                                />
-                            )) }
-                        </PalettesViewGridContainer>
-                    ) : viewMode === 'table' ? (
-                        <PalettesViewTableContainer>
-                            <PalettesTable palettes={palettes} />
-                        </PalettesViewTableContainer>
-                    ) : null }
-                </PalettesViewContainer>
+                            <Spacer />
+
+                            <AddPaletteButton onClick={() => navigate('/dashboard/palettes/new')}>
+                                <span>Добавить палитру</span>
+                            </AddPaletteButton>
+                        </PalettesViewToolbarContainer>
+
+                        { viewMode === 'grid' ? (
+                            <PalettesViewGridContainer>
+                                { palettes.map(palette => (
+                                    <PaletteCard
+                                        key={palette.id}
+                                        data={palette}
+                                    />
+                                )) }
+                            </PalettesViewGridContainer>
+                        ) : viewMode === 'table' ? (
+                            <PalettesViewTableContainer>
+                                <PalettesTable palettes={palettes} />
+                            </PalettesViewTableContainer>
+                        ) : null }
+                    </PalettesViewContainer>
+                </Section>
             </SetMainSection>
         </SetRoot>
     )
@@ -83,7 +82,7 @@ export const Set = () => {
 const SetRoot = styled.main({
     display: 'flex',
     flexDirection: 'column',
-    padding: '24px',
+    padding: '16px',
 })
 
 const SetMainSection = styled.main({
@@ -92,15 +91,14 @@ const SetMainSection = styled.main({
     rowGap: '24px',
 })
 
-const PalettesViewToolbarContainer = styled.section({
-    display: 'flex',
-    colGap: '8px',
-})
-
 const PalettesViewContainer = styled.section({
     display: 'flex',
     flexDirection: 'column',
     rowGap: '24px',
+})
+
+const PalettesViewToolbarContainer = styled.section({
+    display: 'flex',
 })
 
 const PalettesViewGridContainer = styled.div({

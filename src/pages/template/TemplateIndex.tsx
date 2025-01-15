@@ -2,6 +2,7 @@ import { useUnit } from 'effector-react'
 import { useNavigate } from 'react-router-dom'
 import styled from '@emotion/styled'
 import { usePageNav } from '../shared/usePageNav'
+import { Section } from '../shared/primitives'
 
 export const TemplateIndex = () => {
     const navigate = useNavigate()
@@ -11,6 +12,9 @@ export const TemplateIndex = () => {
     return (
         <TemplateIndexRoot>
             <TemplateIndexMainSection>
+                <Section>
+
+                </Section>
             </TemplateIndexMainSection>
         </TemplateIndexRoot>
     )
@@ -19,7 +23,7 @@ export const TemplateIndex = () => {
 const TemplateIndexRoot = styled.main({
     display: 'flex',
     flexDirection: 'column',
-    padding: '24px',
+    padding: '16px',
 })
 
 const TemplateIndexMainSection = styled.main({

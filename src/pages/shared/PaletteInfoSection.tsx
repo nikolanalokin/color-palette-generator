@@ -320,6 +320,7 @@ const ToneInput = styled.input({
     margin: 0,
     border: 0,
     padding: 0,
+    backgroundColor: 'unset',
     fontSize: '0.875rem',
     fontWeight: 500,
     width: '56px',

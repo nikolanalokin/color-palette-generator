@@ -5,7 +5,7 @@ import { ArrowLeftIcon } from 'lucide-react'
 import { Button, IconButton, Toolbar } from '../../components'
 import { $appSets } from '../../stores'
 import { SetsTable } from '../shared/SetsTable'
-import { PageTitle, VerticalDivider } from '../shared/primitives'
+import { PageTitle, Section, VerticalDivider } from '../shared/primitives'
 import { usePageNav } from '../shared/usePageNav'
 
 export const SetIndex = () => {
@@ -18,15 +18,17 @@ export const SetIndex = () => {
     return (
         <SetIndexRoot>
             <SetIndexMainSection>
-                <SetsViewTableContainer>
-                    <SetsTableToolbar>
-                        <Button onClick={() => navigate('new')}>
-                            <span>Добавить набор</span>
-                        </Button>
-                    </SetsTableToolbar>
+                <Section>
+                    <SetsViewTableContainer>
+                        <SetsViewTableToolbar>
+                            <Button onClick={() => navigate('new')}>
+                                <span>Добавить набор</span>
+                            </Button>
+                        </SetsViewTableToolbar>
 
-                    <SetsTable sets={appSets} />
-                </SetsViewTableContainer>
+                        <SetsTable sets={appSets} />
+                    </SetsViewTableContainer>
+                </Section>
             </SetIndexMainSection>
         </SetIndexRoot>
     )
@@ -35,7 +37,7 @@ export const SetIndex = () => {
 const SetIndexRoot = styled.main({
     display: 'flex',
     flexDirection: 'column',
-    padding: '24px',
+    padding: '16px',
 })
 
 const SetIndexMainSection = styled.main({
@@ -50,7 +52,7 @@ const SetsViewTableContainer = styled.div({
     rowGap: '24px',
 })
 
-const SetsTableToolbar = styled.div(
+const SetsViewTableToolbar = styled.div(
     () => ({
         display: 'flex',
     })

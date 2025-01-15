@@ -251,21 +251,21 @@ export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
 
 const PaletteSettingBarRoot = styled.div(
     ({}) => ({
-        maxHeight: '100%',
-        width: '384px',
-        paddingInlineStart: '16px',
-        paddingInlineEnd: '4px',
-        paddingBlock: '16px',
-        borderRadius: '16px',
-        backgroundColor: 'rgba(255 255 255 / 0.5)',
-        border: '1px solid rgba(255 255 255 / 0.3)',
-        backdropFilter: 'blur(10px)',
-        boxShadow: '0 4px 30px rgba(0 0 0 / 0.1)',
+        // maxHeight: '100%',
+        // width: '384px',
+        // paddingInlineStart: '16px',
+        // paddingInlineEnd: '4px',
+        // paddingBlock: '16px',
+        // borderRadius: '16px',
+        // backgroundColor: 'rgba(255 255 255 / 0.5)',
+        // border: '1px solid rgba(255 255 255 / 0.3)',
+        // backdropFilter: 'blur(10px)',
+        // boxShadow: '0 4px 30px rgba(0 0 0 / 0.1)',
         display: 'grid',
         rowGap: '16px',
-        overflowY: 'auto',
-        scrollbarGutter: 'stable',
-        overscrollBehaviorY: 'contain',
+        // overflowY: 'auto',
+        // scrollbarGutter: 'stable',
+        // overscrollBehaviorY: 'contain',
     })
 )
 

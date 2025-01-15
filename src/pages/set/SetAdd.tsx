@@ -5,7 +5,7 @@ import styled from '@emotion/styled'
 import { $appPalettes, $editedAppSet, addAppSet, createDefaultAppSet, setEditedAppSet } from '../../stores'
 import { Button, ContentLoader, IconButton, TextInput, Toolbar } from '../../components'
 import { PalettesSelectionTable } from '../shared/PalettesSelectionTable'
-import { PageTitle, Spacer, VerticalDivider } from '../shared/primitives'
+import { PageTitle, Section, Spacer, VerticalDivider } from '../shared/primitives'
 import { ArrowLeftIcon } from 'lucide-react'
 import { usePageNav } from '../shared/usePageNav'
 
@@ -38,44 +38,66 @@ export const SetAdd = () => {
     const valid = !!editedAppSet.name && editedAppSet.palettes.length > 0
 
     return (
-        <SetRoot>
-            <Toolbar>
-                <Button
-                    disabled={!valid}
-                    onClick={() => {
-                        addAppSet(editedAppSet)
-                        navigate('/dashboard')
-                    }}
-                >
-                    Сохранить
-                </Button>
-            </Toolbar>
+        <SetAddRoot>
+            <SetAddMainSection>
+                <Section>
+                    <SetAddFormContainer>
+                        <SetAddFormToolbar>
+                            <Button
+                                disabled={!valid}
+                                onClick={() => {
+                                    addAppSet(editedAppSet)
+                                    navigate('/dashboard')
+                                }}
+                            >
+                                Сохранить
+                            </Button>
+                        </SetAddFormToolbar>
 
-            <SetMainSection>
-                <TextInput
-                    labelText="Название набора"
-                    value={editedAppSet.name}
-                    onChange={updateName}
-                />
+                        <SetAddForm>
+                            <TextInput
+                                labelText="Название набора"
+                                value={editedAppSet.name}
+                                onChange={updateName}
+                            />
 
-                <PalettesSelectionTable
-                    palettes={palettes}
-                    value={editedAppSet.palettes}
-                    onValueChange={updatePalettes}
-                />
-            </SetMainSection>
-        </SetRoot>
+                            <PalettesSelectionTable
+                                palettes={palettes}
+                                value={editedAppSet.palettes}
+                                onValueChange={updatePalettes}
+                            />
+                        </SetAddForm>
+                    </SetAddFormContainer>
+                </Section>
+            </SetAddMainSection>
+        </SetAddRoot>
     )
 }
 
-const SetRoot = styled.main({
+const SetAddRoot = styled.main({
+    display: 'flex',
+    flexDirection: 'column',
+    padding: '16px',
+})
+
+const SetAddMainSection = styled.main({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-start',
-    padding: '24px',
+    rowGap: '24px',
 })
 
-const SetMainSection = styled.main({
+const SetAddFormContainer = styled.section({
+    display: 'flex',
+    flexDirection: 'column',
+    rowGap: '24px',
+})
+
+const SetAddFormToolbar = styled.section({
+    display: 'flex',
+})
+
+const SetAddForm = styled.section({
     display: 'flex',
     flexDirection: 'column',
     rowGap: '24px',

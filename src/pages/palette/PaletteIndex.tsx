@@ -5,6 +5,7 @@ import { $appPalettes } from '../../stores'
 import { usePageNav } from '../shared/usePageNav'
 import { AddPaletteButton } from '../shared/AddPaletteButton'
 import { PalettesTable } from '../shared/PalettesTable'
+import { Section } from '../shared/primitives'
 
 export const PaletteIndex = () => {
     const navigate = useNavigate()
@@ -16,15 +17,17 @@ export const PaletteIndex = () => {
     return (
         <PaletteIndexRoot>
             <PaletteIndexMainSection>
-                <PalettesViewTableContainer>
-                    <PalettesTableToolbar>
-                        <AddPaletteButton onClick={() => navigate('new')}>
-                            <span>Добавить палитру</span>
-                        </AddPaletteButton>
-                    </PalettesTableToolbar>
+                <Section>
+                    <PalettesViewTableContainer>
+                        <PalettesTableToolbar>
+                            <AddPaletteButton onClick={() => navigate('new')}>
+                                <span>Добавить палитру</span>
+                            </AddPaletteButton>
+                        </PalettesTableToolbar>
 
-                    <PalettesTable palettes={appPalettes} />
-                </PalettesViewTableContainer>
+                        <PalettesTable palettes={appPalettes} />
+                    </PalettesViewTableContainer>
+                </Section>
             </PaletteIndexMainSection>
         </PaletteIndexRoot>
     )
@@ -33,7 +36,7 @@ export const PaletteIndex = () => {
 const PaletteIndexRoot = styled.main({
     display: 'flex',
     flexDirection: 'column',
-    padding: '24px',
+    padding: '16px',
 })
 
 const PaletteIndexMainSection = styled.main({

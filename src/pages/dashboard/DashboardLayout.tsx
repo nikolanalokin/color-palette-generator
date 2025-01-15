@@ -16,6 +16,7 @@ export const DashboardLayout = () => {
             </Header>
 
             <Sidebar>
+                <LogoContainer></LogoContainer>
                 <Nav>
                     <NavItem to="sets">
                         <LibraryIcon />
@@ -32,6 +33,10 @@ export const DashboardLayout = () => {
             <Main>
                 <Outlet />
             </Main>
+
+            <Footer>
+                @nikolanalokin { new Date().getFullYear() }
+            </Footer>
         </DashboardLayoutRoot>
     )
 }
@@ -45,32 +50,54 @@ const Header = styled.header({
     zIndex: 100,
     position: 'fixed',
     insetBlockStart: 0,
-    insetInline: 0,
-    height: '64px',
-    backgroundColor: 'rgba(255 255 255 / 0.5)',
-    backdropFilter: 'blur(10px)',
+    insetInlineStart: '64px',
+    insetInlineEnd: 0,
+    height: '96px',
 
     display: 'flex',
     alignItems: 'center',
-    paddingInline: '14px',
+    paddingInline: '36px',
+    paddingBlockStart: '16px',
     columnGap: '16px',
-})
 
-const PageTitle = styled.h1({
-    margin: 0,
-    fontSize: '1.25rem',
-    lineHeight: '1.5rem',
-    fontWeight: 600,
+    backgroundColor: 'rgba(238 245 245 / .5)',
+    backdropFilter: 'blur(10px)',
 })
 
 const Sidebar = styled.aside({
     zIndex: 100,
     position: 'fixed',
-    insetBlock: '64px',
+    insetBlock: 0,
     insetInlineStart: 0,
     width: '64px',
-    backgroundColor: 'rgba(255 255 255 / 0.5)',
+    backgroundColor: 'rgba(255 255 255 / 0.8)',
     backdropFilter: 'blur(10px)',
+})
+
+const Main = styled.main({
+    paddingBlockStart: '96px',
+    paddingInlineStart: '64px',
+    minHeight: 'calc(100vh - 62px)',
+})
+
+const Footer = styled.footer({
+    paddingInlineStart: '64px',
+    paddingInlineEnd: '24px',
+    paddingBlock: '24px',
+    fontSize: '0.875rem',
+    lineHeight: 1,
+    textAlign: 'end',
+})
+
+const PageTitle = styled.h1({
+    margin: 0,
+    fontSize: '2.25rem',
+    lineHeight: 1,
+    fontWeight: 700,
+})
+
+const LogoContainer = styled.nav({
+    height: '96px',
 })
 
 const Nav = styled.nav({
@@ -98,8 +125,3 @@ const NavItem = styled(NavLink)(
         },
     }
 )
-
-const Main = styled.main({
-    paddingBlockStart: '64px',
-    paddingInlineStart: '64px',
-})

@@ -7,15 +7,17 @@ import { PalettesTable } from '../shared/PalettesTable'
 import { SetsTable } from '../shared/SetsTable'
 import { AddPaletteButton } from '../shared/AddPaletteButton'
 import { usePageNav } from '../shared/usePageNav'
+import { Section } from '../shared/primitives'
 
 export const DashboardIndex = () => {
     const navigate = useNavigate()
     const appSets = useUnit($appSets)
     const appPalettes = useUnit($appPalettes)
-    usePageNav('Панель управления', null)
+    usePageNav('Dashboard', null)
     return (
         <DashboardIndexRoot>
             <DashboardIndexMainSection>
+                <Section>
                 <PalettesViewTableContainer>
                     <PalettesTableToolbar>
                         <AddPaletteButton onClick={() => navigate('palettes/new')}>
@@ -25,7 +27,9 @@ export const DashboardIndex = () => {
 
                     <PalettesTable palettes={appPalettes} />
                 </PalettesViewTableContainer>
+                </Section>
 
+                <Section>
                 <SetsViewTableContainer>
                     <SetsTableToolbar>
                         <Button onClick={() => navigate('sets/new')}>
@@ -35,6 +39,7 @@ export const DashboardIndex = () => {
 
                     <SetsTable sets={appSets} />
                 </SetsViewTableContainer>
+                </Section>
             </DashboardIndexMainSection>
         </DashboardIndexRoot>
     )
@@ -43,14 +48,13 @@ export const DashboardIndex = () => {
 const DashboardIndexRoot = styled.main({
     display: 'flex',
     flexDirection: 'column',
+    padding: '16px',
 })
 
 const DashboardIndexMainSection = styled.main({
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
-    columnGap: '24px',
-    paddingInline: '48px',
-    paddingBlock: '24px',
+    gap: '6px',
 })
 
 const PalettesViewTableContainer = styled.div({
