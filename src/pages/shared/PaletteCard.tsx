@@ -22,6 +22,7 @@ export const PaletteCard = forwardRef<HTMLDivElement, PaletteCardProps>(
         } = props
 
         const {
+            isOpen,
             setModal,
             open,
             close,
@@ -66,7 +67,7 @@ export const PaletteCard = forwardRef<HTMLDivElement, PaletteCardProps>(
                         </IconButton>
                     </DialogHeader>
                     <DialogBody>
-                        { open ? <PaletteContrastTable palette={data.palette} /> : null }
+                        { isOpen ? <PaletteContrastTable palette={data.palette} /> : null }
                     </DialogBody>
                 </Dialog>
             </PaletteCardRoot>

@@ -20,4 +20,6 @@ export const DialogFooter = (props: DialogFooterProps) => {
 const DialogFooterRoot = styled.div({
     paddingBlockEnd: '24px',
     paddingInline: '36px',
+    display: 'flex',
+    justifyContent: 'flex-end',
 })

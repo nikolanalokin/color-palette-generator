@@ -24,6 +24,10 @@ export const SetIndex = () => {
                             <Button onClick={() => navigate('new')}>
                                 <span>Добавить набор</span>
                             </Button>
+
+                            <Button onClick={() => navigate('new')}>
+                                <span>Создать набор на основе шаблона</span>
+                            </Button>
                         </SetsViewTableToolbar>
 
                         <SetsTable sets={appSets} />
@@ -55,5 +59,6 @@ const SetsViewTableContainer = styled.div({
 const SetsViewTableToolbar = styled.div(
     () => ({
         display: 'flex',
+        columnGap: '8px',
     })
 )

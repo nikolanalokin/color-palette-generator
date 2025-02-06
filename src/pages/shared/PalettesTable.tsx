@@ -15,6 +15,7 @@ export const PalettesTable = (props: PalettesTableProps) => {
     const { palettes } = props
     const navigate = useNavigate()
     const {
+        isOpen,
         setModal,
         open,
         close,
@@ -115,7 +116,7 @@ export const PalettesTable = (props: PalettesTableProps) => {
                     </IconButton>
                 </DialogHeader>
                 <DialogBody>
-                    { open && contrastTablePalette ? <PaletteContrastTable palette={contrastTablePalette.palette} /> : null }
+                    { isOpen && contrastTablePalette ? <PaletteContrastTable palette={contrastTablePalette.palette} /> : null }
                 </DialogBody>
             </Dialog>
         </PalettesTableRoot>

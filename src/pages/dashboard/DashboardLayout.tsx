@@ -47,11 +47,6 @@ const DashboardLayoutRoot = styled.main({
 })
 
 const Header = styled.header({
-    zIndex: 100,
-    position: 'fixed',
-    insetBlockStart: 0,
-    insetInlineStart: '64px',
-    insetInlineEnd: 0,
     height: '96px',
 
     display: 'flex',
@@ -59,6 +54,8 @@ const Header = styled.header({
     paddingInline: '36px',
     paddingBlockStart: '16px',
     columnGap: '16px',
+
+    marginInlineStart: '64px',
 
     backgroundColor: 'rgba(238 238 238 / .5)',
     backdropFilter: 'blur(10px)',
@@ -75,14 +72,14 @@ const Sidebar = styled.aside({
 })
 
 const Main = styled.main({
-    paddingBlockStart: '96px',
+    // paddingBlockStart: '96px',
     paddingInlineStart: '64px',
-    minHeight: 'calc(100vh - 62px)',
+    minHeight: 'calc(100vh - 62px - 96px)',
 })
 
 const Footer = styled.footer({
-    paddingInlineStart: '64px',
-    paddingInlineEnd: '24px',
+    marginInlineStart: '64px',
+    paddingInline: '24px',
     paddingBlock: '24px',
     fontSize: '0.875rem',
     lineHeight: 1,

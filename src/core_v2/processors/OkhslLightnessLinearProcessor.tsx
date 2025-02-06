@@ -23,8 +23,5 @@ export class OkhslLightnessLinearProcessor implements Processor<Okhsl> {
 }
 
 export function getDefaultOkhslLightnessLinearProcessorValue (): OkhslLightnessLinearProcessorOptions {
-    return {
-        value: 0,
-        scaleZero: null
-    }
+    return null
 }

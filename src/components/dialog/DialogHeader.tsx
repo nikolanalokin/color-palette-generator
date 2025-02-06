@@ -22,4 +22,5 @@ const DialogHeaderRoot = styled.div({
     justifyContent: 'space-between',
     paddingBlockStart: '24px',
     paddingInline: '36px',
+    columnGap: '24px',
 })
