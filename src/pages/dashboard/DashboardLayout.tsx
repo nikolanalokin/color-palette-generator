@@ -60,7 +60,7 @@ const Header = styled.header({
     paddingBlockStart: '16px',
     columnGap: '16px',
 
-    backgroundColor: 'rgba(238 245 245 / .5)',
+    backgroundColor: 'rgba(238 238 238 / .5)',
     backdropFilter: 'blur(10px)',
 })
 

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import styled from '@emotion/styled'
 import { usePageNav } from '../shared/usePageNav'
 import { Section } from '../shared/primitives'
+import { Form } from '../../components'
+import { OkhslHueShiftProcessorForm, OkhslHueShiftRotateProcessorForm, OkhslLightnessBezierProcessorForm, OkhslLightnessLinearProcessorForm, OkhslSaturationProcessorForm } from '../../components/forms'
 
 export const TemplateIndex = () => {
     const navigate = useNavigate()
@@ -13,7 +15,13 @@ export const TemplateIndex = () => {
         <TemplateIndexRoot>
             <TemplateIndexMainSection>
                 <Section>
-
+                    <Form>
+                        <OkhslHueShiftProcessorForm />
+                        <OkhslHueShiftRotateProcessorForm />
+                        <OkhslLightnessBezierProcessorForm />
+                        <OkhslLightnessLinearProcessorForm />
+                        <OkhslSaturationProcessorForm />
+                    </Form>
                 </Section>
             </TemplateIndexMainSection>
         </TemplateIndexRoot>

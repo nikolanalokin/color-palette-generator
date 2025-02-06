@@ -24,3 +24,10 @@ export class OkhslHueShiftProcessor implements Processor<Okhsl> {
         }
     }
 }
+
+export function getDefaultOkhslHueShiftProcessorValue (): OkhslHueShiftProcessorOptions {
+    return {
+        value: 0,
+        scaleZero: null
+    }
+}

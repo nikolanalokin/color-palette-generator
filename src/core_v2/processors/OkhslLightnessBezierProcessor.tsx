@@ -35,3 +35,11 @@ export class OkhslLightnessBezierProcessor implements Processor<Okhsl> {
         return (p0 - p1 + Math.sqrt(b * (p0 - 2 * p1 + p2) + Math.pow(p1, 2) - p0 * p2)) / (p0 - 2 * p1 + p2)
     }
 }
+
+export function getDefaultOkhslLightnessBezierProcessorValue (): OkhslLightnessBezierProcessorOptions {
+    return {
+        p0: [0, 0],
+        p1: [0.5, 0.5],
+        p2: [1, 1],
+    }
+}

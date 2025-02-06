@@ -32,3 +32,10 @@ export class OkhslSaturationProcessor implements Processor<Okhsl> {
         }
     }
 }
+
+export function getDefaultOkhslSaturationProcessorValue (): OkhslSaturationProcessorOptions {
+    return {
+        value: 0,
+        scaleZero: null
+    }
+}

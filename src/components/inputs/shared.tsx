@@ -44,6 +44,11 @@ export const FormFields = styled.div({
     rowGap: '16px',
 })
 
+export const FormFieldsRow = styled.div({
+    display: 'flex',
+    columnGap: '12px',
+})
+
 export const FormGroupLabel = styled.label({
     fontSize: '1rem',
     fontWeight: 500,

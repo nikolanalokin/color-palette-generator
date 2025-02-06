@@ -108,3 +108,6 @@ export function createDefaultAppPalette (): AppPalette {
         palette: createPalette(createDefaultColor(), createDefaultOptions()),
     }
 }
+
+$appPalettes.watch(payload => console.log('watch $appPalettes', payload))
+$editedPalette.watch(payload => console.log('watch $editedPalette', payload))

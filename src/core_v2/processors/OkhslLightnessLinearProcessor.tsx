@@ -6,7 +6,7 @@ export interface OkhslLightnessLinearProcessorOptions {
 }
 
 export class OkhslLightnessLinearProcessor implements Processor<Okhsl> {
-    constructor (options: OkhslLightnessLinearProcessorOptions) {
+    constructor (options: OkhslLightnessLinearProcessorOptions = {}) {
 
     }
 
@@ -19,5 +19,12 @@ export class OkhslLightnessLinearProcessor implements Processor<Okhsl> {
 
     define (color: Okhsl): number {
         return 1 - color.l
+    }
+}
+
+export function getDefaultOkhslLightnessLinearProcessorValue (): OkhslLightnessLinearProcessorOptions {
+    return {
+        value: 0,
+        scaleZero: null
     }
 }

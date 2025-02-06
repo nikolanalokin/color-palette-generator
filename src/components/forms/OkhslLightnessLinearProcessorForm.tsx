@@ -1,0 +1,27 @@
+import { getDefaultOkhslLightnessLinearProcessorValue, OkhslLightnessLinearProcessorOptions } from '../../core_v2'
+import { useControllableState } from '../hooks'
+import { FormGroup, NumberInput } from '../inputs'
+
+export type OkhslLightnessLinearProcessorFormProps = {
+    value?: OkhslLightnessLinearProcessorOptions
+    onChange?(value: OkhslLightnessLinearProcessorOptions): void
+}
+
+export const OkhslLightnessLinearProcessorForm: React.FC<OkhslLightnessLinearProcessorFormProps> = props => {
+    const {
+        value: valueProp,
+        onChange,
+    } = props
+
+    const [value, setValue] = useControllableState({
+        defaultProp: getDefaultOkhslLightnessLinearProcessorValue(),
+        prop: valueProp,
+        onChange,
+    })
+
+    return (
+        <FormGroup labelText="Lightness linear">
+            Нет настроек
+        </FormGroup>
+    )
+}

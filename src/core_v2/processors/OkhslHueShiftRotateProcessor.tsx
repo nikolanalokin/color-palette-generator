@@ -40,3 +40,13 @@ export class OkhslHueShiftRotateProcessor implements Processor<Okhsl> {
         }
     }
 }
+
+export function getDefaultOkhslHueShiftRotateProcessorValue (): OkhslHueShiftRotateProcessorOptions {
+    return {
+        point1: 110,
+        value1: 0,
+        point2: 264,
+        value2: 0,
+        scaleZero: null
+    }
+}
