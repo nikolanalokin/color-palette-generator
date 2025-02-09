@@ -1,44 +1,77 @@
 import styled from '@emotion/styled'
-import { Button, Toolbar } from '../../components'
-import { useNavigate } from 'react-router-dom'
-import { $appPalettes, $appSets } from '../../stores'
+import { Link, useNavigate } from 'react-router-dom'
 import { useUnit } from 'effector-react'
-import { PalettesTable } from '../shared/PalettesTable'
-import { SetsTable } from '../shared/SetsTable'
+import { Button } from '../../components'
+import { $appPalettes, $appSets } from '../../stores'
 import { AddPaletteButton } from '../shared/AddPaletteButton'
 import { usePageNav } from '../shared/usePageNav'
 import { Section } from '../shared/primitives'
+import { $templates } from '../../stores/template'
 
 export const DashboardIndex = () => {
     const navigate = useNavigate()
-    const appSets = useUnit($appSets)
-    const appPalettes = useUnit($appPalettes)
+    const palettes = useUnit($appPalettes)
+    const sets = useUnit($appSets)
+    const templates = useUnit($templates)
     usePageNav('Dashboard', null)
     return (
         <DashboardIndexRoot>
             <DashboardIndexMainSection>
                 <Section>
-                <PalettesViewTableContainer>
-                    <PalettesTableToolbar>
-                        <AddPaletteButton onClick={() => navigate('palettes/new')}>
+                    <Card to="palettes">
+                        <Title>
+                            Палитры
+                        </Title>
+
+                        <Caption>
+                            Всего: { palettes.length }
+                        </Caption>
+
+                        <AddPaletteButton onClick={evt => {
+                            evt.preventDefault()
+                            navigate('palettes/new')
+                        }}>
                             <span>Добавить палитру</span>
                         </AddPaletteButton>
-                    </PalettesTableToolbar>
-
-                    <PalettesTable palettes={appPalettes} />
-                </PalettesViewTableContainer>
+                    </Card>
                 </Section>
 
                 <Section>
-                <SetsViewTableContainer>
-                    <SetsTableToolbar>
-                        <Button onClick={() => navigate('sets/new')}>
+                    <Card to="sets">
+                        <Title>
+                            Наборы
+                        </Title>
+
+                        <Caption>
+                            Всего: { sets.length }
+                        </Caption>
+
+                        <Button onClick={evt => {
+                            evt.preventDefault()
+                            navigate('sets/new')
+                        }}>
                             <span>Добавить набор</span>
                         </Button>
-                    </SetsTableToolbar>
+                    </Card>
+                </Section>
 
-                    <SetsTable sets={appSets} />
-                </SetsViewTableContainer>
+                <Section>
+                    <Card to="templates">
+                        <Title>
+                            Шаблоны
+                        </Title>
+
+                        <Caption>
+                            Всего: { templates.length }
+                        </Caption>
+
+                        <Button onClick={evt => {
+                            evt.preventDefault()
+                            navigate('templates/new')
+                        }}>
+                            <span>Добавить шаблон</span>
+                        </Button>
+                    </Card>
                 </Section>
             </DashboardIndexMainSection>
         </DashboardIndexRoot>
@@ -53,30 +86,22 @@ const DashboardIndexRoot = styled.main({
 
 const DashboardIndexMainSection = styled.main({
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
+    gridTemplateColumns: 'repeat(3, max-content)',
     gap: '6px',
 })
 
-const PalettesViewTableContainer = styled.div({
+const Card = styled(Link)({
     display: 'flex',
     flexDirection: 'column',
-    rowGap: '24px',
+    rowGap: '16px',
 })
 
-const PalettesTableToolbar = styled.div(
-    () => ({
-        display: 'flex',
-    })
-)
-
-const SetsViewTableContainer = styled.div({
-    display: 'flex',
-    flexDirection: 'column',
-    rowGap: '24px',
+const Title = styled.div({
+    fontSize: '1.5rem',
+    fontWeight: 600,
 })
 
-const SetsTableToolbar = styled.div(
-    () => ({
-        display: 'flex',
-    })
-)
+const Caption = styled.div({
+    fontSize: '0.875rem',
+    fontWeight: 400,
+})

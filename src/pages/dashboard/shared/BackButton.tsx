@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import { useUnit } from 'effector-react'
 import { ArrowLeftIcon } from 'lucide-react'
-import { IconButton } from '../../components'
-import { $backOptions } from '../../stores'
+import { IconButton } from '../../../components'
+import { $backOptions } from '../../../stores'
 
 export const BackButton = () => {
     const navigate = useNavigate()

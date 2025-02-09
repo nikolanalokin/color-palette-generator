@@ -1,4 +1,5 @@
-import { ProcessorType } from '../astral'
+import { getGenerator, getProcessor, ProcessorType } from '../astral'
+import { CommonPaletteSettingsVO } from '../types'
 
 export const processorOptions: Array<{
     value: ProcessorType
@@ -31,3 +32,23 @@ export const processorOptions: Array<{
         description: 'Параболлическое уменьшение насыщенности с 0 на заданной точке',
     },
 ]
+
+export function getGeneratorInstance (props: CommonPaletteSettingsVO) {
+    const {
+        scale,
+        generator,
+        processors,
+    } = props
+
+    const Generator = getGenerator(generator)
+
+    const instance = new Generator({
+        scale,
+        processors: processors.map(processor => {
+            const Processor = getProcessor(processor.type)
+            return new Processor(processor.options as any)
+        })
+    })
+
+    return instance
+}

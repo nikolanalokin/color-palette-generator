@@ -1,6 +1,26 @@
-import { createEvent, createStore } from 'effector'
+import { createEffect, createEvent, createStore } from 'effector'
 import { storage } from '../services/storage'
 import { TemplateVO } from '../types'
+
+// export const getTemplatesFx = createEffect(() => {
+//     return storage.get('templates')
+// })
+
+// export const getTemplateFx = createEffect((templateId: string) => {
+//     return storage.get('templates').find(t => t.id === templateId)
+// })
+
+// export const createTemplateFx = createEffect((template: TemplateVO) => {
+
+// })
+
+// export const saveTemplateFx = createEffect((templateId: string, template: TemplateVO) => {
+
+// })
+
+// export const deleteTemplateFx = createEffect((templateId: string) => {
+
+// })
 
 export const addTemplate = createEvent<TemplateVO>()
 export const updateTemplate = createEvent<TemplateVO>()

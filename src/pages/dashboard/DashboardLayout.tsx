@@ -4,7 +4,7 @@ import { useUnit } from 'effector-react'
 import { BookDashedIcon, LibraryIcon, PaletteIcon } from 'lucide-react'
 import { iconButtonStyles } from '../../components'
 import { $appTitle } from '../../stores'
-import { BackButton } from './BackButton'
+import { BackButton } from './shared/BackButton'
 
 export const DashboardLayout = () => {
     const appTitle = useUnit($appTitle)
@@ -18,11 +18,11 @@ export const DashboardLayout = () => {
             <Sidebar>
                 <LogoContainer></LogoContainer>
                 <Nav>
-                    <NavItem to="sets">
-                        <LibraryIcon />
-                    </NavItem>
                     <NavItem to="palettes">
                         <PaletteIcon />
+                    </NavItem>
+                    <NavItem to="sets">
+                        <LibraryIcon />
                     </NavItem>
                     <NavItem to="templates">
                         <BookDashedIcon />

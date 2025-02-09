@@ -38,6 +38,7 @@ export const Set = () => {
     if (!editedAppSet) {
         return <ContentLoader />
     }
+
     const palettes = appPalettes.filter(p => editedAppSet.palettes.includes(p.id))
 
     return (

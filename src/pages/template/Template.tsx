@@ -1,5 +1,5 @@
 import { useUnit } from 'effector-react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import styled from '@emotion/styled'
 import { usePageNav } from '../shared/usePageNav'
 import { Section } from '../shared/primitives'
@@ -24,23 +24,29 @@ import {
     useModal
 } from '../../components'
 import { useEffect, useState } from 'react'
-import { $editedTemplate, addTemplate, createDefaultTemplate, setEditedTemplate } from '../../stores/template'
+import { $editedTemplate, $templates, addTemplate, createDefaultTemplate, setEditedTemplate } from '../../stores/template'
 import { MinusIcon, PlusIcon, Settings2Icon, XIcon } from 'lucide-react'
 import { getProcessorDefaultValue, ProcessorType } from '../../astral'
 import { processorOptions as options } from '../../core/astral'
 
-export const TemplateAdd = () => {
+export const Template = () => {
     const navigate = useNavigate()
+    const { templateId } = useParams()
+
+    usePageNav('Шаблон', { to: '/dashboard/templates' })
+
+    const templates = useUnit($templates)
     const editedTemplate = useUnit($editedTemplate)
 
-    usePageNav('Добавление шаблона', { to: '/dashboard/templates' })
-
     useEffect(() => {
-        setEditedTemplate(createDefaultTemplate())
-        return () => {
-            setEditedTemplate(null)
+        if (templateId) {
+            const template = templates.find(template => template.id === templateId)
+            if (template) setEditedTemplate(template)
+            else setEditedTemplate(createDefaultTemplate())
+        } else {
+            setEditedTemplate(createDefaultTemplate())
         }
-    }, [])
+    }, [templateId])
 
     const {
         isOpen,
@@ -70,8 +76,8 @@ export const TemplateAdd = () => {
     const ProcessorOptionsForm = getProcessorForm(editedProcessorType)
 
     return (
-        <TemplateAddRoot>
-            <TemplateAddMainSection>
+        <TemplateRoot>
+            <TemplateMainSection>
                 <Section>
                     <FormContainer>
                         <FormToolbar>
@@ -98,7 +104,7 @@ export const TemplateAdd = () => {
 
                             <ScaleInput>
                                 <div>Шкала</div>
-                                { scale.join(', ') }
+                                { scale?.join(', ') }
                             </ScaleInput>
 
                             <GeneratorInput>
@@ -178,7 +184,7 @@ export const TemplateAdd = () => {
                         </Form>
                     </FormContainer>
                 </Section>
-            </TemplateAddMainSection>
+            </TemplateMainSection>
 
             <Dialog ref={setModal}>
                 <DialogHeader>
@@ -218,17 +224,17 @@ export const TemplateAdd = () => {
                     </Button>
                 </DialogFooter>
             </Dialog>
-        </TemplateAddRoot>
+        </TemplateRoot>
     )
 }
 
-const TemplateAddRoot = styled.main({
+const TemplateRoot = styled.main({
     display: 'flex',
     flexDirection: 'column',
     padding: '16px',
 })
 
-const TemplateAddMainSection = styled.main({
+const TemplateMainSection = styled.main({
     display: 'flex',
     flexDirection: 'column',
     rowGap: '24px',

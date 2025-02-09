@@ -4,7 +4,7 @@ import { Index } from '../pages/Index'
 import { Palette, PaletteIndex } from '../pages/palette'
 import { Set, SetAdd, SetIndex } from '../pages/set'
 import { DashboardIndex, DashboardLayout } from '../pages/dashboard'
-import { TemplateAdd, TemplateIndex } from '../pages/template'
+import { Template, TemplateAdd, TemplateIndex } from '../pages/template'
 
 export const router = createBrowserRouter([
     {
@@ -67,6 +67,10 @@ export const router = createBrowserRouter([
                             {
                                 path: 'new',
                                 element: <TemplateAdd />,
+                            },
+                            {
+                                path: ':templateId',
+                                element: <Template />,
                             },
                         ]
                     },

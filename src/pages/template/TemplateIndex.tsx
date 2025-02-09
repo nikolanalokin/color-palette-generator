@@ -4,7 +4,7 @@ import styled from '@emotion/styled'
 import { usePageNav } from '../shared/usePageNav'
 import { Section } from '../shared/primitives'
 import { Button, IconButton, List, ListItem, ListItemAction, ListItemContent, ListItemSubtitle, ListItemTitle } from '../../components'
-import { $templates } from '../../stores/templates'
+import { $templates } from '../../stores/template'
 import { Settings2Icon } from 'lucide-react'
 
 export const TemplateIndex = () => {
