@@ -1,6 +1,6 @@
 import { Okhsl } from 'culori'
 import { Processor } from './Processor'
-import { linear } from '../../core/math'
+import { linear } from '../math'
 
 export interface OkhslHueShiftRotateProcessorOptions {
     point1: number

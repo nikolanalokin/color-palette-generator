@@ -1,0 +1,33 @@
+import { ProcessorType } from '../astral'
+
+export const processorOptions: Array<{
+    value: ProcessorType
+    label: string
+    description: string
+}> = [
+    {
+        value: 'OkhslHueShiftProcessor',
+        label: 'OkhslHueShiftProcessor',
+        description: 'Линейное изменение цветового тона на заданное значение с 0 на заданной точке',
+    },
+    {
+        value: 'OkhslHueShiftRotateProcessor',
+        label: 'OkhslHueShiftRotateProcessor',
+        description: 'Линейная интерполяция цветового тона по двум точкам',
+    },
+    {
+        value: 'OkhslLightnessBezierProcessor',
+        label: 'OkhslLightnessBezierProcessor',
+        description: 'Безье интерполяция светлоты',
+    },
+    {
+        value: 'OkhslLightnessLinearProcessor',
+        label: 'OkhslLightnessLinearProcessor',
+        description: 'Линейная интерполяция светлоты',
+    },
+    {
+        value: 'OkhslSaturationProcessor',
+        label: 'OkhslSaturationProcessor',
+        description: 'Параболлическое уменьшение насыщенности с 0 на заданной точке',
+    },
+]

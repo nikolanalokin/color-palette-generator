@@ -11,57 +11,23 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
+    getProcessorForm,
     IconButton,
+    List,
     ListItem,
     ListItemAction,
     ListItemContent,
     ListItemSubtitle,
     ListItemTitle,
     ListTitle,
-    OkhslHueShiftProcessorForm,
-    OkhslHueShiftRotateProcessorForm,
-    OkhslLightnessBezierProcessorForm,
-    OkhslLightnessLinearProcessorForm,
-    OkhslSaturationProcessorForm,
     TextInput,
     useModal
 } from '../../components'
 import { useEffect, useState } from 'react'
 import { $editedTemplate, addTemplate, createDefaultTemplate, setEditedTemplate } from '../../stores/templates'
-import { List, MinusIcon, PlusIcon, Settings2Icon, XIcon } from 'lucide-react'
-import { getProcessorDefaultValue, ProcessorType } from '../../core_v2'
-
-const options: Array<{
-    value: ProcessorType
-    label: string
-    description: string
-}> = [
-    {
-        value: 'OkhslHueShiftProcessor',
-        label: 'OkhslHueShiftProcessor',
-        description: 'Линейное изменение цветового тона на заданное значение с 0 на заданной точке',
-    },
-    {
-        value: 'OkhslHueShiftRotateProcessor',
-        label: 'OkhslHueShiftRotateProcessor',
-        description: 'Линейная интерполяция цветового тона по двум точкам',
-    },
-    {
-        value: 'OkhslLightnessBezierProcessor',
-        label: 'OkhslLightnessBezierProcessor',
-        description: 'Безье интерполяция светлоты',
-    },
-    {
-        value: 'OkhslLightnessLinearProcessor',
-        label: 'OkhslLightnessLinearProcessor',
-        description: 'Линейная интерполяция светлоты',
-    },
-    {
-        value: 'OkhslSaturationProcessor',
-        label: 'OkhslSaturationProcessor',
-        description: 'Параболлическое уменьшение насыщенности с 0 на заданной точке',
-    },
-]
+import { MinusIcon, PlusIcon, Settings2Icon, XIcon } from 'lucide-react'
+import { getProcessorDefaultValue, ProcessorType } from '../../astral'
+import { processorOptions as options } from '../../core/astral'
 
 export const TemplateAdd = () => {
     const navigate = useNavigate()
@@ -99,13 +65,7 @@ export const TemplateAdd = () => {
 
     const valid = !!name
 
-    const ProcessorOptionsForm = {
-        OkhslHueShiftProcessor: OkhslHueShiftProcessorForm,
-        OkhslHueShiftRotateProcessor: OkhslHueShiftRotateProcessorForm,
-        OkhslLightnessBezierProcessor: OkhslLightnessBezierProcessorForm,
-        OkhslLightnessLinearProcessor: OkhslLightnessLinearProcessorForm,
-        OkhslSaturationProcessor: OkhslSaturationProcessorForm,
-    }[editedProcessorType]
+    const ProcessorOptionsForm = getProcessorForm(editedProcessorType)
 
     return (
         <TemplateAddRoot>

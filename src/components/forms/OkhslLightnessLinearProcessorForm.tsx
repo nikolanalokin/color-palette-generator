@@ -1,4 +1,4 @@
-import { getDefaultOkhslLightnessLinearProcessorValue, OkhslLightnessLinearProcessorOptions } from '../../core_v2'
+import { getDefaultOkhslLightnessLinearProcessorValue, OkhslLightnessLinearProcessorOptions } from '../../astral'
 import { useControllableState } from '../hooks'
 import { FormGroup, NumberInput } from '../inputs'
 

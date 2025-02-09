@@ -1,5 +1,5 @@
 import { Okhsl } from 'culori'
-import { bezier, Point } from '../../core/math'
+import { bezier, Point } from '../math'
 import { Processor } from './Processor'
 
 export interface OkhslLightnessBezierProcessorOptions {

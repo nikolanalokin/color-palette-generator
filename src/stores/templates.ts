@@ -1,24 +1,13 @@
 import { createEvent, createStore } from 'effector'
 import { storage } from '../services/storage'
-import { ProcessorOptions, ProcessorType } from '../core_v2'
+import { TemplateVO } from '../types'
 
-export type Template = {
-    id: string
-    name: string
-    processors: TemplateProcessor[]
-}
+export const addTemplate = createEvent<TemplateVO>()
+export const updateTemplate = createEvent<TemplateVO>()
+export const removeTemplate = createEvent<TemplateVO>()
+export const copyTemplate = createEvent<TemplateVO>()
 
-export type TemplateProcessor = {
-    type: ProcessorType
-    options: ProcessorOptions | null
-}
-
-export const addTemplate = createEvent<Template>()
-export const updateTemplate = createEvent<Template>()
-export const removeTemplate = createEvent<Template>()
-export const copyTemplate = createEvent<Template>()
-
-export const $templates = createStore<Template[]>(storage.get('templates') || [])
+export const $templates = createStore<TemplateVO[]>(storage.get('templates') || [])
     .on(addTemplate, (state, payload) => {
         return state.concat({
             ...payload,
@@ -43,15 +32,17 @@ export const $templates = createStore<Template[]>(storage.get('templates') || []
 
 $templates.watch(state => storage.set('templates', state))
 
-export const setEditedTemplate = createEvent<Template>()
+export const setEditedTemplate = createEvent<TemplateVO>()
 
-export const $editedTemplate = createStore<Template>(null)
+export const $editedTemplate = createStore<TemplateVO>(null)
     .on(setEditedTemplate, (_, payload) => payload)
 
-export function createDefaultTemplate (): Template {
+export function createDefaultTemplate (): TemplateVO {
     return {
         id: null,
         name: '',
+        scale: [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
+        generator: 'OkhslScalePaletteGenerator',
         processors: [],
     }
 }

@@ -1,8 +1,8 @@
 import { Color, formatHex, okhsl, Okhsl } from 'culori'
 import { Processor } from '../processors'
 import { PaletteInfo, ShadeInfo } from '../types'
-import { invlerp, lerp } from '../../core/math'
-import { deltaE, findNearestValueInScale, getColorInfo, getNearestColorNames, uniqueId } from '../../core/utils'
+import { invlerp, lerp } from '../math'
+import { deltaE, findNearestValueInScale, getColorInfo, getNearestColorNames, uniqueId } from '../utils'
 
 export interface OkhslScalePaletteGeneratorOptions {
     scale: number[]

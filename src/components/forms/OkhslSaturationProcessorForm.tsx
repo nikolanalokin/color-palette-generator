@@ -1,4 +1,4 @@
-import { getDefaultOkhslSaturationProcessorValue, OkhslSaturationProcessorOptions } from '../../core_v2'
+import { getDefaultOkhslSaturationProcessorValue, OkhslSaturationProcessorOptions } from '../../astral'
 import { useControllableState } from '../hooks'
 import { FormGroup, NumberInput } from '../inputs'
 

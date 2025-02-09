@@ -33,14 +33,14 @@ export type PaletteGenerationMethodTypeVO = 'lightness' | 'contrast'
 
 export type PaletteGenerationMethodOptionsVO = {}
 
-export type TemplateVO = {
-    id: string
-    name: string
-    scale: number[]
-    method: PaletteGenerationMethodVO
-    preprocessings: ProcessingVO[]
-    postprocessings: ProcessingVO[]
-}
+// export type TemplateVO = {
+//     id: string
+//     name: string
+//     scale: number[]
+//     method: PaletteGenerationMethodVO
+//     preprocessings: ProcessingVO[]
+//     postprocessings: ProcessingVO[]
+// }
 
 export type ProcessingVO = {
     channel: Omit<Color, 'mode'>
@@ -53,3 +53,5 @@ export type ProcessingTypeVO = ''
 export type ProcessingOptionsVO = {
 
 }
+
+export * from './vo'

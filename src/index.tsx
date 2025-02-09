@@ -3,7 +3,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { router } from './services/router'
 import { RouterProvider } from 'react-router-dom'
-import './core_v2'
+import './astral'
 
 const root = createRoot(document.getElementById('root') as HTMLElement)
 

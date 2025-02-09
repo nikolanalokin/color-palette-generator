@@ -1,4 +1,4 @@
-import { getDefaultOkhslLightnessBezierProcessorValue, OkhslLightnessBezierProcessorOptions } from '../../core_v2'
+import { getDefaultOkhslLightnessBezierProcessorValue, OkhslLightnessBezierProcessorOptions } from '../../astral'
 import { useControllableState } from '../hooks'
 import { FormFieldsRow, FormGroup, NumberInput } from '../inputs'
 

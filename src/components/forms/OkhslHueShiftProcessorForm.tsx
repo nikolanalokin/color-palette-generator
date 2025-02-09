@@ -1,4 +1,4 @@
-import { getDefaultOkhslHueShiftProcessorValue, OkhslHueShiftProcessorOptions } from '../../core_v2'
+import { getDefaultOkhslHueShiftProcessorValue, OkhslHueShiftProcessorOptions } from '../../astral'
 import { useControllableState } from '../hooks'
 import { FormGroup, NumberInput } from '../inputs'
 
