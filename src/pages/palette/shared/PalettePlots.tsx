@@ -1,15 +1,14 @@
 import styled from '@emotion/styled'
-import { PaletteInfo, ShadeInfo } from '../../core'
-import { PlotLinePlot, PlotLinePlotProps } from '../../components'
+import { ShadeInfo } from '../../../astral'
+import { PlotLinePlot, PlotLinePlotProps } from '../../../components'
 import { useMemo, useState } from 'react'
-import { Section } from './primitives'
-import { ToggleButtonGroup } from '../../components/buttons/ToggleButtonGroup'
-import { ToggleButton } from '../../components/buttons/ToggleButton'
-import { useUnit } from 'effector-react'
-import { $editedPaletteShadesMap } from '../../stores'
+import { Section } from '../../shared/primitives'
+import { ToggleButtonGroup } from '../../../components/buttons/ToggleButtonGroup'
+import { ToggleButton } from '../../../components/buttons/ToggleButton'
+import { PaletteVO } from '../../../types'
 
 export type PalettePlotsProps = {
-    palette?: PaletteInfo
+    palette?: PaletteVO
 }
 
 type ColorSpace =
@@ -81,12 +80,17 @@ const options: Array<{ value: ColorSpace, label: string }> = [
 
 export const PalettePlots = (props: PalettePlotsProps) => {
     const { palette } = props
-    const editedPaletteShadesMap = useUnit($editedPaletteShadesMap)
+    const paletteShadesMap = useMemo(() => {
+        return palette?.shades.reduce((acc, shade) => acc.set(shade.number, shade), new Map()) ?? new Map()
+    }, [palette])
     const [colorSpace, setColorSpace] = useState<string>(options[0].value)
     const data = palette.shades.slice(1, -1)
     const plotsProps = useMemo<PlotDef[]>(() => {
         return plotsPropsDict[colorSpace]
     }, [colorSpace])
+    if (!palette) {
+        return null
+    }
     return (
         <PalettePlotsRoot>
             <ToggleButtonGroup value={colorSpace} onValueChange={setColorSpace}>
@@ -105,7 +109,7 @@ export const PalettePlots = (props: PalettePlotsProps) => {
                             getX={d => d.number}
                             xDomain={[0, 1000]}
                             xLabel="tone"
-                            dotFill={d => editedPaletteShadesMap.get(d[0]).hex}
+                            dotFill={d => paletteShadesMap.get(d[0]).hex}
                             {...plotProps}
                         />
                     </Section>
@@ -120,7 +124,7 @@ export const PalettePlots = (props: PalettePlotsProps) => {
                         yDomain={[0, 100]}
                         xLabel="tone"
                         yLabel="ΔE"
-                        dotFill={d => editedPaletteShadesMap.get(d[0]).hex}
+                        dotFill={d => paletteShadesMap.get(d[0]).hex}
                     />
                 </Section>
             </PlotsContainer>

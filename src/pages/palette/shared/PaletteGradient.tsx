@@ -1,20 +1,22 @@
 import styled from '@emotion/styled'
-import { formatHex, formatHsl, wcagContrast } from 'culori'
-import { contrastAPCA, PaletteInfo, ShadeInfo } from '../../core'
-import { formatOkhsl } from './format-utils'
-import { InfoTooltip, Tooltip, TooltipContent, TooltipTrigger } from '../../components'
+import { ShadeInfo } from '../../../astral'
+import { InfoTooltip } from '../../../components'
+import { PaletteVO } from '../../../types'
 
 type BasePaletteGradientProps = {
-    palette?: PaletteInfo
+    palette?: PaletteVO
 }
 
 export type PaletteGradientProps = Omit<React.HTMLAttributes<HTMLDivElement>, keyof BasePaletteGradientProps> & BasePaletteGradientProps
 
 export const PaletteGradient = (props: PaletteGradientProps) => {
     const { palette, ...restProps } = props
+    if (!palette?.shades) {
+        return null
+    }
     return (
         <PaletteGradientRoot palette={palette} {...restProps}>
-            { palette.shades.map(shade => (
+            { palette?.shades.map(shade => (
                 <PaletteGradientShadePoint
                     key={shade.number}
                     shade={shade}
@@ -30,7 +32,7 @@ export const PaletteGradient = (props: PaletteGradientProps) => {
     )
 }
 
-const PaletteGradientRoot = styled.div<{ palette?: PaletteInfo }>(
+const PaletteGradientRoot = styled.div<{ palette?: PaletteVO }>(
     ({ palette }) => {
         const stops = palette.shades.map(shade => `${shade.hex} ${shade.normalized * 100}%`).join(', ')
         return {

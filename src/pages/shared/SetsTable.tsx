@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import styled from '@emotion/styled'
 import { TableIcon, CopyIcon, Trash2Icon, Settings2Icon, XIcon } from 'lucide-react'
-import { $appPalettes, AppPalette, AppSet, copyAppPalette, removeAppPalette, removeAppSet } from '../../stores'
+import { $palettes, AppPalette, AppSet, copyPalette, removePalette, removeSet } from '../../stores'
 import { ShadeInfo } from '../../core'
 import { Button, Dialog, DialogBody, DialogHeader, DialogTitle, IconButton, InfoTooltip, useModal } from '../../components'
 import { useNavigate } from 'react-router-dom'
@@ -16,7 +16,7 @@ export type SetsTableProps = {
 export const SetsTable = (props: SetsTableProps) => {
     const { sets } = props
     const navigate = useNavigate()
-    const appPalettes = useUnit($appPalettes)
+    const palettes = useUnit($palettes)
     return (
         <SetsTableRoot>
             <SetsTableContainer>
@@ -41,7 +41,7 @@ export const SetsTable = (props: SetsTableProps) => {
                                 <td>
                                     <ColorCellContainer>
                                         { set.palettes.map(paletteId => {
-                                            const palette = appPalettes.find(p => p.id === paletteId)
+                                            const palette = palettes.find(p => p.id === paletteId)
                                             const inputShade = palette.palette.inputShade
                                             return  (
                                                 // <InfoTooltip message={palette.name || palette.palette.name}>
@@ -63,7 +63,7 @@ export const SetsTable = (props: SetsTableProps) => {
                                             <Settings2Icon />
                                         </IconButton>
 
-                                        <IconButton onClick={() => removeAppSet(set)}>
+                                        <IconButton onClick={() => removeSet(set)}>
                                             <Trash2Icon />
                                         </IconButton>
                                     </PaletteActions>

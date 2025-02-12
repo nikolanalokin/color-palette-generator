@@ -2,21 +2,19 @@ import styled from '@emotion/styled'
 import { Outlet, useLocation } from 'react-router-dom'
 import { GlobalStyles } from '../components'
 import { useEffect } from 'react'
-import { $themeShade, setThemeTone } from '../stores'
+import { setThemeTone } from '../stores'
 import { formatCss } from 'culori'
 import { ShadeInfo } from '../core'
-import { useUnit } from 'effector-react'
 
 export const Root = () => {
     const location = useLocation()
-    const shade = useUnit($themeShade)
     useEffect(() => {
         setThemeTone(null)
     }, [location])
     return (
         <>
             <GlobalStyles />
-            <RootRoot shade={shade}>
+            <RootRoot>
                 <Outlet />
                 {/* <Footer>
                     @nikolanalokin { new Date().getFullYear() }

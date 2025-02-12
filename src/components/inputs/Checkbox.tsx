@@ -109,5 +109,7 @@ const CheckboxCheckIcon = styled(CheckIcon)({
 const CheckboxLabel = styled.span(
     ({}) => ({
         fontSize: '0.875rem',
+        lineHeight: '1rem',
+        paddingBlock: '0.25rem'
     })
 )

@@ -1,12 +1,12 @@
-import { Okhsl } from 'culori'
-import { PaletteInfo, ProcessorOptions, ProcessorType } from '../astral'
+import { GeneratorType, PaletteInfo, ProcessorOptions, ProcessorType } from '../astral'
+import { RequiredProps } from './utils'
 
-export type PaletteResultVO = PaletteInfo
+type PaletteResultVO = PaletteInfo
 
 export type CommonPaletteSettingsVO = {
-    scale: number[]
-    generator?: any
-    processors: ProcessorVO[]
+    scale?: number[]
+    generator?: GeneratorType
+    processors?: ProcessorVO[]
 }
 
 export type ProcessorVO = {
@@ -15,55 +15,41 @@ export type ProcessorVO = {
 }
 
 /* --- Палитры --- */
-export type CommonPaletteVO = {
+export type CommonPaletteVO = RequiredProps<Partial<PaletteResultVO>, 'inputColor'> & {
     id: string
-    name: string
-    color: Okhsl // ?
+    name?: string
 }
 
-export type PaletteVO = TemplatePaletteVO | IndependentPaletteVO
+export type PaletteVO = TemplatePaletteVO & IndependentPaletteVO
 
 export type TemplatePaletteVO = CommonPaletteVO & {
-    templateId: string
-}
-
-export type DetailedTemplatePaletteVO = TemplatePaletteVO & {
-    result: PaletteResultVO
+    templateId?: string
 }
 
 export type IndependentPaletteVO = CommonPaletteVO & CommonPaletteSettingsVO
 
-export type DetailedIndependentPaletteVO = IndependentPaletteVO & {
-    result: PaletteResultVO
-}
-
-export type DetailedPaletteVO = DetailedTemplatePaletteVO | DetailedIndependentPaletteVO
-
 /* --- Наборы --- */
 export type CommonSetVO = {
     id: string
-    name: string
+    name?: string
 }
 
-export type SetVO = TemplateSetVO | ManualSetVO
+export type SetVO = TemplateSetVO & ManualSetVO
 
 export type TemplateSetVO = CommonSetVO & {
-    templateId: string
-    colors: string[]
-}
-
-export type DetailedTemplateSetVO = TemplateSetVO & {
-    palettes: DetailedTemplatePaletteVO[]
+    colors?: string[]
+    templateId?: string
+    paletteIds?: string[]
 }
 
 export type ManualSetVO = CommonSetVO & {
-    paletteIds: string[]
+    paletteIds?: string[]
 }
 
 /* --- Шаблоны --- */
 export type CommonTemplateVO = {
     id: string
-    name: string
+    name?: string
 }
 
 export type TemplateVO = CommonTemplateVO & CommonPaletteSettingsVO

@@ -1,20 +1,17 @@
 import { useMemo, useState } from 'react'
 import styled from '@emotion/styled'
-import { TableIcon, CopyIcon, Trash2Icon, Settings2Icon, XIcon } from 'lucide-react'
-import { copyPalette, removePalette } from '../../stores'
+import { TableIcon, XIcon } from 'lucide-react'
 import { ShadeInfo } from '../../core'
 import { Dialog, DialogBody, DialogHeader, DialogTitle, IconButton, InfoTooltip, useModal } from '../../components'
-import { useNavigate } from 'react-router-dom'
 import { PaletteContrastTable } from './PaletteContrastTable'
 import { PaletteVO } from '../../types'
 
-export type PalettesTableProps = {
+export type ResultsTableProps = {
     palettes?: PaletteVO[]
 }
 
-export const PalettesTable = (props: PalettesTableProps) => {
+export const ResultsTable = (props: ResultsTableProps) => {
     const { palettes } = props
-    const navigate = useNavigate()
     const {
         isOpen,
         setModal,
@@ -27,16 +24,16 @@ export const PalettesTable = (props: PalettesTableProps) => {
         return [...allTonesSet.values()].sort((a, b) => a - b)
     }, [palettes])
     const allPalettesShadesMap = useMemo(() => {
-        return palettes.reduce((acc, p) => {
-            const shadesMap = p.shades.reduce((acc, shade) => (acc.set(shade.number, shade), acc), new Map())
-            acc[p.id] = shadesMap
+        return palettes.reduce((acc, r) => {
+            const shadesMap = r.shades.reduce((acc, shade) => (acc.set(shade.number, shade), acc), new Map())
+            acc[r.id] = shadesMap
             return acc
         }, {} as Record<string, Map<number, ShadeInfo>>)
     }, [palettes])
     return (
-        <PalettesTableRoot>
-            <PalettesTableContainer>
-                <PalettesTableTable>
+        <ResultsTableRoot>
+            <ResultsTableContainer>
+                <ResultsTableTable>
                     <thead>
                         <tr>
                             <th />
@@ -87,26 +84,14 @@ export const PalettesTable = (props: PalettesTableProps) => {
                                                     <TableIcon />
                                                 </IconButton>
                                             </InfoTooltip>
-
-                                            <IconButton onClick={() => navigate(`/dashboard/palettes/${palette.id}`)}>
-                                                <Settings2Icon />
-                                            </IconButton>
-
-                                            <IconButton onClick={() => copyPalette(palette)}>
-                                                <CopyIcon />
-                                            </IconButton>
-
-                                            <IconButton onClick={() => removePalette(palette)}>
-                                                <Trash2Icon />
-                                            </IconButton>
                                         </PaletteActions>
                                     </td>
                                 </tr>
                             )
                         }) }
                     </tbody>
-                </PalettesTableTable>
-            </PalettesTableContainer>
+                </ResultsTableTable>
+            </ResultsTableContainer>
 
             <Dialog ref={setModal}>
                 <DialogHeader>
@@ -122,21 +107,21 @@ export const PalettesTable = (props: PalettesTableProps) => {
                     { isOpen && contrastTablePalette ? <PaletteContrastTable palette={contrastTablePalette} /> : null }
                 </DialogBody>
             </Dialog>
-        </PalettesTableRoot>
+        </ResultsTableRoot>
     )
 }
 
-const PalettesTableRoot = styled.div({
+const ResultsTableRoot = styled.div({
     display: 'flex',
 })
 
-const PalettesTableContainer = styled.div(
+const ResultsTableContainer = styled.div(
     () => ({
         display: 'flex',
     })
 )
 
-const PalettesTableTable = styled.table({
+const ResultsTableTable = styled.table({
     borderCollapse: 'collapse',
     borderColor: 'inherit',
     textIndent: 0,

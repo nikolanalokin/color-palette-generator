@@ -42,6 +42,10 @@ export function getGeneratorInstance (props: CommonPaletteSettingsVO) {
 
     const Generator = getGenerator(generator)
 
+    if (!Generator) {
+        return null
+    }
+
     const instance = new Generator({
         scale,
         processors: processors.map(processor => {

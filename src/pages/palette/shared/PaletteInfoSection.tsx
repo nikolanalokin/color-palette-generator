@@ -1,40 +1,35 @@
 import { useEffect, useMemo, useState } from 'react'
 import styled from '@emotion/styled'
-import { BetweenHorizontalStartIcon, InfoIcon, PlusIcon, Trash2Icon } from 'lucide-react'
-import { PaletteInfo, ShadeInfo } from '../../core'
-import { formatHsl, formatOkhsl } from './format-utils'
-import { IconButton, Tooltip, TooltipContent, TooltipTrigger } from '../../components'
-import { BLACK_HEX, WHITE_HEX } from '../../core/utils'
+import { BetweenHorizontalStartIcon, InfoIcon, Trash2Icon } from 'lucide-react'
+import { ShadeInfo } from '../../../astral'
+import { formatHsl, formatOkhsl } from '../../shared/format-utils'
+import { IconButton, Tooltip, TooltipContent, TooltipTrigger } from '../../../components'
+import { BLACK_HEX, WHITE_HEX } from '../../../core/utils'
 import { PaletteGradient } from './PaletteGradient'
-import { PaletteOptions, setThemeTone } from '../../stores'
+import { setThemeTone } from '../../../stores'
+import { PaletteVO } from '../../../types'
 
 export type PaletteInfoSectionProps = {
-    palette?: PaletteInfo
-    options?: PaletteOptions
-    onOptionsChange?(value: PaletteOptions): void
-}
-
-function scaleToMap (scale: number[]) {
-    return scale.reduce((acc, tone) => (acc.set(tone, String(tone)), acc), new Map<number, string>())
-}
-
-function mapToScale (map: Map<number, string>) {
-    const scale = [...map.values()].map(parseFloat)
-    scale.sort((a, b) => a - b)
-    return scale
+    palette?: PaletteVO
+    scale?: number[]
+    onScaleChange?(value: number[]): void
+    disabled?: boolean
 }
 
 export const PaletteInfoSection = (props: PaletteInfoSectionProps) => {
-    const { palette, options, onOptionsChange } = props
-    const [tonesMap, setTonesMap] = useState(scaleToMap(options.scale))
+    const { palette, scale, onScaleChange, disabled } = props
+    const [tonesMap, setTonesMap] = useState(scaleToMap(scale))
     useEffect(() => {
-        setTonesMap(scaleToMap(options.scale))
-    }, [options.scale])
-    const paletteShadesMap = useMemo(() => {
-        return palette.shades.reduce((acc, shade) => acc.set(shade.number, shade), new Map<number, ShadeInfo>())
+        setTonesMap(scaleToMap(scale))
+    }, [scale])
+    const paletteShadesMap = useMemo<Map<number, ShadeInfo>>(() => {
+        return palette?.shades?.reduce((acc, shade) => acc.set(shade.number, shade), new Map()) ?? new Map()
     }, [palette])
+    if (!palette?.shades) {
+        return null
+    }
     const updateOptions = (map: Map<number, string>) => {
-        onOptionsChange?.({ ...options, scale: mapToScale(map) })
+        onScaleChange?.(mapToScale(map))
     }
     const handleToneChange = (tone: number, value: string) => {
         if (!/\d*/.test(value)) {
@@ -50,7 +45,7 @@ export const PaletteInfoSection = (props: PaletteInfoSectionProps) => {
         updateOptions(tonesMapCopy)
     }
     const handleToneAddAfter = (tone: number) => {
-        const newTone = Math.round(tone + options.scale[options.scale.findIndex(t => t === tone) + 1]) / 2
+        const newTone = Math.round(tone + scale[scale.findIndex(t => t === tone) + 1]) / 2
         tonesMap.set(newTone, String(newTone))
         const tonesMapCopy = new Map(tonesMap)
         setTonesMap(tonesMapCopy)
@@ -115,18 +110,19 @@ export const PaletteInfoSection = (props: PaletteInfoSectionProps) => {
                                 </TableHeadRow>
                             </thead>
                             <tbody>
-                                { options.scale.map((tone, index) => {
+                                { scale.map((tone, index) => {
                                     const shade = paletteShadesMap.get(tone)
                                     const color = Math.abs(shade.apca.blackOn) >= 45 ? 'black' :'white'
                                     const row = createRow(shade)
-                                    const highlight = palette.nearestShade.number === shade.number
+                                    const highlight = palette?.nearestShade.number === shade.number
                                     return (
-                                        <TableRow key={shade.id} data-highlight={highlight}>
+                                        <TableRow key={shade.guid} data-highlight={highlight}>
                                             <ToneCell>
                                                 <ToneInput
                                                     type="text"
                                                     value={tonesMap.get(shade.number)}
                                                     onChange={evt => handleToneChange(shade.number, evt.target.value)}
+                                                    disabled={disabled}
                                                 />
                                             </ToneCell>
 
@@ -176,12 +172,14 @@ export const PaletteInfoSection = (props: PaletteInfoSectionProps) => {
 
                                             <ActionsCell>
                                                 <Actions>
-                                                    <IconButton
-                                                        type="button"
-                                                        onClick={() => handleToneRemove(shade.number)}
-                                                    >
-                                                        <Trash2Icon />
-                                                    </IconButton>
+                                                    { !disabled ? (
+                                                        <IconButton
+                                                            type="button"
+                                                            onClick={() => handleToneRemove(shade.number)}
+                                                        >
+                                                            <Trash2Icon />
+                                                        </IconButton>
+                                                    ) : null }
                                                 </Actions>
                                             </ActionsCell>
                                         </TableRow>
@@ -190,30 +188,42 @@ export const PaletteInfoSection = (props: PaletteInfoSectionProps) => {
                             </tbody>
                         </Table>
 
-                        <AddToneActionsContainer>
-                            { options.scale.slice(0, -1).map((tone, index) => {
-                                const shade = paletteShadesMap.get(tone)
-                                return (
-                                    <AddToneActionsItem key={shade.id}>
-                                        <AddToneButtonContainer>
-                                            <AddToneButton
-                                                type="button"
-                                                variant="blur"
-                                                onClick={() => handleToneAddAfter(shade.number)}
-                                            >
-                                                <BetweenHorizontalStartIcon />
-                                            </AddToneButton>
-                                        </AddToneButtonContainer>
-                                    </AddToneActionsItem>
-                                )
-                            }) }
-                        </AddToneActionsContainer>
+                        { !disabled ? (
+                            <AddToneActionsContainer>
+                                { scale.slice(0, -1).map((tone, index) => {
+                                    const shade = paletteShadesMap.get(tone)
+                                    return (
+                                        <AddToneActionsItem key={shade.guid}>
+                                            <AddToneButtonContainer>
+                                                <AddToneButton
+                                                    type="button"
+                                                    variant="blur"
+                                                    onClick={() => handleToneAddAfter(shade.number)}
+                                                >
+                                                    <BetweenHorizontalStartIcon />
+                                                </AddToneButton>
+                                            </AddToneButtonContainer>
+                                        </AddToneActionsItem>
+                                    )
+                                }) }
+                            </AddToneActionsContainer>
+                        ) : null }
                     </TableContainer>
             </PaletteInfoSectionRoot>
 
             <input type="submit" hidden />
         </form>
     )
+}
+
+function scaleToMap (scale: number[]) {
+    return scale.reduce((acc, tone) => (acc.set(tone, String(tone)), acc), new Map<number, string>())
+}
+
+function mapToScale (map: Map<number, string>) {
+    const scale = [...map.values()].map(parseFloat)
+    scale.sort((a, b) => a - b)
+    return scale
 }
 
 const createRow = (shade: ShadeInfo) => {

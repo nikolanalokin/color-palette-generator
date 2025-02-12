@@ -47,7 +47,7 @@ export class OkhslScalePaletteGenerator {
             }
 
             return {
-                id: uniqueId(),
+                guid: uniqueId(),
                 number: tone,
                 normalized: shadeScaleValue,
                 ...getColorInfo(shadeColor),
@@ -56,7 +56,7 @@ export class OkhslScalePaletteGenerator {
         })
 
         const inputShade: ShadeInfo = {
-            id: uniqueId(),
+            guid: uniqueId(),
             number: baseTone,
             normalized: baseScaleValue,
             ...getColorInfo(color),
@@ -66,8 +66,9 @@ export class OkhslScalePaletteGenerator {
         const nearestShade = shades.reduce((shade1, shade2) => shade1.delta < shade2.delta ? shade1 : shade2)
 
         return {
-            id: uniqueId(),
-            name: getNearestColorNames(color).at(0),
+            guid: uniqueId(),
+            inputColorName: getNearestColorNames(color).at(0),
+            inputColor: color,
             inputShade,
             shades,
             nearestShade,

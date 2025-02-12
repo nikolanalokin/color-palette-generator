@@ -1,15 +1,17 @@
 import styled from '@emotion/styled'
-import { AppPalette } from '../../stores'
-import { Checkbox } from '../../components'
-import { useControllableState } from '../../components/hooks'
+import { Checkbox } from '../../../components'
+import { useControllableState } from '../../../components/hooks'
+import { PaletteVO } from '../../../types'
 
-export type PalettesSelectionTableProps = {
-    palettes: AppPalette[]
+interface BasePalettesSelectionTableProps {
+    palettes: PaletteVO[]
     value?: string[]
     onValueChange?(value: string[]): void
 }
 
-export const PalettesSelectionTable: React.FC<React.HTMLAttributes<HTMLDivElement> & PalettesSelectionTableProps> = props => {
+export type PalettesSelectionTableProps = Omit<React.HTMLAttributes<HTMLDivElement>, keyof BasePalettesSelectionTableProps> & BasePalettesSelectionTableProps
+
+export const PalettesSelectionTable: React.FC<PalettesSelectionTableProps> = props => {
     const {
         palettes,
         value: valueProp,
@@ -41,12 +43,12 @@ export const PalettesSelectionTable: React.FC<React.HTMLAttributes<HTMLDivElemen
                                 </td>
                                 <td>
                                     <PaletteName data-suggestion={!palette.name}>
-                                        { palette.name || palette.palette.name }
+                                        { palette.name || palette.inputColorName }
                                     </PaletteName>
                                 </td>
                                 <td>
                                     <ColorCellContainer>
-                                        { palette.palette.shades.map(shade => (
+                                        { palette.shades.map(shade => (
                                             <ColorCell
                                                 key={shade.number}
                                                 style={{
@@ -88,8 +90,12 @@ const PalettesTableTable = styled.table({
     },
 
     '& td:first-of-type': {
-        maxWidth: '20ch',
-        paddingInlineEnd: '16px',
+        width: '24px',
+    },
+
+    '& td:nth-of-type(2)': {
+        width: '16ch',
+        paddingInline: '16px',
     },
 })
 
@@ -115,7 +121,8 @@ const ColorCellContainer = styled.div({
 })
 
 const ColorCell = styled.div({
-    width: '60px',
+    flex: 1,
+    minWidth: '60px',
     height: '60px',
     display: 'grid',
     placeItems: 'center',

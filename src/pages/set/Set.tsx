@@ -2,16 +2,12 @@ import { useEffect, useState } from 'react'
 import { useUnit } from 'effector-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import styled from '@emotion/styled'
-import { Button, ContentLoader, IconButton, Toolbar } from '../../components'
-import { $appPalettes, $appSets, $editedAppSet, createDefaultAppSet, setEditedAppSet } from '../../stores'
-import { PaletteCard } from '../shared/PaletteCard'
-import { ToggleButtonGroup } from '../../components/buttons/ToggleButtonGroup'
-import { ToggleButton } from '../../components/buttons/ToggleButton'
-import { PalettesTable } from '../shared/PalettesTable'
+import { ContentLoader } from '../../components'
+import { $sets, $editedSet, $palettes, createDefaultSet, setEditedSet } from '../../stores'
 import { AddPaletteButton } from '../shared/AddPaletteButton'
-import { ArrowLeftIcon } from 'lucide-react'
-import { PageTitle, Section, Spacer, VerticalDivider } from '../shared/primitives'
+import { Section, Spacer } from '../shared/primitives'
 import { usePageNav } from '../shared/usePageNav'
+import { ResultsTable } from '../shared/ResultsTable'
 
 export const Set = () => {
     const { setId } = useParams()
@@ -19,27 +15,27 @@ export const Set = () => {
 
     usePageNav('Редактирование набора', { to: '/dashboard/sets' })
 
-    const sets = useUnit($appSets)
-    const editedAppSet = useUnit($editedAppSet)
-    const appPalettes = useUnit($appPalettes)
+    const sets = useUnit($sets)
+    const palettes = useUnit($palettes)
+    const editedSet = useUnit($editedSet)
 
     const [viewMode, setViewMode] = useState('table')
 
     useEffect(() => {
         if (setId) {
             const set = sets.find(set => set.id === setId)
-            if (set) setEditedAppSet(set)
-            else setEditedAppSet(createDefaultAppSet())
+            if (set) setEditedSet(set)
+            else setEditedSet(createDefaultSet())
         } else {
-            setEditedAppSet(createDefaultAppSet())
+            setEditedSet(createDefaultSet())
         }
     }, [setId])
 
-    if (!editedAppSet) {
+    if (!editedSet) {
         return <ContentLoader />
     }
 
-    const palettes = appPalettes.filter(p => editedAppSet.palettes.includes(p.id))
+    const filteredPalettes = palettes.filter(p => editedSet.paletteIds.includes(p.id))
 
     return (
         <SetRoot>
@@ -47,10 +43,7 @@ export const Set = () => {
                 <Section>
                     <PalettesViewContainer>
                         <PalettesViewToolbarContainer>
-                            <ToggleButtonGroup value={viewMode} onValueChange={setViewMode}>
-                                <ToggleButton value="grid">Сетка</ToggleButton>
-                                <ToggleButton value="table">Таблица</ToggleButton>
-                            </ToggleButtonGroup>
+                            { editedSet.name }
 
                             <Spacer />
 
@@ -59,19 +52,10 @@ export const Set = () => {
                             </AddPaletteButton>
                         </PalettesViewToolbarContainer>
 
-                        { viewMode === 'grid' ? (
-                            <PalettesViewGridContainer>
-                                { palettes.map(palette => (
-                                    <PaletteCard
-                                        key={palette.id}
-                                        data={palette}
-                                    />
-                                )) }
-                            </PalettesViewGridContainer>
-                        ) : viewMode === 'table' ? (
-                            <PalettesViewTableContainer>
-                                <PalettesTable palettes={palettes} />
-                            </PalettesViewTableContainer>
+                        { editedSet.templateId ? (
+                            <ResultsTable
+                                palettes={filteredPalettes}
+                            />
                         ) : null }
                     </PalettesViewContainer>
                 </Section>

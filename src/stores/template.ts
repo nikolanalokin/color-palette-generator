@@ -1,4 +1,4 @@
-import { createEffect, createEvent, createStore } from 'effector'
+import { createEvent, createStore } from 'effector'
 import { storage } from '../services/storage'
 import { TemplateVO } from '../types'
 
@@ -29,10 +29,7 @@ export const copyTemplate = createEvent<TemplateVO>()
 
 export const $templates = createStore<TemplateVO[]>(storage.get('templates') || [])
     .on(addTemplate, (state, payload) => {
-        return state.concat({
-            ...payload,
-            id: state.length > 0 ? String(Math.max(...state.map(p => +p.id)) + 1) : '1',
-        })
+        return state.concat(payload)
     })
     .on(copyTemplate, (state, payload) => {
         return state.concat({
@@ -51,6 +48,7 @@ export const $templates = createStore<TemplateVO[]>(storage.get('templates') || 
     })
 
 $templates.watch(state => storage.set('templates', state))
+$templates.watch(payload => console.log('watch $templates', payload))
 
 export const setEditedTemplate = createEvent<TemplateVO>()
 

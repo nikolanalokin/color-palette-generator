@@ -1,13 +1,14 @@
 import styled from '@emotion/styled'
-import { contrastAPCA, PaletteInfo } from '../../core'
+import { contrastAPCA } from '../../core'
 import { useState } from 'react'
-import { Field, FieldLabel, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components'
+import { Field, FieldLabel } from '../../components'
 import { contrastWCAG } from '../../core/utils'
 import { ToggleButtonGroup } from '../../components/buttons/ToggleButtonGroup'
 import { ToggleButton } from '../../components/buttons/ToggleButton'
+import { PaletteVO } from '../../types'
 
 export type PaletteContrastTableProps = {
-    palette?: PaletteInfo
+    palette?: PaletteVO
 }
 
 export const PaletteContrastTable = (props: PaletteContrastTableProps) => {

@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 import { Link } from 'react-router-dom'
 import { CopyIcon, TableIcon, Trash2Icon, XIcon } from 'lucide-react'
 import { ShadeInfo } from '../../core'
-import { $appPalettes, AppSet, copyAppPalette, removeAppPalette } from '../../stores'
+import { $palettes, AppSet, copyPalette, removePalette } from '../../stores'
 import { Dialog, DialogBody, DialogHeader, DialogTitle, IconButton, InfoTooltip, useModal } from '../../components'
 import { PaletteContrastTable } from './PaletteContrastTable'
 import { useUnit } from 'effector-react'
@@ -22,13 +22,13 @@ export const SetCard = forwardRef<HTMLDivElement, SetCardProps>(
             ...restProps
         } = props
 
-        const appPalettes = useUnit($appPalettes)
+        const palettes = useUnit($palettes)
 
         return (
             <SetCardRoot ref={forwardedRef} {...restProps}>
                 <SetCardPalettesContainer to={`/sets/${data.id}`}>
                     { data.palettes.map(paletteId => {
-                        const palette = appPalettes.find(p => p.id === paletteId)
+                        const palette = palettes.find(p => p.id === paletteId)
                         return (
                             <SetCardPalette
                                 key={palette.id}

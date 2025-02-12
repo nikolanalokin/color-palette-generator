@@ -1,19 +1,19 @@
 import { useUnit } from 'effector-react'
 import { useNavigate } from 'react-router-dom'
 import styled from '@emotion/styled'
-import { ArrowLeftIcon } from 'lucide-react'
-import { Button, IconButton, Toolbar } from '../../components'
-import { $appSets } from '../../stores'
-import { SetsTable } from '../shared/SetsTable'
-import { PageTitle, Section, VerticalDivider } from '../shared/primitives'
+import { Button } from '../../components'
+import { $palettes, $sets } from '../../stores'
+import { Section } from '../shared/primitives'
 import { usePageNav } from '../shared/usePageNav'
+import { SetListView } from './shared/SetListView'
 
 export const SetIndex = () => {
     const navigate = useNavigate()
 
     usePageNav('Наборы', { to: '/dashboard' })
 
-    const appSets = useUnit($appSets)
+    const sets = useUnit($sets)
+    const palettes = useUnit($palettes)
 
     return (
         <SetIndexRoot>
@@ -24,13 +24,12 @@ export const SetIndex = () => {
                             <Button onClick={() => navigate('new')}>
                                 <span>Добавить набор</span>
                             </Button>
-
-                            <Button onClick={() => navigate('new')}>
-                                <span>Создать набор на основе шаблона</span>
-                            </Button>
                         </SetsViewTableToolbar>
 
-                        <SetsTable sets={appSets} />
+                        <SetListView
+                            sets={sets}
+                            palettes={palettes}
+                        />
                     </SetsViewTableContainer>
                 </Section>
             </SetIndexMainSection>

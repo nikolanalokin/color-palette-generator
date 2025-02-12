@@ -5,6 +5,7 @@ import { css } from '@emotion/react'
 
 type BaseIconButtonProps = {
     variant?: 'blur'
+    size?: 'sm' | 'md'
 }
 
 export type IconButtonProps = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, keyof BaseIconButtonProps> & BaseIconButtonProps
@@ -13,6 +14,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
     (props, forwardedRef) => {
         const {
             variant,
+            size = 'md',
             children,
             ...restProps
         } = props
@@ -22,6 +24,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
                 ref={forwardedRef}
                 {...restProps}
                 data-variant={variant}
+                data-size={size}
             >
                 { children }
             </IconButtonRoot>
@@ -40,6 +43,18 @@ export const iconButtonStyles = css(
             height: '1.25rem',
         },
 
+        '&[data-size="sm"]': {
+            borderRadius: '4px',
+
+            paddingBlock: '4px',
+            paddingInline: '4px',
+
+            'svg': {
+                width: '1rem',
+                height: '1rem',
+            },
+        },
+
         '&[data-variant="blur"]': {
             backgroundColor: 'rgba(255 255 255 / 0.5)',
             border: '1px solid rgba(255 255 255 / 0.3)',
@@ -53,7 +68,7 @@ export const iconButtonStyles = css(
             '&:active': {
                 backgroundColor: 'rgba(255 255 255 / 0.1)',
             },
-        }
+        },
     }
 )
 

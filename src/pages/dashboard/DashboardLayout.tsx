@@ -57,12 +57,11 @@ const Header = styled.header({
 
     marginInlineStart: '64px',
 
-    backgroundColor: 'rgba(238 238 238 / .5)',
-    backdropFilter: 'blur(10px)',
+    // backgroundColor: 'rgba(238 238 238 / .5)',
+    // backdropFilter: 'blur(10px)',
 })
 
 const Sidebar = styled.aside({
-    zIndex: 100,
     position: 'fixed',
     insetBlock: 0,
     insetInlineStart: 0,

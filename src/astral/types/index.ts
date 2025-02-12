@@ -1,5 +1,21 @@
 import { Color, Hsl, Okhsl, Oklch, Rgb } from 'culori'
 
+export type PaletteInfo = {
+    guid: string
+    inputColorName: string
+    inputColor: string | Color
+    inputShade: ShadeInfo
+    shades: ShadeInfo[]
+    nearestShade: ShadeInfo
+}
+
+export type ShadeInfo = ColorInfo & {
+    guid: string
+    number: number
+    normalized: number
+    delta: number
+}
+
 export type ColorInfo = {
     hex: string
     rgb: Rgb
@@ -15,25 +31,4 @@ export type ContrastInfo = {
     onWhite: number
     whiteOn: number
     blackOn: number
-}
-
-export type ShadeInfo = ColorInfo & {
-    id: string
-    number: number
-    normalized: number
-    delta: number
-}
-
-export type PaletteInfo = {
-    id: string
-    name: string
-    inputShade: ShadeInfo
-    shades: ShadeInfo[]
-    nearestShade: ShadeInfo
-}
-
-export type SetInfo = {
-    id: string
-    name: string
-    palettes: PaletteInfo[]
 }

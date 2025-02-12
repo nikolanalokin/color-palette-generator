@@ -1,6 +1,6 @@
+import * as Plot from '@observablehq/plot'
 import styled from '@emotion/styled'
-import { ShadeInfo } from '../../core'
-import * as Plot from "@observablehq/plot"
+import { ShadeInfo } from '../../astral'
 import { useEffect, useRef } from 'react'
 
 const defaultMargin = { top: 20, right: 20, bottom: 32, left: 40 }

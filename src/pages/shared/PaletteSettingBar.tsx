@@ -30,6 +30,7 @@ export type PaletteSettingBarProps = {
     onSave?(): void
 }
 
+/** @deprecated */
 export const PaletteSettingBar = (props: PaletteSettingBarProps) => {
     const {
         name,

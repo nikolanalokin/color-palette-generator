@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import { Link, useNavigate } from 'react-router-dom'
 import { useUnit } from 'effector-react'
 import { Button } from '../../components'
-import { $appPalettes, $appSets } from '../../stores'
+import { $palettes, $sets } from '../../stores'
 import { AddPaletteButton } from '../shared/AddPaletteButton'
 import { usePageNav } from '../shared/usePageNav'
 import { Section } from '../shared/primitives'
@@ -10,8 +10,8 @@ import { $templates } from '../../stores/template'
 
 export const DashboardIndex = () => {
     const navigate = useNavigate()
-    const palettes = useUnit($appPalettes)
-    const sets = useUnit($appSets)
+    const palettes = useUnit($palettes)
+    const sets = useUnit($sets)
     const templates = useUnit($templates)
     usePageNav('Dashboard', null)
     return (
