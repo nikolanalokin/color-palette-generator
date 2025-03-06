@@ -31,6 +31,9 @@ export const Template = () => {
         } else {
             setEditedTemplate(createDefaultTemplate())
         }
+        return () => {
+            setEditedTemplate(null)
+        }
     }, [templateId])
 
     if (!editedTemplate) {

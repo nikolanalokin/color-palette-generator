@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import { Outlet, useLocation } from 'react-router-dom'
-import { GlobalStyles } from '../components'
+import { GlobalStyles, VarsStyles } from '../components'
 import { useEffect } from 'react'
 import { setThemeTone } from '../stores'
 import { formatCss } from 'culori'
@@ -14,6 +14,8 @@ export const Root = () => {
     return (
         <>
             <GlobalStyles />
+            <VarsStyles />
+
             <RootRoot>
                 <Outlet />
                 {/* <Footer>

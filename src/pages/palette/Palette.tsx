@@ -32,6 +32,9 @@ export const Palette = () => {
         } else {
             setEditedPalette(createDefaultPalette())
         }
+        return () => {
+            setEditedPalette(null)
+        }
     }, [paletteId])
 
     if (!editedPalette) {

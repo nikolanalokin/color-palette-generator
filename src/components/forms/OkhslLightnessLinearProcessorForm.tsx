@@ -1,6 +1,6 @@
 import { getDefaultOkhslLightnessLinearProcessorValue, OkhslLightnessLinearProcessorOptions } from '../../astral'
 import { useControllableState } from '../hooks'
-import { FormGroup, NumberInput } from '../inputs'
+import { FormGroup } from '../inputs'
 
 export type OkhslLightnessLinearProcessorFormProps = {
     value?: OkhslLightnessLinearProcessorOptions

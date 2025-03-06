@@ -1,3 +1,5 @@
 export * from './generators'
 export * from './processors'
 export * from './types'
+export * from './math'
+export * from './utils'

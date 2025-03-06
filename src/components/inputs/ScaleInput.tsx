@@ -3,6 +3,9 @@ import { Field, FieldLabel } from './shared'
 import { NumberInput } from './NumberInput'
 import { useControllableState } from '../hooks'
 import { useEffect, useState } from 'react'
+import { Slider } from './Slider'
+import { IconButton } from '../buttons'
+import { PlusIcon } from 'lucide-react'
 
 type BaseScaleInputProps = {
     labelText?: string
@@ -21,18 +24,18 @@ export const ScaleInput = (props: ScaleInputProps) => {
         ...restProps
     } = props
 
-    const [value, setValue] = useControllableState({
+    const [values, setValues] = useControllableState({
         defaultProp: [],
         prop: valueProp,
         onChange: onValueChange,
     })
 
-    const [from, setFrom] = useState(fromValue(value).from)
-    const [to, setTo] = useState(fromValue(value).to)
-    const [parts, setParts] = useState(fromValue(value).parts)
+    const [from, setFrom] = useState(fromValues(values).from)
+    const [to, setTo] = useState(fromValues(values).to)
+    const [parts, setParts] = useState(fromValues(values).parts)
 
     useEffect(() => {
-        if (!value.length) {
+        if (!values.length) {
             update()
         }
     }, [])
@@ -43,8 +46,8 @@ export const ScaleInput = (props: ScaleInputProps) => {
             to > from &&
             parts > 1
         ) {
-            const newValue = toValue(from, to, parts)
-            setValue(newValue)
+            const newValues = toValues(from, to, parts)
+            setValues(newValues)
         }
     }
 
@@ -77,11 +80,13 @@ export const ScaleInput = (props: ScaleInputProps) => {
                     value={from}
                     onValueChange={handleFromChange}
                 />
+
                 <NumberInput
                     labelText="До"
                     value={to}
                     onValueChange={handleToChange}
                 />
+
                 <NumberInput
                     labelText="Частей"
                     value={parts}
@@ -89,8 +94,20 @@ export const ScaleInput = (props: ScaleInputProps) => {
                 />
             </ScaleInputInput>
 
+            <ScaleInputSliderContainer>
+                <Slider
+                    value={values}
+                    onValueChange={setValues}
+                    min={from}
+                    max={to}
+                    step={((to - from) / parts) / 4}
+                    markText={v => v % 100 === 0}
+                    disabledEdge
+                />
+            </ScaleInputSliderContainer>
+
             <ScaleInputResult>
-                Результат: { value.join(', ') }
+                Результат: { values.join(', ') }
             </ScaleInputResult>
         </ScaleInputRoot>
     )
@@ -116,6 +133,12 @@ const ScaleInputInput = styled.div(
     })
 )
 
+const ScaleInputSliderContainer = styled.div(
+    () => ({
+        display: 'flex',
+    })
+)
+
 const ScaleInputResult = styled.div(
     () => ({
         fontSize: '0.75rem',
@@ -123,13 +146,13 @@ const ScaleInputResult = styled.div(
     })
 )
 
-function toValue (from: number, to: number, parts: number) {
+function toValues (from: number, to: number, parts: number) {
     const step = (to - from) / parts
     return [...new Array(parts)].map((_, i) => i * step).concat(to)
 }
 
-function fromValue (value: number[]) {
-    if (!value.length) {
+function fromValues (values: number[]) {
+    if (!values.length) {
         return {
             from: 0,
             to: 1000,
@@ -137,8 +160,8 @@ function fromValue (value: number[]) {
         }
     }
     return {
-        from: value.at(0),
-        to: value.at(-1),
-        parts: value.length - 1,
+        from: values.at(0),
+        to: values.at(-1),
+        parts: values.length - 1,
     }
 }

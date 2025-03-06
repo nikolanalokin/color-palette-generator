@@ -27,6 +27,16 @@ export const processorOptions: Array<{
         description: 'Линейная интерполяция светлоты',
     },
     {
+        value: 'OkhslLightnessQuadProcessor',
+        label: 'OkhslLightnessQuadProcessor',
+        description: 'Квадратичная интерполяция светлоты',
+    },
+    {
+        value: 'OkhslLightnessCubeProcessor',
+        label: 'OkhslLightnessCubeProcessor',
+        description: 'Кубическая интерполяция светлоты',
+    },
+    {
         value: 'OkhslSaturationProcessor',
         label: 'OkhslSaturationProcessor',
         description: 'Параболлическое уменьшение насыщенности с 0 на заданной точке',

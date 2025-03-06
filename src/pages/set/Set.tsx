@@ -29,6 +29,9 @@ export const Set = () => {
         } else {
             setEditedSet(createDefaultSet())
         }
+        return () => {
+            setEditedSet(null)
+        }
     }, [setId])
 
     if (!editedSet) {

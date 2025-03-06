@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import { Link, useNavigate } from 'react-router-dom'
 import { useUnit } from 'effector-react'
-import { Button } from '../../components'
+import { BezierPlot, Button } from '../../components'
 import { $palettes, $sets } from '../../stores'
 import { AddPaletteButton } from '../shared/AddPaletteButton'
 import { usePageNav } from '../shared/usePageNav'
@@ -72,6 +72,10 @@ export const DashboardIndex = () => {
                             <span>Добавить шаблон</span>
                         </Button>
                     </Card>
+                </Section>
+
+                <Section>
+                    <BezierPlot />
                 </Section>
             </DashboardIndexMainSection>
         </DashboardIndexRoot>
