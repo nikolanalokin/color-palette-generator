@@ -31,6 +31,7 @@ export const Index = () => {
 const IndexRoot = styled.div({
     display: 'flex',
     flexDirection: 'column',
+    backgroundColor: 'rgba(0 0 0 / .1)',
 
     // background: `
     //     radial-gradient(100% 244.46% at 0% 0%, #CCFF00 0%, #FF027C 100%),

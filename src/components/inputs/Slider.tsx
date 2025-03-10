@@ -76,8 +76,6 @@ export const Slider = (props: SliderProps) => {
         setValues(values.filter(v => v !== value))
     })
 
-    console.log(marks)
-
     return (
         <SliderRoot {...restProps}>
             { labelText ? (

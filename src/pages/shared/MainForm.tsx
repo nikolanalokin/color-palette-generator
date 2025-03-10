@@ -1,22 +1,22 @@
 import styled from '@emotion/styled'
-import { Checkbox, ColorPicker, Field, FieldLabel, Form, FormControl, NumberInput, Option2, ScaleInput, Select2, TextInput } from '../../components'
-import { useMemo, useState } from 'react'
-import { createPalette, InterpolatorProps, PaletteInfo } from '../../engine'
-import { PaletteDisplayLine } from './PaletteDisplayLine'
-import { Mode, Okhsl } from 'culori'
-import { useControllableState } from '../../components/hooks'
-import { Section } from './primitives'
 import { combine, createEvent, createStore } from 'effector'
 import { useUnit } from 'effector-react'
+import { Color, Mode, Okhsl } from 'culori'
+import { Checkbox, ColorPicker, Field, FieldLabel, Form, FormControl, NumberInput, Option2, ScaleInput, Select2, TextInput } from '../../components'
+import { createPalette, InterpolatorProps, PaletteInfo } from '../../engine'
+import { PaletteDisplayLine } from './PaletteDisplayLine'
+import { useControllableState } from '../../components/hooks'
+import { Section } from './primitives'
 import { Slider } from '../../components/inputs/Slider'
+import { PalettePlots } from '../palette/shared/PalettePlots'
 
 const setMode = createEvent<Mode>()
-const setColor = createEvent<Okhsl>()
+const setColor = createEvent<Color>()
 const setScale = createEvent<number[]>()
 const setInterpolators = createEvent<InterpolatorProps[]>()
 
 const $mode = createStore<Mode>('okhsl')
-const $color = createStore<Okhsl>({
+const $color = createStore<Color>({
     mode: 'okhsl',
     h: 25,
     s: .9,
@@ -92,6 +92,12 @@ export const MainForm = () => {
                 {/* Редактор оттенков */}
                 <ShadesEditor palette={palette} css={{ gridArea: 'display' }} />
             </Section>
+
+            <Section area="plots">
+                <PalettePlots
+                    palette={palette}
+                />
+            </Section>
             {/* Действия с результатом */}
         </MainFormRoot>
     )
@@ -103,6 +109,7 @@ const MainFormRoot = styled.div({
     gridTemplateAreas: `
         "picker settings"
         "display display"
+        "plots plots"
     `,
     gridTemplateColumns: '400px 1fr',
     gap: '1rem',
@@ -185,7 +192,6 @@ const InterpolatorEditor = (props) => {
                                     min={0}
                                     max={1}
                                     step={.01}
-                                    markText={v => v % .1 === 0}
                                     css={{ width: '400px' }}
                                     marks={[...new Array(11)].map((_, i) => ({ label: String(i / 10), value: i / 10 }))}
                                 />
