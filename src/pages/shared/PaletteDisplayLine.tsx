@@ -1,27 +1,29 @@
 import styled from '@emotion/styled'
-import { PaletteInfo } from '../../core'
+import { PaletteInfo } from '../../engine'
 import { PaletteColor } from './PaletteColor'
 
-export type PaletteDisplayLineProps = {
+export type PaletteDisplayLineProps = React.HTMLAttributes<HTMLDivElement> & {
     palette?: PaletteInfo
 }
 
 export const PaletteDisplayLine = (props: PaletteDisplayLineProps) => {
-    const { palette } = props
+    const { palette, ...restProps } = props
     return (
-        <PaletteDisplayLineRoot>
-            <Gradient
+        <PaletteDisplayLineRoot {...restProps}>
+            {/* <Gradient
                 style={{
-                    background: `linear-gradient(to right, ${palette.shades.map((shade, i, arr) => `${shade.hex} ${shade.number / arr.at(-1).number * 100}%`).join(', ')})`
+                    background: `linear-gradient(to right, ${
+                        palette.shades.map((shade, i, arr) => `${shade.hex} ${shade.number / arr.at(-1).number * 100}%`).join(', ')
+                    })`
                 }}
-            />
+            /> */}
 
             <PaletteContainer>
                 { palette.shades.map((shade) => (
                     <StyledPaletteColor
-                        key={shade.number}
+                        key={shade.guid}
                         shade={shade}
-                        nearest={shade.hex === palette.nearestShade.hex}
+                        nearest={shade.number === palette.nearestShade.number}
                     />
                 )) }
             </PaletteContainer>
@@ -54,7 +56,6 @@ const PaletteContainer = styled.div(
 
 const StyledPaletteColor = styled(PaletteColor)(
     ({}) => ({
-        flexGrow: 1,
-        flexBasis: 0,
+        flex: '1 0 0%',
     })
 )

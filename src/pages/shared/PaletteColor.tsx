@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import { formatHsl, wcagContrast } from 'culori'
-import { contrastAPCA, ShadeInfo } from '../../core'
+import { formatHsl } from 'culori'
+import { ShadeInfo } from '../../engine'
 import { formatOkhsl } from './format-utils'
 
 type BasePaletteColorProps = {
@@ -13,40 +13,35 @@ export type PaletteColorProps = Omit<React.HTMLAttributes<HTMLDivElement>, keyof
 export const PaletteColor = (props: PaletteColorProps) => {
     if (!props.shade) return
     const { shade, nearest, ...restProps } = props
-    let wcagBlack = wcagContrast(shade.hex, 'black')
-    let wcagWhite = wcagContrast(shade.hex, 'white')
-    let apcaBlack = contrastAPCA('black', shade.hex)
-    let apcaWhite = contrastAPCA('white', shade.hex)
-    let textColor = Math.abs(apcaBlack) > 60 ? 'black' : Math.abs(apcaWhite) > 60 ? 'white' : '#808080'
+    let textColor = Math.abs(shade.apca.blackOn) >= 45 ? 'black' : 'white'
     return (
         <PaletteColorRoot {...restProps}>
             <PaletteColorRect
                 data-highlight={nearest}
-                {...props}
                 style={{ backgroundColor: shade.hex }}
             >
                 <span style={{ color: textColor }}>{ shade.number }</span>
             </PaletteColorRect>
 
             <PaletteColorDescriptionContainer>
-                <Title>
+                {/* <Title>
                     { shade.number }
-                </Title>
+                </Title> */}
                 <Subtitle>
                     { shade.hex }
                 </Subtitle>
                 <Caption>
-                    WCAG { wcagBlack.toFixed(2) }/{ wcagWhite.toFixed(2) }
+                    WCAG { shade.wcag.blackOn.toFixed(2) }/{ shade.wcag.whiteOn.toFixed(2) }
                 </Caption>
                 <Caption>
-                    APCA { apcaBlack.toFixed(1) }/{ apcaWhite.toFixed(1) }
+                    APCA { shade.apca.blackOn.toFixed(1) }/{ shade.apca.whiteOn.toFixed(1) }
                 </Caption>
-                <Caption>
+                {/* <Caption>
                     HSL { formatHsl(shade.hsl) }
                 </Caption>
                 <Caption>
                     OKHSL { formatOkhsl(shade.okhsl) }
-                </Caption>
+                </Caption> */}
                 <Caption>
                     deltaE { shade.delta.toPrecision(4) }
                 </Caption>
@@ -55,38 +50,33 @@ export const PaletteColor = (props: PaletteColorProps) => {
     )
 }
 
-const PaletteColorRoot = styled.div(
-    ({}) => ({
-        display: 'flex',
-        flexDirection: 'column',
-        rowGap: '8px',
-    })
-)
+const PaletteColorRoot = styled.div({
+    display: 'flex',
+    flexDirection: 'column',
+    rowGap: '0.5rem',
+})
 
-const PaletteColorRect = styled.div(
-    ({}) => ({
-        position: 'relative',
-        aspectRatio: 1,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '8px',
-        fontWeight: '500',
-        borderRadius: '8px',
+const PaletteColorRect = styled.div({
+    aspectRatio: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '1rem',
+    borderRadius: '0.5rem',
+    fontWeight: '500',
 
-        '&[data-highlight="true"]': {
-            boxShadow: '0 0 0 1px white, 0 0 0 3px black',
-        }
-    })
-)
+    '&[data-highlight="true"]': {
+        boxShadow: '0 0 0 1px white, 0 0 0 3px black',
+    }
+})
 
-const PaletteColorDescriptionContainer = styled.div(
-    ({}) => ({
-        display: 'flex',
-        flexDirection: 'column',
-        rowGap: '2px',
-    })
-)
+const PaletteColorDescriptionContainer = styled.div({
+    display: 'flex',
+    flexDirection: 'column',
+    rowGap: '0.125rem',
+    paddingInlineEnd: '0.5rem',
+    overflowWrap: 'anywhere',
+})
 
 const Title = styled.div(
     () => ({
@@ -97,12 +87,13 @@ const Title = styled.div(
 
 const Subtitle = styled.div(
     () => ({
-        fontSize: '0.875rem',
+        fontSize: '0.75rem',
+        fontWeight: '500',
     })
 )
 
 const Caption = styled.div(
     () => ({
-        fontSize: '11px',
+        fontSize: '0.6875rem',
     })
 )

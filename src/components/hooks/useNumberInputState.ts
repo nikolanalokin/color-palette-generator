@@ -210,7 +210,7 @@ function useNumberInputState (props: NumberInputStateProps) {
     }
 }
 
-function roundToStepPrecision (value: number, step: number) {
+export function roundToStepPrecision (value: number, step: number) {
     let roundedValue = value
     let stepString = step.toString()
     let pointIndex = stepString.indexOf('.')
@@ -222,7 +222,7 @@ function roundToStepPrecision (value: number, step: number) {
     return roundedValue
 }
 
-function snapValueToStep (value: number, min: number | undefined, max: number | undefined, step: number) {
+export function snapValueToStep (value: number, min: number | undefined, max: number | undefined, step: number) {
     min = Number(min)
     max = Number(max)
 

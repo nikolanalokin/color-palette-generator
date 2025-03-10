@@ -7,6 +7,7 @@ import { findNearestValueInScale, ticks } from '../../astral'
 import { Popover, PopoverContent, PopoverTrigger } from '../popover'
 import { IconButton } from '../buttons'
 import { PlusIcon, Trash2Icon } from 'lucide-react'
+import { roundToStepPrecision, snapValueToStep } from '../hooks/useNumberInputState'
 
 type BaseSliderProps = {
     labelText?: string
@@ -16,8 +17,13 @@ type BaseSliderProps = {
     min?: number
     max?: number
     step?: number
-    markText?(markValue: number): boolean
+    marks?: boolean | SliderMark[]
     disabledEdge?: boolean
+}
+
+type SliderMark = {
+    value: number
+    label: string
 }
 
 export type SliderProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, keyof BaseSliderProps > & BaseSliderProps
@@ -31,7 +37,7 @@ export const Slider = (props: SliderProps) => {
         min = 0,
         max = 10,
         step = 1,
-        markText = () => true,
+        marks: marksProp,
         disabledEdge,
         ...restProps
     } = props
@@ -42,7 +48,14 @@ export const Slider = (props: SliderProps) => {
         onChange: onValueChange,
     })
 
-    const marks = useMemo(() => ticks([min, max], ((max - min) / step) + 1), [min, max, step])
+    const marks = useMemo(
+        () => marksProp === true
+            ? ticks([min, max], ((max - min) / step) + 1).map(v => ({ label: String(roundToStepPrecision(v, step)), value: v } as SliderMark))
+            : Array.isArray(marksProp)
+                ? marksProp
+                : null,
+        [marksProp, min, max, step]
+    )
 
     const containerRef = useRef<HTMLDivElement>(null)
 
@@ -55,13 +68,15 @@ export const Slider = (props: SliderProps) => {
     const handleDoubleClick = useCallbackRef((evt: React.PointerEvent<HTMLDivElement>) => {
         const newLeft = evt.clientX - containerRect.left
         const newNormalizedValue = clamp(newLeft, 0, containerRect.width) / containerRect.width
-        const newValue = findNearestValueInScale(newNormalizedValue * (max - min), marks)
+        const newValue = snapValueToStep(newNormalizedValue * (max - min), min, max, step)
         setValues([...values, newValue].sort((a, b) => a - b))
     })
 
     const handleRemoveValue = useCallbackRef((value: number) => {
         setValues(values.filter(v => v !== value))
     })
+
+    console.log(marks)
 
     return (
         <SliderRoot {...restProps}>
@@ -77,14 +92,14 @@ export const Slider = (props: SliderProps) => {
             >
                 <SliderTrack />
 
-                { marks.map((markValue, index) => {
-                    const normalizedValue = markValue / (max - min)
+                { marks?.map((mark, index) => {
+                    const normalizedValue = mark.value / (max - min)
                     return (
                         <SliderMark
                             key={index}
                             style={{ left: `${normalizedValue * 100}%` }}
                         >
-                            { markText(markValue) ? markValue : null }
+                            { mark.label }
                         </SliderMark>
                     )
                 }) }
@@ -106,7 +121,6 @@ export const Slider = (props: SliderProps) => {
                             min={min}
                             max={max}
                             step={step}
-                            marks={marks}
                             onEnd={() => setValues([...values].sort((a, b) => a - b))}
                             onRemove={handleRemoveValue}
                             disabled={disabledEdge && (index === 0 || index === values.length - 1)}
@@ -178,7 +192,6 @@ type SliderTrumbProps = {
     max: number
     step: number
     disabled?: boolean
-    marks?: number[]
     onStart?(): void
     onEnd?(): void
     onRemove?(value: number): void
@@ -193,7 +206,6 @@ const SliderTrumb: React.FC<Omit<React.HTMLAttributes<HTMLDivElement>, keyof Sli
         max,
         step,
         disabled,
-        marks,
         onStart,
         onEnd,
         onRemove,
@@ -214,9 +226,9 @@ const SliderTrumb: React.FC<Omit<React.HTMLAttributes<HTMLDivElement>, keyof Sli
         if (pointerIdRef.current) {
             const newLeft = evt.clientX - containerRect.left
             const newNormalizedValue = clamp(newLeft, 0, containerRect.width) / containerRect.width
-            const newValue = newNormalizedValue * (max - min)
+            const newValue =  newNormalizedValue * (max - min)
             if (Math.abs(newValue - value) > step / 2) {
-                onValueChange?.(value + (step * Math.sign(newValue - value)))
+                onValueChange?.(roundToStepPrecision(value + (step * Math.sign(newValue - value)), step))
             }
         }
     })

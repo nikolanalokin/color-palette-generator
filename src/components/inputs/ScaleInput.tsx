@@ -101,7 +101,10 @@ export const ScaleInput = (props: ScaleInputProps) => {
                     min={from}
                     max={to}
                     step={((to - from) / parts) / 4}
-                    markText={v => v % 100 === 0}
+                    marks={[...new Array(parts * 5 + 1)].map((_, i) => ({
+                        value: i * 20,
+                        label: i * 20 % 100 === 0 ? String(i * 20) : null
+                    }))}
                     disabledEdge
                 />
             </ScaleInputSliderContainer>

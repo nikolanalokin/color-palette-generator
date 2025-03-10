@@ -85,3 +85,9 @@ export const BaseSelect = styled.select({
         outline: '2px solid black',
     },
 })
+
+export const FormControl = styled.div({
+    display: 'flex',
+    alignItems: 'center',
+    minHeight: '40px',
+})

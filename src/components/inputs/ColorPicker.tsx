@@ -6,21 +6,22 @@ import { TextInput } from './TextInput'
 import { OkhslColorPicker } from './OkhslColorPicker'
 import { useControllableState } from '../hooks'
 
-export type ColorPickerProps = {
-    mode?: Mode
-    value?: string | Color
-    onValueChange?(value: string | Color): void
+export type ColorPickerProps<C extends string | Color> = React.HTMLAttributes<HTMLDivElement> & {
+    mode?: C extends Color ? C['mode'] : undefined
+    value?: C
+    onValueChange?(value: C): void
 }
 
-export const ColorPicker: React.FC<ColorPickerProps> = props => {
+export function ColorPicker<C extends string | Color>(props: ColorPickerProps<C>) {
     const {
         mode,
         value: valueProp,
         onValueChange,
+        ...restProps
     } = props
 
     const [value, setValue] = useControllableState({
-        defaultProp: DEFAULT_COLOR,
+        defaultProp: DEFAULT_COLOR as C,
         prop: valueProp,
         onChange: onValueChange,
     })
@@ -40,7 +41,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = props => {
 
     const handleHexColorChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = isHexMode ? evt.target.value : converter(evt.target.value)
-        setValue?.(newValue)
+        setValue?.(newValue as C)
     }
 
     const handleHexStringChange = (value: string) => {
@@ -48,17 +49,17 @@ export const ColorPicker: React.FC<ColorPickerProps> = props => {
 
         if (/^#?([a-f0-9]{6}|[a-f0-9]{3})$/.test(value)) {
             const newValue = isHexMode ? value : converter(value)
-            setValue?.(newValue)
+            setValue?.(newValue as C)
         }
     }
 
     const handleOkhslChange = (value: Okhsl) => {
         const newValue = isHexMode ? formatHex(value) : value
-        setValue?.(newValue)
+        setValue?.(newValue as C)
     }
 
     return (
-        <FormGroup>
+        <FormGroup {...restProps}>
             <ColorRectContainer>
                 <ColorRect
                     type="color"

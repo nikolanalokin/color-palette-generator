@@ -42,7 +42,7 @@ const RootRoot = styled.div<{ shade?: ShadeInfo }>(
             ? `linear-gradient(to left, ${formatCss(shade.rgb)}, ${formatCss({...shade.rgb, alpha: 0})} 50%)`
             : null,
 
-        backgroundColor: 'rgba(238 238 238 / 1)',
+        // backgroundColor: 'rgba(238 238 238 / 1)',
     })
 )
 
