@@ -1,4 +1,4 @@
-import { Color, formatHex, getMode, Mode, useMode } from 'culori'
+import { Color, formatHex, formatHex8, getMode, Mode, useMode } from 'culori'
 import { invlerp, lerp } from './math'
 import { deltaE, findNearestValueInScale, getColorInfo, getNearestColorNames, uniqueId } from './utils'
 import { PaletteInfo, ShadeInfo } from './types'
@@ -43,7 +43,7 @@ export function createPalette (props: CreatePaletteProps): PaletteInfo {
             number: tone,
             normalized: shadeScaleValue,
             ...getColorInfo(shadeColor),
-            delta: deltaE(formatHex(baseColor), formatHex(shadeColor)),
+            delta: deltaE(formatHex8(baseColor), formatHex8(shadeColor)),
         }
     })
 

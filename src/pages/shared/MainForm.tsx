@@ -9,18 +9,20 @@ import { useControllableState } from '../../components/hooks'
 import { Section } from './primitives'
 import { Slider } from '../../components/inputs/Slider'
 import { PalettePlots } from '../palette/shared/PalettePlots'
+import { debounce } from '../../utils/debounce'
 
 const setMode = createEvent<Mode>()
 const setColor = createEvent<Color>()
 const setScale = createEvent<number[]>()
 const setInterpolators = createEvent<InterpolatorProps[]>()
 
-const $mode = createStore<Mode>('okhsl')
+const $mode = createStore<Mode>('okhsl').on(setMode, (_, payload) => payload)
 const $color = createStore<Color>({
     mode: 'okhsl',
     h: 25,
     s: .9,
     l: .5,
+    alpha: 1,
 }).on(setColor, (_, payload) => payload)
 const $scale = createStore<number[]>([0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]).on(setScale, (_, payload) => payload)
 const $interpolators = createStore<InterpolatorProps[]>([
@@ -32,6 +34,8 @@ const $interpolators = createStore<InterpolatorProps[]>([
         max: 1,
     },
 ]).on(setInterpolators, (_, payload) => payload)
+
+const debouncedCreatePalette = debounce(createPalette, 200)
 
 export const $palette = combine(
     {
@@ -54,6 +58,27 @@ export const MainForm = () => {
         <MainFormRoot>
             <Section area="picker">
                 <Form css={{ gridArea: 'picker' }}>
+                    <Select2
+                        value={mode}
+                        onValueChange={setMode}
+                    >
+                        <Option2 value="hsl">
+                            Hsl
+                        </Option2>
+                        <Option2 value="lab">
+                            Lab
+                        </Option2>
+                        <Option2 value="okhsl">
+                            Okhsl
+                        </Option2>
+                        <Option2 value="oklch">
+                            Oklch
+                        </Option2>
+                        <Option2 value="rgb">
+                            Rgb
+                        </Option2>
+                    </Select2>
+
                     {/* Ввод цвета */}
                     <ColorPicker
                         mode={mode}
@@ -88,16 +113,21 @@ export const MainForm = () => {
                 </Form>
             </Section>
 
-            <Section area="display">
-                {/* Редактор оттенков */}
-                <ShadesEditor palette={palette} css={{ gridArea: 'display' }} />
-            </Section>
+            { palette ? (
+                <>
+                    <Section area="display">
+                        {/* Редактор оттенков */}
+                        <ShadesEditor palette={palette} css={{ gridArea: 'display' }} />
+                    </Section>
 
-            <Section area="plots">
-                <PalettePlots
-                    palette={palette}
-                />
-            </Section>
+                    <Section area="plots">
+                        <PalettePlots
+                            palette={palette}
+                        />
+                    </Section>
+                </>
+            ) : null }
+
             {/* Действия с результатом */}
         </MainFormRoot>
     )

@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import { Color, formatCss, p3 } from 'culori'
+import { Color, formatCss, getMode, p3, Rgb } from 'culori'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useControllableState } from '../../hooks'
 import { clamp, invlerp, lerp, precision, round, ticks } from '../../../core'
@@ -8,21 +8,25 @@ import { BaseInput } from '../shared'
 type BaseColorRangeInputProps<C extends Color> = {
     value?: C
     onChange?(value: C): void
-    channel?: Extract<Exclude<keyof C, 'mode' | 'alpha'>, string>
+    channel?: string
     step?: number
 }
 
 export type ColorRangeInputProps<C extends Color> = Omit<React.HTMLAttributes<HTMLDivElement>, keyof BaseColorRangeInputProps<C>>
     & BaseColorRangeInputProps<C>
 
-export function ColorRangeInput<C extends Color>(props: ColorRangeInputProps<C>) {
+export function ColorRangeInput<C extends Color = Rgb>(props: ColorRangeInputProps<C>) {
     const {
         value,
         onChange,
         channel,
-        step = .01,
+        step: stepProp = .01,
         ...restProps
     } = props
+
+    const definition = getMode(value?.mode ?? 'rgb')
+    const channelRange = 'ranges' in definition ? definition.ranges[channel] : [0, 1]
+    const step = stepProp || ((channelRange.at(-1) - channelRange.at(0)) / 100)
 
     const channelValue = value[channel] as number
 
@@ -35,12 +39,15 @@ export function ColorRangeInput<C extends Color>(props: ColorRangeInputProps<C>)
 
     return (
         <ColorRangeInputRoot {...restProps}>
+            <span>{ channel[0] }</span>
             <Range
                 color={value}
                 channel={channel}
                 value={channelValue}
                 onChange={value => handleChange(value)}
                 step={step}
+                min={channelRange.at(0)}
+                max={channelRange.at(-1)}
             />
             <Input
                 color={value}
@@ -48,6 +55,8 @@ export function ColorRangeInput<C extends Color>(props: ColorRangeInputProps<C>)
                 value={channelValue}
                 onChange={value => handleChange(value)}
                 step={step}
+                min={channelRange.at(0)}
+                max={channelRange.at(-1)}
             />
         </ColorRangeInputRoot>
     )
@@ -56,7 +65,8 @@ export function ColorRangeInput<C extends Color>(props: ColorRangeInputProps<C>)
 const ColorRangeInputRoot = styled.div(
     () => ({
         display: 'flex',
-        columnGap: '12px',
+        alignItems: 'center',
+        columnGap: '.5rem',
     })
 )
 
@@ -66,6 +76,8 @@ type InputProps = {
     value?: number
     onChange?(value: number): void
     step?: number
+    min?: number
+    max?: number
 }
 
 const Input = (props: InputProps) => {
@@ -75,8 +87,9 @@ const Input = (props: InputProps) => {
         value: valueProp,
         onChange,
         step = .01,
+        min = 0,
+        max = 1,
     } = props
-    const range = getRange(color, channel)
     const value = valueProp
     const handleChange = (newValue: number) => {
         onChange?.(newValue)
@@ -85,9 +98,9 @@ const Input = (props: InputProps) => {
         <InputRoot
             type="number"
             value={value}
-            min={range[0]}
-            max={range[1]}
             step={step}
+            min={min}
+            max={max}
             onChange={evt => handleChange(parseFloat(evt.target.value))}
         />
     )
@@ -103,6 +116,8 @@ type RangeProps = {
     value?: number
     onChange?(value: number): void
     step?: number
+    min?: number
+    max?: number
 }
 
 const Range = (props: RangeProps) => {
@@ -112,20 +127,21 @@ const Range = (props: RangeProps) => {
         value: valueProp,
         onChange,
         step = .01,
+        min = 0,
+        max = 1,
     } = props
-    const range = getRange(color, channel)
     const handleChange = (value: number) => {
         onChange?.(value)
     }
     return (
         <RangeRoot
             type="range"
-            style={{ backgroundImage: generateBackground(color, channel, range) }}
+            style={{ backgroundImage: generateBackground(color, channel, [min, max]) }}
             value={valueProp}
             onChange={evt => handleChange(+evt.target.value)}
-            min={range.at(0)}
-            max={range.at(-1)}
             step={step}
+            min={min}
+            max={max}
             trumbColor={getCssColor(color)}
         />
     )

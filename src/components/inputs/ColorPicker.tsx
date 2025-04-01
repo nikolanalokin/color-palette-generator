@@ -3,60 +3,61 @@ import styled from '@emotion/styled'
 import { Color, formatHex, getMode, Mode, okhsl, Okhsl, useMode } from 'culori'
 import { FormGroup } from './shared'
 import { TextInput } from './TextInput'
-import { OkhslColorPicker } from './OkhslColorPicker'
-import { useControllableState } from '../hooks'
+import { useControllableState, useLatest } from '../hooks'
+import { FindColorByMode } from 'culori/src/common'
+import { ChannelColorPicker } from './ChannelColorPicker'
 
-export type ColorPickerProps<C extends string | Color> = React.HTMLAttributes<HTMLDivElement> & {
-    mode?: C extends Color ? C['mode'] : undefined
+export type ColorPickerProps<M extends Mode, C = FindColorByMode<M>> = React.HTMLAttributes<HTMLDivElement> & {
+    mode?: M
     value?: C
     onValueChange?(value: C): void
 }
 
-export function ColorPicker<C extends string | Color>(props: ColorPickerProps<C>) {
+export function ColorPicker<M extends Mode = 'rgb', C = FindColorByMode<M>>(props: ColorPickerProps<M>) {
     const {
-        mode,
+        mode = 'rgb',
         value: valueProp,
         onValueChange,
         ...restProps
     } = props
 
+    const prevMode = useLatest(mode)
+
+    const definition = useMemo(() => getMode(mode), [mode])
+    const converter = useMemo(() => useMode(definition), [definition])
+
     const [value, setValue] = useControllableState({
-        defaultProp: DEFAULT_COLOR as C,
+        defaultProp: converter(DEFAULT_COLOR),
         prop: valueProp,
         onChange: onValueChange,
     })
 
-    const isHexMode = !mode
+    const [hexString, setHexString] = useState(formatHex(value))
 
-    const converter = useMemo(() => isHexMode ? (v: string) => v : useMode(getMode(mode)), [mode, isHexMode])
-
-    const hexValue = useMemo(() => isHexMode ? value as string : formatHex(value), [value, isHexMode])
-    const inModeValue = useMemo(() => isHexMode ? converter(value as string) : value as Color, [value, isHexMode, converter])
-
-    const [hexString, setHexString] = useState(hexValue)
-
-    useEffect(() => {
-        setHexString(hexValue)
-    }, [hexValue])
-
-    const handleHexColorChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-        const newValue = isHexMode ? evt.target.value : converter(evt.target.value)
-        setValue?.(newValue as C)
+    if (prevMode !== mode) {
+        setValue(converter(value))
     }
 
-    const handleHexStringChange = (value: string) => {
-        setHexString(value)
+    const handleHexColorChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = evt.target.value
+        setValue(converter(newValue))
+        setHexString(newValue)
+    }
 
-        if (/^#?([a-f0-9]{6}|[a-f0-9]{3})$/.test(value)) {
-            const newValue = isHexMode ? value : converter(value)
-            setValue?.(newValue as C)
+    const handleHexStringChange = (newValue: string) => {
+        setHexString(newValue)
+
+        if (/^#?([a-f0-9]{6}|[a-f0-9]{3})$/.test(newValue)) {
+            setValue(converter(newValue))
         }
     }
 
-    const handleOkhslChange = (value: Okhsl) => {
-        const newValue = isHexMode ? formatHex(value) : value
-        setValue?.(newValue as C)
+    const handleChange = (newValue: C) => {
+        setValue(newValue)
+        setHexString(formatHex(newValue))
     }
+
+    const hexValue = formatHex(value)
 
     return (
         <FormGroup {...restProps}>
@@ -74,9 +75,9 @@ export function ColorPicker<C extends string | Color>(props: ColorPickerProps<C>
                 onChange={handleHexStringChange}
             />
 
-            <OkhslColorPicker
-                value={okhsl(inModeValue)}
-                onChange={handleOkhslChange}
+            <ChannelColorPicker
+                value={value}
+                onChange={handleChange}
             />
         </FormGroup>
     )

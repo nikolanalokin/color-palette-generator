@@ -1,4 +1,4 @@
-import { Color, colorsNamed, differenceCiede2000, formatHex, hsl, nearest, okhsl, oklch, rgb, wcagContrast } from 'culori'
+import { Color, colorsNamed, differenceCiede2000, formatHex, formatHex8, hsl, nearest, okhsl, oklch, rgb, wcagContrast } from 'culori'
 import { ColorInfo } from './types'
 import { APCAcontrast, sRGBtoY } from 'apca-w3'
 import { clamp } from './math'
@@ -12,9 +12,9 @@ export const APCA_ON_BLACK_RANGE = [-105.65824801241264, 0]
 export const APCA_ON_WHITE_RANGE = [0, 106.04067321268862]
 
 export function getColorInfo (color: Color | string): ColorInfo {
-    const hexColor = formatHex(color)
+    const hexColor = formatHex8(color)
     return {
-        hex: formatHex(color),
+        hex: hexColor,
         rgb: rgb(hexColor),
         hsl: hsl(hexColor),
         okhsl: okhsl(hexColor),

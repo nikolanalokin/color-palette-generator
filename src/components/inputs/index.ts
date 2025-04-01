@@ -1,4 +1,5 @@
 export * from './ColorRangeInput'
+export * from './ChannelColorPicker'
 export * from './Checkbox'
 export * from './ColorPicker'
 export * from './ColorsInput'

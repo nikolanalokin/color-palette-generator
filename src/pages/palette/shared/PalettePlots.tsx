@@ -5,10 +5,10 @@ import { useMemo, useState } from 'react'
 import { Section } from '../../shared/primitives'
 import { ToggleButtonGroup } from '../../../components/buttons/ToggleButtonGroup'
 import { ToggleButton } from '../../../components/buttons/ToggleButton'
-import { PaletteVO } from '../../../types'
+import { PaletteInfo } from '../../../engine'
 
 export type PalettePlotsProps = {
-    palette?: PaletteVO
+    palette?: PaletteInfo
 }
 
 type ColorSpace =
